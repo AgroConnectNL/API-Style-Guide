@@ -1,4 +1,4 @@
-# AGRI-API-Style-Guide
+# AGRI API Style Guide
 
 De AgroConnect *AGRI API Style Guide* is een richtlijn voor het ontwikkelen van RESTFul API platforms. De *AGRI API Style Guide* is opgezet met als doel het bevorderen van de uniformiteit van RESTFul API platforms in de Agri- en Food sector. AgroConnect adviseert en stimuleert het gebruik van deze API Style Guide.
 
@@ -32,7 +32,7 @@ De AGRI API Style Guide maakt gebruik van de volgende standaarden van deze lijst
 
 ## Waar bestaat de *AGRI API Style Guide* uit
 
-De AGRI API Style Guide bestaat uit:
+De *AGRI API Style Guide* bestaat uit:
 
 - de API Style Guide Documentatie
 
