@@ -34,7 +34,7 @@ De AGRI API Style Guide maakt gebruik van de volgende standaarden van deze lijst
 
 De *AGRI API Style Guide* bestaat uit:
 
-- de API Style Guide Documentatie
+- de API Style Guide Documentatie (Engelstalig)
 
 - ready-to-use OpenAPI.yaml en .json files die als basis gebruikt kunnen worden bij de opzet van een nieuw platform
 
