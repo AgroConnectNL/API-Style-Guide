@@ -7,7 +7,6 @@
 #### Authors:
 
 Conny Graumans ([AgroConnect](www.agroconnect.nl))
-
 Bernard van Raaij (Van Raaij Advies)
 
 #### Credits
@@ -42,7 +41,7 @@ The list of API Design Rules in the *AGRI API Style Guide* is composed of:
 
 Design rules can be functional rules which should be considered when designing and building the api, and technical rules, which should be tested automatically.
 
-the rules are explained in detail in chapter 3. of this document.
+The rules are explained in detail in chapter 3. of this document.
 
 ### 2.1 List of functional rules
 
@@ -86,28 +85,19 @@ the rules are explained in detail in chapter 3. of this document.
 
 ### 3.1 Resources
 
-
-
 The REST architectural style is centered around the concept of a [=resource=]. A resource is an abstraction of a conceptual entity, identified by a globally unique [=URI=]. It may correspond to anything from a physical object (e.g. a building or a person) to an abstract concept (e.g. a permit, an event or today's weather). Although a resource is not tied to any specific exchange format, its current state can be transferred to clients through one or more representations, such as JSON or XML.
-
-<span id="api-05"></span>
 
 <div class="rule" id="/core/naming-resources" data-type="functional">
    <p class="rulelab">Use nouns to name resources</p>
    <dl>
    <dt>Statement</dt>
    <dd>
-   Resources are referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer.
+   Resources MUST be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer.
    <aside class="example">
       A few correct examples of nouns as part of a URI:
       <ul>
-         <li>Gebouw</li>
-         <li>Vergunning</li>
-      </ul>
-      <p>This is different than RPC-style APIs, where verbs are often used to perform certain actions:</p>
-      <ul>
-         <li>Opvragen</li>
-         <li>Registreren</li>
+         <li>crops</li>
+         <li>inbound-deliveries</li>
       </ul>
    </aside>
    </dd>
@@ -115,7 +105,7 @@ The REST architectural style is centered around the concept of a [=resource=]. A
    <dd>
    Resources describe objects, not actions.
    </dd>
-</dl>
+   </dl>
 </div>
 
 A resource that corresponds to a single conceptual entity is referred to as a [=singular resource=]. Resources can also be logically grouped into collections, which are themselves resources and typically support operations like paging, sorting, and filtering. While collection members are often of the same type, this is not strictly required. A collection resource contains references (URIs) to the individual singular resources it includes.
