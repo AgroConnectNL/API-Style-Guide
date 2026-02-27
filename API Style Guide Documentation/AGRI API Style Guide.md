@@ -6,12 +6,13 @@
 
 #### Authors:
 
-Conny Graumans ([AgroConnect](www.agroconnect.nl))
 Bernard van Raaij (Van Raaij Advies)
+
+Conny Graumans ([AgroConnect](www.agroconnect.nl))
 
 #### Credits
 
-This document has been prepared with grateful use of the documentation of the API Design Rules from the Kennisplatform APIs.
+This document has been prepared with grateful use of the documentation of the API Design Rules from the Kennisplatform APIs. We also used the [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/restful-api-guidelines/) as a source of inspiration.
 
 ---
 
@@ -31,55 +32,136 @@ More and more organizations in the Agri- and Food domain offer REST APIs (hencef
 
 This document aims to describe a widely applicable set of design rules for the unambiguous provisioning of REST APIs. The primary goal is to offer guidance for organizations designing new APIs, with the purpose of increasing developer experience (DX) and interoperability between APIs. Hopefully, many organizations (especially AgroConnect members) will adopt these design rules in their corporate API strategies and provide feedback about exceptions and additions to subsequently improve these design rules.
 
-## 2. Summary of the Normative API Design Rules
+With this in mind, AgroConnect adopts "API First" as a key engineering principle. API development begins with API specification outside the code and ideally involves ample peer-review feedback to achieve high-quality APIs. API First encompasses a set of quality-related standards. We encourage organization in the Agri-0 and Food domein to follow them to ensure that APIs:
+
+- are easy to understand and learn
+- are general and abstracted from specific implementation and use cases
+- are robust and easy to use
+- have a common look and feel
+- follow a consistent RESTful style and syntax
+- are consistent with other orrganizations’ APIs
+
+Ideally, all APIs in the Agri- and Food domain will look as if the same author created them.
+
+## 2. Normative API Design Rules
 
 The list of API Design Rules in the *AGRI API Style Guide* is composed of:
 
 - rules inherited from the *REST-API Design Rules* as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). These rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
 - rules adapted from the REST-API Design Rules as published by Forum Standaardisatie  which are customized (including examples)
-- rules which are specifically designer for the *AGRI API Style Guide*
+- rules which are specifically designed for this *AGRI API Style Guide*.
 
-Design rules can be functional rules which should be considered when designing and building the api, and technical rules, which should be tested automatically.
+### 2.1 Our rules
 
-The rules are explained in detail in chapter 3. of this document.
+The titles are marked with the corresponding labels: **MUST**, **SHOULD**, **MAY**
 
-### 2.1 List of functional rules
+### 2.1.1 Basic Meta Information and Versioning
 
-#### 2.1.1 List of functional rules
+### API Specification **MUST** be specified and publised using OpenAPI
 
-- [/core/naming-resources](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-resources): Use nouns to name resources
-- [/core/naming-collections](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-collections): Use plural nouns to name collection resources
+We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a sngel JSON file.
+
+Related ADR Rules:
+
+- [/core/doc-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi): Use OpenAPI Specification for documentation
+- [/core/publish-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/publish-openapi): Publish OAS document at a standard location in JSON-format
+
+###  API Specification **MUST** contain API meta information 
+
+API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
+
+- `#/info/title` a (unique) identifying, functional descriptive name of the API
+- `#/info/version` the API specification document version following [**MUST** use semantic versioning](https://opensource.zalando.com/restful-api-guidelines/#116)
+- `#/info/description` a proper description of the API
+- `#/info/contact/{name,url,email}` contact info of the team owning the API specification
+
+Related ADR Rules:
+
+- [/core/doc-openapi-contact](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi-contact): Document contact information for publicly available APIs
+
+### API Specification **MUST** be written using U.S. English
+
+API specification **MUST** be wrtiten in U.S. English
+
+- [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
 - [/core/interface-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/interface-language): Define interfaces in Dutch unless there is an official English glossary available
+
+### API Specification and implementation **MUST** use semantic versioning
+
+OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/restful-api-guidelines/#terminology).
+
+We expect API designers to comply to [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format <MAJOR>.<MINOR>.<PATCH> as follows:
+
+- Increment the **MAJOR** version when you make incompatible API changes after having aligned the changes with consumers. Consumers *have to adapt* their clients to be able to use this version
+- Increment the **MINOR** version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though can use existing features from earlier versions working without modifying their client software implementation
+- Optionally increment the **PATCH** version when you make backwards-compatible bug fixes or editorial changes not affecting the functionality. Consumers do not have to modify their software implementation to use this newer version
+
+Related ADR Rules:
+
+- [/core/semver](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/semver): Adhere to the Semantic Versioning model when releasing API changes
+- [/core/uri-version](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/uri-version): Include the major version number in the URI
+- [/core/version-header](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/version-header): Return the full version number in a response header
+- [/core/deprecation-schedule](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/deprecation-schedule): Include a deprecation schedule when deprecating features or versions
+- [/core/transition-period](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transition-period): Schedule a fixed transition period for a new major API version
+- [/core/changelog](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/changelog): Publish a changelog for API changes between versions
+
+### 2.1.2 Security
+
+Related ADR Rules:
+
+- [/core/transport/tls](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/tls): Secure connections using TLS
+- [/core/transport/security-headers](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/security-headers): Use mandatory security headers in API all responses
+- [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
+- [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
+
+### 2.1.3 URLs and Resources
+
+### URLs **SHOULD NOT** use /api as base path
+
+In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
+
+### Nouns **MUST** be used to name resources
+
+Resources MUST be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer. 
+
+- [/core/naming-resources](https://gitdocumentatie.logius.nl/publicatie/api/adr/#/core/naming-resources): Use nouns to name resources
+
+### Resource names **MUST** be plural
+
+Resources respresent collections and therefore always MUST be referred to with a plural noun
+
+- [/core/naming-collections](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-collections): Use plural nouns to name collection resources
+
+### Resources and sub-(or child-)resources **MUST** be identified via path segments
+
+- [/core/nested-child](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/nested-child): Use nested URIs for child resources
+- [/core/resource-operations](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/resource-operations): Model resource operations as a sub-resource or dedicated resource
+
+### All path segments identifying the resource **MUST** use be written in kebab-case 
+
+Path segments including [=URI=] (template) parameters????????????) are restricted to ASCII kebab-case strings matching regex `^[a-z][a-z\-0-9]*$`. The first character must be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
+
+### URL Paths **MUST** use be normalized without empty path segments and trailing slashes
+
+You must not specify paths with duplicate or trailing slashes, e.g. `/customers//addresses` or `/customers/`. As a consequence, you must also not specify or use path variables with empty string values.
+
+- [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
+
+### Query parameters MUST be written in lowerCamelCase 
+
+Query parameters (a.k.a query keys) in a [=URI=] MUST be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as (lower) camelCase. This also implies that diacritics MUST be normalized and special characters MUST be omitted.
+
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
 - [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 - [/core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
-- [/core/nested-child](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/nested-child): Use nested URIs for child resources
-- [/core/resource-operations](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/resource-operations): Model resource operations as a sub-resource or dedicated resource
-- [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
-- [/core/deprecation-schedule](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/deprecation-schedule): Include a deprecation schedule when deprecating features or versions
-- [/core/transition-period](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transition-period): Schedule a fixed transition period for a new major API version
-- [/core/changelog](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/changelog): Publish a changelog for API changes between versions
-- [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
+- 
+- 
 - [/core/geospatial](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/geospatial): Apply the geospatial module for geospatial data
-
-### 2.2 List of technical rules
-
-#### 
-
-#### 2.2.1 List of technical rules
-
-- [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
+- 
 - [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
-- [/core/doc-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi): Use OpenAPI Specification for documentation
-- [/core/doc-openapi-contact](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi-contact): Document contact information for publicly available APIs
-- [/core/publish-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/publish-openapi): Publish OAS document at a standard location in JSON-format
-- [/core/uri-version](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/uri-version): Include the major version number in the URI
-- [/core/semver](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/semver): Adhere to the Semantic Versioning model when releasing API changes
-- [/core/version-header](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/version-header): Return the full version number in a response header
-- [/core/transport/tls](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/tls): Secure connections using TLS
-- [/core/transport/security-headers](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/security-headers): Use mandatory security headers in API all responses
-- [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
+- 
+- 
 
 ## 3. The core set of Design Rules
 
@@ -127,11 +209,13 @@ Singular resources that stand on their own, i.e. which are not contained within 
 Collection resources describe a list of things:
 
 https://api.example.org/v1/gebouwen
+
 https://api.example.org/v1/vergunningen
 
 Singular resource that is contained within a collection resource:
 
 https://api.example.org/v1/gebouwen/3b9710c4-6614-467a-ab82-36822cf48db1
+
 https://api.example.org/v1/vergunningen/d285e05c-6b01-45c3-92d8-5e19a946b66f
 
 Singular resource describing the profile of the currently authenticated user:
@@ -307,13 +391,13 @@ Rationale
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics.
 
-| Method   | Operation     | Description                                                                                                                                                                                     |
-| -------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET`    | Read          | Retrieve a resource representation for the given [=URI=]. Data is only retrieved and never modified.                                                                                            |
+| Method   | Operation     | Description                                                                                          |
+| -------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `GET`    | Read          | Retrieve a resource representation for the given [=URI=]. Data is only retrieved and never modified. |
 | `POST`   | Create        | Create a subresource as part of a collection resource. This operation is not relevant for singular resources. This method can also be used for [exceptional cases](#/core/resource-operations). |
-| `PUT`    | Create/update | Create a resource with the given [=URI=] or replace (full update) a resource when the resource already exists.                                                                                  |
-| `PATCH`  | Update        | Partially updates an existing resource. The request only contains the resource modifications instead of the full resource representation.                                                       |
-| `DELETE` | Delete        | Remove a resource with the given [=URI=].                                                                                                                                                       |
+| `PUT`    | Create/update | Create a resource with the given [=URI=] or replace (full update) a resource when the resource already exists. |
+| `PATCH`  | Update        | Partially updates an existing resource. The request only contains the resource modifications instead of the full resource representation. |
+| `DELETE` | Delete        | Remove a resource with the given [=URI=].                                                            |
 
 The following table shows some examples of the use of standard HTTP methods:
 
@@ -327,9 +411,13 @@ The following table shows some examples of the use of standard HTTP methods:
 | `DELETE /rijksmonumenten/12` | Deletes national monument #12.             |
 
 The HTTP specification [[rfc9110]] offers a set of standard methods, where every method is designed with explicit semantics. HTTP also defines other methods, e.g. `HEAD`, `OPTIONS`, `TRACE`, and `CONNECT`.  
+
 The OpenAPI Specification 3.0 [Path Item Object](https://spec.openapis.org/oas/v3.0.1#path-item-object) also supports these methods, except for `CONNECT`.  
+
 According to [RFC 9110 9.1](https://www.rfc-editor.org/rfc/rfc9110#name-overview) the `GET` and `HEAD` HTTP methods MUST be supported by the server, all other methods are optional.  
+
 In addition to the standard HTTP methods, a server may support other optional methods as well, e.g. `PROPFIND`, `COPY`, `PURGE`, `VIEW`, `LINK`, `UNLINK`, `LOCK`, `UNLOCK`, etc.  
+
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed).
 
 How to test
@@ -433,6 +521,7 @@ If this would have not been a meaningful use case, this resource should not exis
 The [=singular resources=] for comments, referenced from all 3 collections, could still be modelled on a higher level to avoid deep nesting of URIs (which might increase complexity or problems due to the URI length):
 
 https://api.example.org/v1/comments/123
+
 https://api.example.org/v1/comments/456
 
 Although this approach might seem counterintuitive from a technical perspective (we simply could have modelled a single `/comments` resource with optional filters for article and photo) and might introduce partially redundant functionality, it makes perfect sense from the perspective of the consumer, which increases developer experience.
@@ -466,6 +555,7 @@ API documentation MUST be provided in the form of an OpenAPI definition document
 Rationale
 
 The OpenAPI Specification (OAS) [[OPENAPIS]] defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
+
  API documentation MUST be provided in the form of an OpenAPI definition document which conforms to the OpenAPI Specification (from v3 onwards). As a result, a variety of tools can be used to render the documentation (e.g. Swagger UI or ReDoc) or automate tasks such as testing or code generation. The OAS document SHOULD provide clear descriptions and examples.
 
 How to test
@@ -633,10 +723,13 @@ A response includes a header "API-Version" with a number matching the version nu
 ## Transport Security
 
 This section describes security principles, concepts and technologies to apply when working with APIs.
+
 Controls need to be applied for the security objectives of integrity, confidentiality and availability of the API (which includes the services and data provided thereby).
+
 The [architecture section of the API strategy](https://docs.geostandaarden.nl/api/API-Strategie-architectuur/) contains architecture patterns for implementing transport security.
 
 The scope of this section is limited to generic security controls that directly influence the visible parts of an API.
+
 Effectively, only security standards directly applicable to interactions are discussed here.
 
 In order to meet the complete security objectives, every implementer MUST also apply a range of controls not mentioned in this section.
@@ -674,12 +767,17 @@ Be aware that queries (anything after the '?' in a URI) are also part of a URI.
 ### HTTP-level Security
 
 The guidelines and principles defined in this section are client agnostic.
+
 When implementing a client agnostic API, one SHOULD at least facilitate that multi-purpose generic HTTP-clients like browsers are able to securely interact with the API.
+
 When implementing an API for a specific client it may be possible to limit measures as long as it ensures secure access for this specific client.
+
 Nevertheless it is advised to review the following security measures, which are mostly inspired by the [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html).
 
 Even while remaining client agnostic, clients can be classified in four major groups.
+
 This is in line with common practice in [[[?OAuth2]]].
+
 The groups are:
 
 1. Web applications.
@@ -688,21 +786,31 @@ The groups are:
 4. System-to-system applications.
 
 This section contains elements that apply to the generic classes of clients listed above.
+
 Although not every client implementation has a need for all the specifications referenced below, a client agnostic API SHOULD provide these to facilitate any client to implement relevant security controls.
 
 Most specifications referenced in this section are applicable to the first three classes of clients listed above.
+
 Security considerations for native applications are provided in [[[rfc8252]]], much of which can help non-OAuth2 based implementations as well.
+
 For browser-based applications a subsection is included with additional details and information.
+
 System-to-system (sometimes called machine-to-machine) may have a need for the listed specifications as well.
+
 Note that different usage patterns may be applicable in contexts with system-to-system clients, see above under Client Authentication.
 
 Realizations may rely on internal usage of HTTP-Headers.
+
 Information for processing requests and responses can be passed between components, that can have security implications.
+
 For instance, this is common practice between a reverse proxy or TLS-offloader and an application server.
+
 Additional HTTP headers are used in such example to pass an original IP-address or client certificate.
 
 Implementations MUST consider filtering both inbound and outbound traffic for HTTP-headers used internally.
+
 The primary focus of inbound filtering is to prevent injection of malicious headers on requests.
+
 For outbound filtering, the main concern is leaking of information.
 
 Use mandatory security headers in all API responses
@@ -715,14 +823,14 @@ Rationale
 
 There are a number of security related headers that can be returned in the HTTP responses to instruct browsers to act in specific ways. However, some of these headers are intended to be used with HTML responses, and as such may provide little or no security benefits on an API that does not return HTML. The following headers SHOULD be included in all API responses:
 
-| Header                                            | Rationale                                                                                                                                |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `Cache-Control: no-store`                         | Prevent sensitive information from being cached.                                                                                         |
-| `Content-Security-Policy: frame-ancestors 'none'` | To protect against drag-and-drop style clickjacking attacks.                                                                             |
-| `Content-Type`                                    | To specify the content type of the response. This SHOULD be `application/json` for JSON responses.                                       |
-| `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                                                           |
-| `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML.                                   |
-| `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                                                             |
+| Header                                            | Rationale                                                                                            |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Cache-Control: no-store`                         | Prevent sensitive information from being cached.                                                     |
+| `Content-Security-Policy: frame-ancestors 'none'` | To protect against drag-and-drop style clickjacking attacks.                                         |
+| `Content-Type`                                    | To specify the content type of the response. This SHOULD be `application/json` for JSON responses.   |
+| `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                       |
+| `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML. |
+| `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
 | `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [/core/transport/cors](#/core/transport/cors) for more information. |
 
 The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You SHOULD include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
@@ -748,17 +856,23 @@ Use CORS to restrict access from other domains for applicable resources
 Rationale
 
 Different resources can have different uses, as some resources are publicly available whereas others are restricted to several domains.
+
  Modern web browsers use Cross-Origin Resource Sharing (CORS) to minimize the risk associated with cross-site HTTP-requests.
 
 By default browsers only allow 'same origin' access to resources.
+
  This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser.
+
  To enable cross-site requests APIs can return a `Access-Control-Allow-Origin` response header.
 
 An allowlist SHOULD be used to determine the validity of different cross-site requests.
+
  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist.
+
  If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
 
 Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is NOT RECOMMENDED, because it disables CORS-security measures.
+
  However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
 
 How to test
@@ -768,23 +882,30 @@ Tests of this design rule can only be performed when the intended client is know
 ### Browser-based applications
 
 A specific subclass of clients are browser-based applications, that require the presence of particular security controls to facilitate secure implementation.
+
 Clients in this class are also known as *user-agent-based* or *single-page-applications* (SPA).
+
 All browser-based applications SHOULD follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22).
+
 These applications can be split into three architectural patterns:
 
 - JavaScript applications with a backend; with this class of applications, the backend is the confidential client and should intermediate any interaction, with tokens never ending up in the browser.
+
   Effectively, these are not different from regular web-application for this security facet, even though they leverage JavaScript for implementation.
 - JavaScript applications that share a domain with the API (resource server); these can leverage cookies marked as HTTP-Only, Secure and SameSite.
 - JavaScript applications without a backend; these clients are considered public clients, and are potentially more vulnerable to several types of attacks, including Cross-Site Scripting (XSS), Cross Site Request Forgery (CSRF) and OAuth token theft.
+
   In order to support these clients, the Cross-Origin Resource Sharing (CORS) policy mentioned above is critical and MUST be supported.
 
 ### Validate content types
 
 A REST request or response body SHOULD match the intended content type in the header.
+
 Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
 
 - Reject requests containing unexpected or missing content type headers with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
 - Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`.
+
   This avoids XXE-attack vectors for example.
 
 It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`, and the client specifies the preferred order of response types by the Accept header in the request.
@@ -823,7 +944,9 @@ Statement
 The [[[ADR-signing]]] version 1.0.x MUST be applied when signing payloads.
 
 This rule does not dictate signing.
+
  Instead, it only applies in situations where there is a need for assurance of end to end message integrity and authenticity between client application and server application.
+
  In those situations, [[[ADR-signing]]] specifies how to sign.
 
 Rationale
@@ -840,7 +963,9 @@ Statement
 The [[[ADR-encryption]]] version 1.0.x MUST be applied when encrypting payloads.
 
 This rule does not dictate encryption.
+
  Instead, it only applies in situations where there is a need for end to end message payload confidentiality between client application and server application.
+
  In those situations, [[[ADR-encryption]]] specifies how to encrypt.
 
 Rationale
