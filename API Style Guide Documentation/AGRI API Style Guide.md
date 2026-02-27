@@ -59,7 +59,7 @@ The titles are marked with the corresponding labels: **MUST**, **SHOULD**, **
 
 ### API Specification **MUST** be specified and publised using OpenAPI
 
-We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a sngel JSON file.
+We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a single JSON file.
 
 Related ADR Rules:
 
