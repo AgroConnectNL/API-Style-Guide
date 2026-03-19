@@ -12,7 +12,7 @@ Conny Graumans ([AgroConnect](www.agroconnect.nl))
 
 #### Credits
 
-This document has been prepared with grateful use of the documentation of the API Design Rules from the Kennisplatform APIs. We also used the [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/restful-api-guidelines/) as a source of inspiration.
+This document has been prepared with grateful use of the documentation of the API Design Rules from the [Kennisplatform API's](https://developer.overheid.nl/communities/kennisplatform-apis). We also used the [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/restful-api-guidelines/) as a source of inspiration.
 
 ---
 
@@ -30,7 +30,7 @@ The key words *MAY*, *MUST*, *MUST NOT*, *NOT RECOMMENDED*, *SHOULD*, and 
 
 More and more organizations in the Agri- and Food domain offer REST APIs (henceforth abbreviated as APIs), in addition to existing interfaces like SOAP and WFS. AgroConnect supports this development. These APIs aim to be developer-friendly and easy to implement. While this is a commendable aim, it does not shield a developer from a steep learning curve getting to know every new API, in particular when every individual API is designed using different patterns and conventions.
 
-This document aims to describe a widely applicable set of design rules for the unambiguous provisioning of REST APIs. The primary goal is to offer guidance for organizations designing new APIs, with the purpose of increasing developer experience (DX) and interoperability between APIs. Hopefully, many organizations (especially AgroConnect members) will adopt these design rules in their corporate API strategies and provide feedback about exceptions and additions to subsequently improve these design rules.
+This document aims to describe a widely applicable set of design rules for the unambiguous provisioning of REST (aka RESTFul) APIs. The primary goal is to offer guidance for organizations designing new APIs, with the purpose of increasing developer experience (DX) and interoperability between APIs. Hopefully, many organizations (especially AgroConnect members) will adopt these design rules in their corporate API strategies and provide feedback about exceptions and additions to subsequently improve these design rules.
 
 With this in mind, AgroConnect adopts "API First" as a key engineering principle. API development begins with API specification outside the code and ideally involves ample peer-review feedback to achieve high-quality APIs. API First encompasses a set of quality-related standards. We encourage organization in the Agri-0 and Food domein to follow them to ensure that APIs:
 
@@ -53,20 +53,20 @@ The list of API Design Rules in the *AGRI API Style Guide* is composed of:
 
 ### 2.1 Our rules
 
-The titles are marked with the corresponding labels: **MUST**, **SHOULD**, **MAY**
+### 2.1.1 Basic Meta Information and Versioning [Mxxx]
 
-### 2.1.1 Basic Meta Information and Versioning
+The API specification, also referred to as the API contract, serves as the primary reference for third parties developing client implementations. Its objective is to provide client developers with comprehensive details required to implement conformant clients. The rules in this section define the mandated publication format and the specific elements that must be included in the specification. This section also defines the versioning rules for the specification to ensure controlled evolution and maintain backward compatibility after the initial formal release.
 
-### API Specification **MUST** be specified and publised using OpenAPI
+### [M001] API Specification **MUST** be specified and publised using OpenAPI
 
-We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a sngel JSON file.
+We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a single JSON file.
 
 Related ADR Rules:
 
 - [/core/doc-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi): Use OpenAPI Specification for documentation
 - [/core/publish-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/publish-openapi): Publish OAS document at a standard location in JSON-format
 
-###  API Specification **MUST** contain API meta information 
+###  [M002] API Specification **MUST** contain API meta information 
 
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
@@ -79,14 +79,14 @@ Related ADR Rules:
 
 - [/core/doc-openapi-contact](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi-contact): Document contact information for publicly available APIs
 
-### API Specification **MUST** be written using U.S. English
+### [M003] API Specification **MUST** be written using U.S. English
 
-API specification **MUST** be wrtiten in U.S. English
+API specification **MUST** be wrtiten in U.S. English. This rule differs slightly from the ADR rules which allow English but prefers Dutch. 
 
 - [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
 - [/core/interface-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/interface-language): Define interfaces in Dutch unless there is an official English glossary available
 
-### API Specification and implementation **MUST** use semantic versioning
+### [M004] API Specification and implementation **MUST** use semantic versioning
 
 OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/restful-api-guidelines/#terminology).
 
@@ -105,7 +105,7 @@ Related ADR Rules:
 - [/core/transition-period](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transition-period): Schedule a fixed transition period for a new major API version
 - [/core/changelog](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/changelog): Publish a changelog for API changes between versions
 
-### 2.1.2 Security
+### 2.1.2 Security [Sxxx]
 
 Related ADR Rules:
 
@@ -114,58 +114,107 @@ Related ADR Rules:
 - [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
 - [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
 
-### 2.1.3 URLs and Resources
+### 2.1.3 URLs and Resources ([Uxxx]
 
-### URLs **SHOULD NOT** use /api as base path
+The key abstraction of information in REST is a Resource. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier ([=URI=]), which is part of the Uniform Resource Locator ([=URL=]). This section defines the rules for naming resources and constructing URLs.
+
+### [U001] URLs **SHOULD NOT** use /api as base path
 
 In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
-### Nouns **MUST** be used to name resources
+### [U002] Nouns **MUST** be used to name resources
 
 Resources MUST be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer. 
 
+Related ADR Rules:
+
 - [/core/naming-resources](https://gitdocumentatie.logius.nl/publicatie/api/adr/#/core/naming-resources): Use nouns to name resources
 
-### Resource names **MUST** be plural
+### [U003] Resource names **MUST** be plural
 
 Resources respresent collections and therefore always MUST be referred to with a plural noun
 
+Related ADR Rules:
+
 - [/core/naming-collections](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-collections): Use plural nouns to name collection resources
 
-### Resources and sub-(or child-)resources **MUST** be identified via path segments
+### [U003] Resources and sub-(or child-)resources **MUST** be identified via path segments
+
+Hierarchical relationships between resources must be represented as resources with sub-resources in the [=URI=] path.
+
+Related ADR Rules:
 
 - [/core/nested-child](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/nested-child): Use nested URIs for child resources
 - [/core/resource-operations](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/resource-operations): Model resource operations as a sub-resource or dedicated resource
 
-### All path segments identifying the resource **MUST** use be written in kebab-case 
+### [U004] All path segments identifying the resource **MUST** use be written in kebab-case 
 
 Path segments including [=URI=] (template) parameters????????????) are restricted to ASCII kebab-case strings matching regex `^[a-z][a-z\-0-9]*$`. The first character must be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
-### URL Paths **MUST** use be normalized without empty path segments and trailing slashes
+### [U005] URL Paths **MUST** use be normalized without empty path segments and trailing slashes
 
-You must not specify paths with duplicate or trailing slashes, e.g. `/customers//addresses` or `/customers/`. As a consequence, you must also not specify or use path variables with empty string values.
+You must not specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you must also not specify or use path variables with empty string values.
+
+Related ADR Rules:
 
 - [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
 
-### Query parameters MUST be written in lowerCamelCase 
+### [U006] Query parameters MUST be written in lowerCamelCase 
 
 Query parameters (a.k.a query keys) in a [=URI=] MUST be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as (lower) camelCase. This also implies that diacritics MUST be normalized and special characters MUST be omitted.
 
+### 2.1.4 RESTFul principles [Rxxx]
+
+The REST architectural style prescribes six principles that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
+
+### [R001] APIs MUST be Stateless
+
+Servers MUST NOT store any session state information of client. This mandates that each request from the client to the server must contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
+
+[/core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
+
+### [R002] APIs MUST provide a full representation of the resource in the response payload
+
+As a consequence of the Uniform Interface principle, each response to an API request MUST contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body MUST be provided.
+
+### [R003] APIs SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
+
+The layered system principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore MUST hide irrelevant implementation details. An API SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
+
+- The primary motivation behind this design rule is that an API design MUST focus on usability for the client, regardless of the implementation details under the hood.
+- The API, application and infrastructure need to be able to evolve independently to ease the task of maintaining backwards compatibility for APIs during an agile development process.
+- The API design of Convenience,- and Process API types SHOULD NOT be a 1-on-1 mapping of the underlying domain- or persistence model.
+- The API design of a System API type MAY be a mapping of the underlying persistence model.
+- The API SHOULD NOT expose information about the technical components being used, such as development platforms/frameworks or database systems.
+- The API SHOULD offer client-friendly attribute names and values, while persisted data may contain abbreviated terms or serializations which might be cumbersome for consumption.
+
+Related ADR rules:
+
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
+
+### [R004] APIs SHOULD NOT support client side caching
+
+Although one of the six REST principles is cacheable data, API platforms SHOULD NOT implement client-side caching of data retrieved via API calls unless it is strictly necessary for performance optimization.
+
+### 2.1.5 HTTP methods and responses [Hxxx]
+
+
+
+Related ADR Rules:
+
+- [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
 - [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
-- [/core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
 - 
-- 
-- [/core/geospatial](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/geospatial): Apply the geospatial module for geospatial data
-- 
-- [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
-- 
-- 
+
+
 
 ## 3. The core set of Design Rules
 
-### 3.1 Resources
+
+
+- [/core/geospatial](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/geospatial): Apply the geospatial module for geospatial data
+- ### 3.1 Resources
 
 The REST architectural style is centered around the concept of a [=resource=]. A resource is an abstraction of a conceptual entity, identified by a globally unique [=URI=]. It may correspond to anything from a physical object (e.g. a building or a person) to an abstract concept (e.g. a permit, an event or today's weather). Although a resource is not tied to any specific exchange format, its current state can be transferred to clients through one or more representations, such as JSON or XML.
 
@@ -410,13 +459,13 @@ The following table shows some examples of the use of standard HTTP methods:
 | `PATCH /rijksmonumenten/12`  | Modifies national monument #12 partially.  |
 | `DELETE /rijksmonumenten/12` | Deletes national monument #12.             |
 
-The HTTP specification [[rfc9110]] offers a set of standard methods, where every method is designed with explicit semantics. HTTP also defines other methods, e.g. `HEAD`, `OPTIONS`, `TRACE`, and `CONNECT`.  
+The HTTP specification [[rfc9110]] offers a set of standard methods, where every method is designed with explicit semantics. HTTP also defines other methods, e.g. `HEAD`, `OPTIONS`, `TRACE`, and `CONNECT`.
 
-The OpenAPI Specification 3.0 [Path Item Object](https://spec.openapis.org/oas/v3.0.1#path-item-object) also supports these methods, except for `CONNECT`.  
+The OpenAPI Specification 3.0 [Path Item Object](https://spec.openapis.org/oas/v3.0.1#path-item-object) also supports these methods, except for `CONNECT`.
 
-According to [RFC 9110 9.1](https://www.rfc-editor.org/rfc/rfc9110#name-overview) the `GET` and `HEAD` HTTP methods MUST be supported by the server, all other methods are optional.  
+According to [RFC 9110 9.1](https://www.rfc-editor.org/rfc/rfc9110#name-overview) the `GET` and `HEAD` HTTP methods MUST be supported by the server, all other methods are optional.
 
-In addition to the standard HTTP methods, a server may support other optional methods as well, e.g. `PROPFIND`, `COPY`, `PURGE`, `VIEW`, `LINK`, `UNLINK`, `LOCK`, `UNLOCK`, etc.  
+In addition to the standard HTTP methods, a server may support other optional methods as well, e.g. `PROPFIND`, `COPY`, `PURGE`, `VIEW`, `LINK`, `UNLINK`, `LOCK`, `UNLOCK`, etc.
 
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed).
 
