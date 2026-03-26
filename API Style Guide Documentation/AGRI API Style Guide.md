@@ -4,9 +4,11 @@
 
 #### Draft February 2026
 
-#### Authors:
+#### Authors
 
 Bernard van Raaij (Van Raaij Advies)
+
+#### Contributors
 
 Conny Graumans ([AgroConnect](www.agroconnect.nl))
 
@@ -24,7 +26,7 @@ This is a draft that could be altered, removed or replaced by other documents. I
 
 As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative.
 
-The key words *MAY*, *MUST*, *MUST NOT*, *NOT RECOMMENDED*, *SHOULD*, and *SHOULD NOT* in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")] [[RFC8174](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc8174 "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words")] when, and only when, they appear in all capitals, as shown here.
+The key words *MAY*, *MUST*, *MUST NOT*, *NOT RECOMMENDED*, *SHOULD*, and *SHOULD NOT* in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")] [[RFC8174](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc8174 "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words")] when, and only when, they appear in all capitals, as shown here.
 
 ## 1. Introduction
 
@@ -57,16 +59,16 @@ The list of API Design Rules in the *AGRI API Style Guide* is composed of:
 
 The API specification, also referred to as the API contract, serves as the primary reference for third parties developing client implementations. Its objective is to provide client developers with comprehensive details required to implement conformant clients. The rules in this section define the mandated publication format and the specific elements that must be included in the specification. This section also defines the versioning rules for the specification to ensure controlled evolution and maintain backward compatibility after the initial formal release.
 
-### [M001] API Specification **MUST** be specified and publised using OpenAPI
+### [M001] API Specification **MUST** be specified and published using OpenAPI
 
-We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be publidhed using a single JSON file.
+We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
 
 Related ADR Rules:
 
 - [/core/doc-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-openapi): Use OpenAPI Specification for documentation
 - [/core/publish-openapi](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/publish-openapi): Publish OAS document at a standard location in JSON-format
 
-###  [M002] API Specification **MUST** contain API meta information 
+### [M002] API Specification **MUST** contain API meta information 
 
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
@@ -81,7 +83,7 @@ Related ADR Rules:
 
 ### [M003] API Specification **MUST** be written using U.S. English
 
-API specification **MUST** be wrtiten in U.S. English. This rule differs slightly from the ADR rules which allow English but prefers Dutch. 
+API specification **MUST** be wrtiten in U.S. English. This rule differs slightly from the ADR rules which allow English but prefer Dutch. 
 
 - [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
 - [/core/interface-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/interface-language): Define interfaces in Dutch unless there is an official English glossary available
@@ -90,7 +92,7 @@ API specification **MUST** be wrtiten in U.S. English. This rule differs slightl
 
 OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/restful-api-guidelines/#terminology).
 
-We expect API designers to comply to [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format <MAJOR>.<MINOR>.<PATCH> as follows:
+We expect API designers to comply to [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format `major.minor.patch` as follows:
 
 - Increment the **MAJOR** version when you make incompatible API changes after having aligned the changes with consumers. Consumers *have to adapt* their clients to be able to use this version
 - Increment the **MINOR** version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though can use existing features from earlier versions working without modifying their client software implementation
@@ -99,11 +101,41 @@ We expect API designers to comply to [Semantic Versioning 2.0](http://semver.or
 Related ADR Rules:
 
 - [/core/semver](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/semver): Adhere to the Semantic Versioning model when releasing API changes
-- [/core/uri-version](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/uri-version): Include the major version number in the URI
-- [/core/version-header](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/version-header): Return the full version number in a response header
 - [/core/deprecation-schedule](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/deprecation-schedule): Include a deprecation schedule when deprecating features or versions
 - [/core/transition-period](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transition-period): Schedule a fixed transition period for a new major API version
 - [/core/changelog](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/changelog): Publish a changelog for API changes between versions
+
+### [M005] The MAJOR version MUST be specified in the HTTP request header
+
+To support simultaneously deployed major versions, clients MUST indicate the targeted major API version in the HTTP headers using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
+
+URL-based versioning (as in `../v1/growers/...`) SHOULD NOT be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
+
+This rule differs from the ADR rule [/core/uri-version](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/uri-version) which _does_ prescribe URI-based versioning
+
+Related ADR Rules:
+
+- [](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/semver)[/core/uri-version](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/uri-version): Include the major version number in the URI
+
+### [M006] The full API version MUST be returned in the HTTP response header
+
+For tracing and debugging purposes, the full version (i.e., `major.minor.patch`) MUST be returned to the client in the `API-Version` HTTP response header.
+
+Related ADR Rules:
+
+- [/core/version-header](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/version-header): Return the full version number in a response header
+
+### [M007] The identification of the client software package MAY be specified in the HTTP request header
+
+Although APIs are client-agnostic, the client MAY pass the name and software version which is calling the API in the standard HTTP header `User-Agent`.
+
+### [M008] A unique, server-side assigned request identfier MUST be returned in the HTTP response header
+
+For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) MUST be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself.
+
+### [M009] The request date-time MUST be returned in the HTTP response header
+
+For tracing and debugging purposes, a unique, server-side generated date-time timestamp MUST be returned to the client in the `Request-Date-Time` HTTP response header. 
 
 ### 2.1.2 Security [Sxxx]
 
@@ -163,23 +195,31 @@ Related ADR Rules:
 
 Query parameters (a.k.a query keys) in a [=URI=] MUST be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as (lower) camelCase. This also implies that diacritics MUST be normalized and special characters MUST be omitted.
 
-### 2.1.4 RESTFul principles [Rxxx]
+### 2.1.4 Adherance to RESTFul principles [Rxxx]
 
-The REST architectural style prescribes six principles that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
+The REST architectural style prescribes [six principles](https://restfulapi.net/) that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
 
 ### [R001] APIs MUST be Stateless
 
 Servers MUST NOT store any session state information of client. This mandates that each request from the client to the server must contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
-[/core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
+Related ADR Rules:
+
+- [core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
 
 ### [R002] APIs MUST provide a full representation of the resource in the response payload
 
 As a consequence of the Uniform Interface principle, each response to an API request MUST contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body MUST be provided.
 
-### [R003] APIs SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
+### [R003] A server side unique identifier MUST be assigned to each created resource and returned to the client
 
-The layered system principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore MUST hide irrelevant implementation details. An API SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
+As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a POST operation), a server-generated unique identifier (preferably a UUID) MUST be assigned to the resource and returned to the client in the response. For succeeding operations (PUT, PATCH, DELETE, GET) on this resource provided by the server, the resource MUST be identified using this server-generated unique identifier as a path parameter.
+
+In addition, resources MAY be identified using secondary identifiers assigned by other entities. The API platform MAY support these identifiers as resource identifiers in subsequent operations (PUT, PATCH, DELETE, GET).
+
+### [R004] APIs SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
+
+The Layered System principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore MUST hide irrelevant implementation details. An API SHOULD NOT expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
 
 - The primary motivation behind this design rule is that an API design MUST focus on usability for the client, regardless of the implementation details under the hood.
 - The API, application and infrastructure need to be able to evolve independently to ease the task of maintaining backwards compatibility for APIs during an agile development process.
@@ -192,26 +232,76 @@ Related ADR rules:
 
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
 
-### [R004] APIs SHOULD NOT support client side caching
+### [R005] APIs SHOULD NOT support client side caching
 
 Although one of the six REST principles is cacheable data, API platforms SHOULD NOT implement client-side caching of data retrieved via API calls unless it is strictly necessary for performance optimization.
 
-### 2.1.5 HTTP methods and responses [Hxxx]
+### 2.1.5 JSON Payloads
 
+Additional information in an API request or response that is not part of the HTTP method, [=URL=], or header must be exchanged in the payload. The rules in this section apply to the payloads.
 
+### [P001] APIs MUST use JSON as payload data interchange format
+
+Use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
+
+### [P002] APIs MUST use standard JSON media types
+
+The use the standard media type `application/json` (or `application/problem+json` to support problem JSON, see: XXXXXXXXXX) MUST be used as `content-type` (or `accept`) header information.
+
+### [P003] Property names MUST be lowerCamelCase
+
+All property names MUST be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
+
+### [P004] Array properties SHOULD have a plural names
+
+Properties names of arrays SHOULD be pluralized to indicate that they contain multiple values. This implies in turn that object names SHOULD be singular 
+
+### [P005] Properties with value `null` and absent properties MUST be handled the same way
+
+OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (`{}`) or can have the value `null` (`{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases must be handled in the exact same manner by specification.
+
+| required | nullable | {}     | {"example":null} |
+| -------- | -------- | ------ | ---------------- |
+| true     | true     | ❌ No  | ✔ Yes           |
+| false    | true     | ✔ Yes | ✔ Yes           |
+| true     | false    | ❌ No  | ❌ No            |
+| false    | false    | ✔ Yes | ❌ No            |
+
+### [P006] Date properties MUST NOT have a time component if only the date is relevant
+
+Properties representing dates (without time) MUST use `date` format and exclude time components. Including time portions leads to timezone conversion errors where clients may interpret 2026-03-25T00:00:00 as local midnight
+
+### [P007] Date, datetime and time properties MUST use RFC9745/ISO8601 date format
+
+All date, datetime and time fields in requests and responses MUST adhere to [[RFC9557]] and [[ISO8601-1]] format. Each field in the OpenAPI specification MUST set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
+
+| Field type | ISO8601 format | OpenAPI format         |
+| ---------- | -------------- | ---------------------- |
+| Date       | full-date      | "format": "date"       |
+| Datetime   | date-time      | "format": "date-time"  |
+| Time       | partial-time   | "format": "time-local" |
+
+RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
+
+- In a field with a date-time value, the date and time component MUST be separated by a "T" in uppercase.
+- The timezone offset "Z" MUST be uppercase.
+- "-00:00" MUST NOT be used as timezone offset.
+
+### [P008] APIs MUST allow all timezone offsets in requests and SHOULD use UTC in responses
+
+APIs MUST accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime SHOULD be in UTC (e.g. Z as timezone offset).
+
+### 2.1.6 HTTP methods and responses [Hxxx]
 
 Related ADR Rules:
 
 - [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
 - [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
-- 
 
 
 
 ## 3. The core set of Design Rules
-
-
 
 - [/core/geospatial](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/geospatial): Apply the geospatial module for geospatial data
 - ### 3.1 Resources
