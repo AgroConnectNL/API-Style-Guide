@@ -49,9 +49,9 @@ Ideally, all APIs in the Agri- and Food domain will look as if the same author c
 
 The list of API Design Rules in the *AGRI API Style Guide* is partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). Our set of rules is composed of:
 
-- rules **inherited **from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
-- rules adapted from the _REST-API Design Rules_ which are **customized **(including examples)
-- rules which are not part of the  _REST-API Design Rules_ and whoch are specifically designed for this *AGRI API Style Guide*.
+- rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
+- rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
+- rules which are not part of the _REST-API Design Rules_ and whoch are specifically designed for this *AGRI API Style Guide*.
 
 ### 2.1 Our rules
 
@@ -61,7 +61,7 @@ The API specification, also referred to as the API contract, serves as the prima
 
 ### [M001] API Specification **MUST** be specified and published using OpenAPI
 
-We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications, so the API contract **MUST **be specified using OpenAPI. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
+We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications, so the API contract **MUST** be specified using OpenAPI. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
 
 Inherited ADR:
 
@@ -109,9 +109,9 @@ Inherited ADR:
 - [/core/transition-period](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transition-period): Schedule a fixed transition period for a new major API version
 - [/core/changelog](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/changelog): Publish a changelog for API changes between versions
 
-### [M005] The MAJOR version **MUST **be specified in the HTTP request header
+### [M005] The MAJOR version **MUST** be specified in the HTTP request header
 
-To support simultaneously deployed `major` versions, clients **MUST **indicate the targeted major API version in the HTTP headers using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
+To support simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API version in the HTTP headers using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
 
 URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
 
@@ -123,19 +123,19 @@ This rule differs from the ADR rule [/core/uri-version](https://gitdocumentatie.
 
 ### [M006] The full API version **MUST** be returned in the HTTP response header
 
-For tracing and debugging purposes, the full API version (i.e., `major.minor.patch`) **MUST **be returned to the client in the `API-Version` HTTP response header.
+For tracing and debugging purposes, the full API version (i.e., `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
 
 Inherited ADR:
 
 - [/core/version-header](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/version-header): Return the full version number in a response header
 
-### [M007] The identification of the client software package **MAY **be specified in the HTTP request header
+### [M007] The identification of the client software package **MAY** be specified in the HTTP request header
 
-Although APIs are client-agnostic, the client **MAY **pass the name and software version which is calling the API in the standard HTTP header `User-Agent`.
+Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP header `User-Agent`.
 
-### [M008] A unique, server-side assigned request identfier **MUST **be returned in the HTTP response header
+### [M008] A unique, server-side assigned request identfier **MUST** be returned in the HTTP response header
 
-For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST **be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself.
+For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST** be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself.
 
 ### [M009] The request date-time **MUST** be returned in the HTTP response header
 
@@ -160,7 +160,7 @@ In most cases, all resources provided by a service are part of the public API, a
 
 ### [U002] Nouns **MUST** be used to name resources
 
-Resources **MUST **be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer. 
+Resources **MUST** be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer. 
 
 Inherited ADR:
 
@@ -168,7 +168,7 @@ Inherited ADR:
 
 ### [U003] Resource names **MUST** be plural
 
-Resources respresent collections and therefore always **MUST **be referred to with a plural noun
+Resources respresent collections and therefore always **MUST** be referred to with a plural noun
 
 Inherited ADR:
 
@@ -176,7 +176,7 @@ Inherited ADR:
 
 ### [U003] Resources and sub-(or child-)resources **MUST** be identified via path segments
 
-Hierarchical relationships between resources **MUST **be represented as resources with sub-resources in the [=URI=] path.
+Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the [=URI=] path.
 
 Inherited ADR:
 
@@ -185,11 +185,11 @@ Inherited ADR:
 
 ### [U004] All path segments identifying the resource **MUST** use be written in kebab-case 
 
-Path segments of a [=URI=] **MUST **only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST **only be used to deliniate distinct words. This also implies that diacritics **MUST **be normalized and special characters **MUST **be omitted. Followin gthis rule a [=URI=] must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST **be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
+Path segments of a [=URI=] **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to deliniate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Followin gthis rule a [=URI=] must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
 Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a [=URI=]. Resources **SHOULD **use the `Accept` header for content negotation.
 
-The last path segment **MAY **start with `_`, which is used as a convention to implement [operations](#/core/resource-operations)
+The last path segment **MAY** start with `_`, which is used as a convention to implement [operations](#/core/resource-operations)
 
 Rationale
 
@@ -197,7 +197,7 @@ Some web servers and frameworks do not handle case sensitivity or special charac
 
 ### [U005] URL Paths **MUST** use be normalized without empty path segments and trailing slashes
 
-You **MUST NOT **specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST **also not specify or use path variables with empty string values.
+You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST** also not specify or use path variables with empty string values.
 
 When requesting a resource including a trailing slash, this **MUST** result in a `404` (not found) error response and not a redirect. This forces API consumers to use the correct [=URI=].
 
@@ -211,9 +211,9 @@ Customized ADR:
 
 - [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
 
-### [U006] Query parameters **MUST **be written in lowerCamelCase 
+### [U006] Query parameters **MUST** be written in lowerCamelCase 
 
-Query parameters (a.k.a query keys) in a [=URI=] **MUST **be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST **be normalized and special characters MUST be omitted.
+Query parameters (a.k.a query keys) in a [=URI=] **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters MUST be omitted.
 
 Rationale
 
@@ -223,32 +223,32 @@ Query keys are often converted to JSON object keys, where camelCase is the namin
 
 The REST architectural style prescribes [six principles](https://restfulapi.net/) that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
 
-### [R001] APIs **MUST **be Stateless
+### [R001] APIs **MUST** be Stateless
 
-APIs **MUST **be stateless and therefore servers **MUST NOT** store any session state information of client. This mandates that each request from the client to the server **MUST **contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
+APIs **MUST** be stateless and therefore servers **MUST NOT** store any session state information of client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
 Inherited ADR:
 
 - [core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
 
-### [R002] APIs **MUST **provide a full representation of the resource in the response payload
+### [R002] APIs **MUST** provide a full representation of the resource in the response payload
 
-As a consequence of the Uniform Interface principle, each response to an API request **MUST **contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST **be provided.
+As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST** be provided.
 
-### [R003] A server side unique identifier **MUST **be assigned to each created resource and returned to the client
+### [R003] A server side unique identifier **MUST** be assigned to each created resource and returned to the client
 
-As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST **be assigned to the resource and returned to the client in the response. For succeeding operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST **be identified using this server-generated unique identifier as a path parameter.
+As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For succeeding operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified using this server-generated unique identifier as a path parameter.
 
-In addition, resources **MAY **be identified using secondary identifiers assigned by other entities. The API platform **MAY **support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
+In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
 ### [R004] APIs **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
 
-The Layered System principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore **MUST **hide irrelevant implementation details. An API **SHOULD NOT **expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
+The Layered System principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore **MUST** hide irrelevant implementation details. An API **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
 
 - The primary motivation behind this design rule is that an API design **MUST** focus on usability for the client, regardless of the implementation details under the hood.
 - The API, application and infrastructure **MUST** be able to evolve independently to ease the task of maintaining backwards compatibility for APIs during an agile development process.
 - The API design of Convenience,- and Process API types **SHOULD NOT** be a 1-on-1 mapping of the underlying domain- or persistence model.
-- The API design of a System API type **MAY **be a mapping of the underlying persistence model.
+- The API design of a System API type **MAY** be a mapping of the underlying persistence model.
 - The API **SHOULD NOT** expose information about the technical components being used, such as development platforms/frameworks or database systems.
 - The API **SHOULD** offer client-friendly attribute names and values, while persisted data may contain abbreviated terms or serializations which might be cumbersome for consumption.
 
@@ -264,17 +264,17 @@ Although one of the six REST principles is cacheable data, API platforms **SHOUL
 
 Additional information in an API request or response that is not part of the HTTP method, [=URL=], or header must be exchanged in the payload. The rules in this section apply to the payloads.
 
-### [P001] APIs **MUST **use JSON as payload data interchange format
+### [P001] APIs **MUST** use JSON as payload data interchange format
 
-API **MUST **use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
+API **MUST** use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
 
-### [P002] APIs **MUST **use standard JSON media types
+### [P002] APIs **MUST** use standard JSON media types
 
-The standard media type `application/json` (or `application/problem+json` to support problem JSON, see: XXXXXXXXXX) **MUST **be used as `content-type` (or `accept`) header information.
+The standard media type `application/json` (or `application/problem+json` to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `content-type` (or `accept`) header information.
 
-### [P003] Property names **MUST **be lowerCamelCase
+### [P003] Property names **MUST** be lowerCamelCase
 
-All property names **MUST **be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
+All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
 ### [P004] Array properties **SHOULD **have a plural names
 
@@ -293,11 +293,11 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 
 ### [P006] Date properties **MUST NOT** have a time component if only the date is relevant
 
-Properties representing dates (without time) **MUST** use `date` format and **MUST **exclude time components. Including time portions leads to timezone conversion errors where clients may interpret 2026-03-25T00:00:00 as local midnight
+Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions leads to timezone conversion errors where clients may interpret 2026-03-25T00:00:00 as local midnight
 
-### [P007] Date, datetime and time properties **MUST **use RFC9745/ISO8601 date format
+### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 date format
 
-All date, datetime and time fields in requests and responses **MUST **adhere to [[RFC9557]] and [[ISO8601-1]] format. Each field in the OpenAPI specification **MUST **set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
+All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] format. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
 
 | Field type | ISO8601 format | OpenAPI format         |
 | ---------- | -------------- | ---------------------- |
@@ -307,25 +307,25 @@ All date, datetime and time fields in requests and responses **MUST **adhere to 
 
 RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
 
-- In a field with a date-time value, the date and time component **MUST **be separated by a "T" in uppercase.
-- The timezone offset "Z" **MUST **be uppercase.
+- In a field with a date-time value, the date and time component **MUST** be separated by a "T" in uppercase.
+- The timezone offset "Z" **MUST** be uppercase.
 - "-00:00" **MUST NOT** be used as timezone offset.
 
-### [P008] APIs **MUST **allow all timezone offsets in requests and **SHOULD** use UTC in responses
+### [P008] APIs **MUST** allow all timezone offsets in requests and **SHOULD** use UTC in responses
 
 APIs **MUST** accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD **be in UTC (e.g. Z as timezone offset).
 
-### [P009] Response payloads **MUST **use the standard error payload
+### [P009] Response payloads **MUST** use the standard error payload
 
-When an API request results in an error (HTTP 4xx of HTTP-5xx), the reponse payload **MUST **contain the "Problem Details for HTTP APIs" as speciffied in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457).
+When an API request results in an error (HTTP 4xx of HTTP-5xx), the reponse payload **MUST** contain the "Problem Details for HTTP APIs" as speciffied in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457).
 
 ### 2.1.6 HTTP methods and responses [Hxxx]
 
 Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP [[RFC9110]].
 
-### [H001] API Operations **MUST **use only standard HTTP methods
+### [H001] API Operations **MUST** use only standard HTTP methods
 
-An API Operation (HTTP-Method plus resource) **MUST **adhere to the HTTP method semantics defined in [[RFC9110]].
+An API Operation (HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [[RFC9110]].
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. Exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
@@ -381,15 +381,15 @@ How to test
 
 Analyse the OpenAPI Description to confirm all supported methods are either `post`, `put`, `get`, `delete`, or `patch`.
 
-### [H00x] API Operations **MUST **adhere to HTTP safety and idempotency semantics for operations
+### [H00x] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
 
-API operations **MUST **adhere to HTTP safety and idempotency semantics for operations. 
+API operations **MUST** adhere to HTTP safety and idempotency semantics for operations. 
 
 Request methods are considered **safe **if their defined semantics are essentially read-only. The client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource.
 
 **Idempotency **essentially means that the effect of a successfully performed request on a server resource is independent of the number of times it is executed. For example, in arithmetic, adding zero to a number is an idempotent operation. An idempotent HTTP method is a method that can be invoked many times without different outcomes. It should not matter if the method has been called only once, or ten times over. The result should always be the same.
 
-The following table describes which HTTP methods **MUST **behave as safe and/or idempotent:
+The following table describes which HTTP methods **MUST** behave as safe and/or idempotent:
 
 | Method    | Safe | Idempotent |
 | --------- | ---- | ---------- |
