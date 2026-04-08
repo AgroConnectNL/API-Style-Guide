@@ -227,6 +227,22 @@ The REST architectural style prescribes [six principles](https://restfulapi.net/
 
 APIs **MUST** be stateless and therefore servers **MUST NOT** store any session state information of client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
+One of the key constraints of the REST architectural style is stateless communication between client and server. It means that every request from client to server must contain all of the information necessary to understand the request. The server cannot take advantage of any stored session context on the server as it didn’t memorize previous requests. Session state must therefore reside entirely on the client.
+
+To properly understand this constraint, it is important to make a distinction between two different kinds of state:
+
+- *Session state*: information about the interactions of an end user with a particular client application within the same user session, such as the last page being viewed, the login state or form data in a multi-step registration process. Session state must reside entirely on the client (e.g. in the user's browser).
+- *Resource state*: information that is permanently stored on the server beyond the scope of a single user session, such as the user's profile, a product purchase or information about a building. Resource state is persisted on the server and must be exchanged between client and server (in both directions) using representations as part of the request or response payload. This is actually where the term *REpresentational State Transfer (REST)* originates from.
+
+It is a misconception that there should be no state at all. The stateless communication constraint should be seen from the server's point of view and states that the server should not be aware of any *session state*.
+
+Stateless communication offers many advantages, including:
+
+- *Simplicity* is increased because the server does not have to memorize or retrieve session state while processing requests
+- *Scalability* is improved because not having to incorporate session state across multiple requests enables higher concurrency and performance
+- *Observability* is improved since every request can be monitored or analyzed in isolation without having to incorporate session context from other requests
+- *Reliability* is improved because it eases the task of recovering from partial failures since the server does not have to maintain, update or communicate session state. One failing request does not influence other requests (depending on the nature of the failure of course).
+
 Inherited ADR:
 
 - [core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
@@ -237,7 +253,7 @@ As a consequence of the Uniform Interface principle, each response to an API req
 
 ### [R003] A server side unique identifier **MUST** be assigned to each created resource and returned to the client
 
-As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For succeeding operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified using this server-generated unique identifier as a path parameter.
+As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For succeeding operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
@@ -260,64 +276,72 @@ Inherited ADR:
 
 Although one of the six REST principles is cacheable data, API platforms **SHOULD NOT** implement client-side caching of data retrieved via API calls unless it is strictly necessary for performance optimization.
 
-### 2.1.5 JSON Payloads
+### 2.1.5 Payloads
 
-Additional information in an API request or response that is not part of the HTTP method, [=URL=], or header must be exchanged in the payload. The rules in this section apply to the payloads.
+Additional information in an API request or response that is not part of the HTTP method, [=URL=], or headers must be exchanged in the payload. The rules in this section apply to the payloads.
 
 ### [P001] APIs **MUST** use JSON as payload data interchange format
 
-API **MUST** use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
+APIs **MUST** use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
 
 ### [P002] APIs **MUST** use standard JSON media types
 
-The standard media type `application/json` (or `application/problem+json` to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `content-type` (or `accept`) header information.
+The standard media types `application/json` (normal operation), `application/json-patch+json` (`PATCH` opererations) or `application/problem+json` (to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `Content-Type` (or `Accept`) header information.
 
 ### [P003] Property names **MUST** be lowerCamelCase
 
 All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
-### [P004] Array properties **SHOULD **have a plural names
+### [P004] Array properties **SHOULD** have a plural names
 
-Properties names of arrays **SHOULD **be pluralized to indicate that they contain multiple values. This implies in turn that object names SHOULD be singular 
+Properties names of arrays **SHOULD** be pluralized to indicate that they contain multiple values. This implies in turn that object names **SHOULD** be singular 
 
 ### [P005] Properties with value `null` and absent properties **MUST** be handled the same way
 
-OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (`{}`) or can have the value `null` (`{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases **MUST** be handled in the exact same manner by specification.
+OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (as in: `{}`) or can have the value `null` (as in: `{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases **MUST** be handled in the exact same manner by specification.
 
-| required | nullable | {}     | {"example":null} |
-| -------- | -------- | ------ | ---------------- |
-| true     | true     | ❌ No  | ✔ Yes           |
-| false    | true     | ✔ Yes | ✔ Yes           |
-| true     | false    | ❌ No  | ❌ No            |
-| false    | false    | ✔ Yes | ❌ No            |
+| required | nullable | `{}`   | `{"example":null}` |
+| -------- | -------- | ------ | ------------------ |
+| true     | true     | ❌ No  | ✔ Yes             |
+| false    | true     | ✔ Yes | ✔ Yes             |
+| true     | false    | ❌ No  | ❌ No              |
+| false    | false    | ✔ Yes | ❌ No              |
 
 ### [P006] Date properties **MUST NOT** have a time component if only the date is relevant
 
 Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions leads to timezone conversion errors where clients may interpret 2026-03-25T00:00:00 as local midnight
 
-### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 date format
+### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 formats
 
-All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] format. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
+OpenAPI does not know an date, datetime or time datatype, though respresent dates, dateimes and times as strings with an apropriate format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
 
-| Field type | ISO8601 format | OpenAPI format         |
-| ---------- | -------------- | ---------------------- |
-| Date       | full-date      | "format": "date"       |
-| Datetime   | date-time      | "format": "date-time"  |
-| Time       | partial-time   | "format": "time-local" |
+| Field type | ISO8601 format | OpenAPI format         | Syntax                                                | Examples                                              |
+| ---------- | -------------- | ---------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| Date       | full-date      | "format": "date"       | `YYYY-DD-MM`                                          | `2026-04-08`                                          |
+| Datetime   | date-time      | "format": "date-time"  | `YYYY-DD-MMThh:mi:ssZ`<br>`YYYY-DD-MMThh:mi:ss±hh:mm` | `2026-04-08T13:17:00Z`<br>`2026-04-08T15:17:00+02:00` |
+| Time       | partial-time   | "format": "time-local" | `hh:mm`                                               | `15:17`                                               |
 
 RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
 
-- In a field with a date-time value, the date and time component **MUST** be separated by a "T" in uppercase.
-- The timezone offset "Z" **MUST** be uppercase.
-- "-00:00" **MUST NOT** be used as timezone offset.
+- In a field with a date-time value, the date and time components **MUST** be separated by a "T" in uppercase.
+- The timezone offset "Z" (meaning UTC) **MUST** be uppercase.
+- "-00:00" **MUST NOT** be used as timezone offset. "+00:00" **MAY** be used as timezone offset to indicate an offset of 0h and 0m.
 
 ### [P008] APIs **MUST** allow all timezone offsets in requests and **SHOULD** use UTC in responses
 
-APIs **MUST** accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD **be in UTC (e.g. Z as timezone offset).
+APIs **MUST** accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
 
-### [P009] Response payloads **MUST** use the standard error payload
+### [P009] `GET` and `DEL`operations MUST NOT have a request payload 
 
-When an API request results in an error (HTTP 4xx of HTTP-5xx), the reponse payload **MUST** contain the "Problem Details for HTTP APIs" as speciffied in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457).
+Because of their nature (retrieving and removing resources) `GET` and `DELETE` operations **MUST NOT** have a request payload
+
+### [P010] `PATCH` operations MUST use the standard _JavaScript Object Notation (JSON) Patch_ payload 
+
+`PATCH`operations MUST NOT use the normal resource respresentation in the request payload, but MUST use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`.
+
+### [P011] Response payloads of erroneous requests **MUST** use the standard error payload
+
+When an API request results in an error (HTTP 4xx of HTTP-5xx), the reponse payload **MUST** contain the "Problem Details for HTTP APIs" as speciffied in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457). The `Accept`variable in the HTTP response header **MUST** be set to `application/problem+json`to inform the client about the responded content. 
 
 ### 2.1.6 HTTP methods and responses [Hxxx]
 
@@ -325,81 +349,45 @@ Although the REST architectural style does not impose a specific protocol, REST 
 
 ### [H001] API Operations **MUST** use only standard HTTP methods
 
-An API Operation (HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [[RFC9110]].
+An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [[RFC9110]].
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. Exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
-The following table shows the effect the HTTP method MUST have when used in a (succesful) request.
+The following table shows on which resource type (single or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (succesful) request.
 
-| Method   | Operation      | Description                                                                                          |
-| -------- | -------------- | ---------------------------------------------------------------------------------------------------- |
-| `GET`    | Read           | Retrieve a resource representation for the given [=URI=]. Data is only retrieved and never modified. |
-| `POST`   | Create         | Create a new resource instance as part of a collection. This operation is not relevant for singular resources. This method can also be used for [exceptional cases](#/core/resource-operations). |
-| `PUT`    | Update         | Replace an existing resource with the given [=URI=] (full update). The resource MAY be created when does not exists. |
-| `PATCH`  | Partial Update | Partially updates an existing resource. The request only contains the resource modifications instead of the full resource representation. |
-| `DELETE` | Delete         | Remove a resource with the given [=URI=].                                                            |
+| Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Single Resouce (e.g. /growers/com.gs1.codelists.gln/8700292113955)                                   |
+| -------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given [=URI=]. Data is only retrieved and never modified. | ✔ Retrieve a single resource representation for the given [=URI=]. Data is only retrieved and never modified. |
+| `POST`   | Create                 | ✔ Create a new resource instance as part of a collection.                                           | ❌ Avoid using `POST` on a single resource. Return `405 Method Not Allowed`                          |
+| `PUT`    | Update/Replace         | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given [=URI=] (full update). The resource MAY be created when does not exist |
+| `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially updates an existing resource.                                                           |
+| `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given [=URI=].                                                         |
 
-| Method   | CRUD                  | Collection Resource (e.g. /users)                                                                    | Single Resouce (e.g. /users/123)                                                 |
-| -------- | --------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `GET`    | Read                  | 200 (OK), list of users. Use pagination, sorting, and filtering to navigate big lists                | 200 (OK), single user. 404 (Not Found), if ID not found or invalid               |
-| `POST`   | Create                | 201 (Created), ‘Location’ header with link to /users/{id} containing new ID                          | Avoid using POST on a single resource                                            |
-| `PUT`    | Update/Replace        | 405 (Method not allowed), unless you want to update every resource in the entire collection of resource | 200 (OK) or 204 (No Content). Use 404 (Not Found), if ID is not found or invalid |
-| `PATCH`  | Partial Update/Modify | 405 (Method not allowed), unless you want to modify the collection itself                            | 200 (OK) or 204 (No Content). Use 404 (Not Found), if ID is not found or invalid |
-| `DELETE` | Delete                | 405 (Method not allowed), unless you want to delete the whole collection — use with caution          | 200 (OK). 404 (Not Found), if ID not found or invalid                            |
-
-Related ADR Rules:
+Inherited ADR:
 
 - [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
 
-Rules:
-
-- [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
-- [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
-
-The following table shows some examples of the use of standard HTTP methods:
-
-| Request                      | Description                                |
-| ---------------------------- | ------------------------------------------ |
-| `GET /rijksmonumenten`       | Retrieves a list of national monuments.    |
-| `GET /rijksmonumenten/12`    | Retrieves an individual national monument. |
-| `POST /rijksmonumenten`      | Creates a new national monument.           |
-| `PUT /rijksmonumenten/12`    | Modifies national monument #12 completely. |
-| `PATCH /rijksmonumenten/12`  | Modifies national monument #12 partially.  |
-| `DELETE /rijksmonumenten/12` | Deletes national monument #12.             |
-
-The HTTP specification [[rfc9110]] offers a set of standard methods, where every method is designed with explicit semantics. HTTP also defines other methods, e.g. `HEAD`, `OPTIONS`, `TRACE`, and `CONNECT`.
-
-The OpenAPI Specification 3.0 [Path Item Object](https://spec.openapis.org/oas/v3.0.1#path-item-object) also supports these methods, except for `CONNECT`.
-
-According to [RFC 9110 9.1](https://www.rfc-editor.org/rfc/rfc9110#name-overview) the `GET` and `HEAD` HTTP methods MUST be supported by the server, all other methods are optional.
-
-In addition to the standard HTTP methods, a server may support other optional methods as well, e.g. `PROPFIND`, `COPY`, `PURGE`, `VIEW`, `LINK`, `UNLINK`, `LOCK`, `UNLOCK`, etc.
-
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed).
-
-How to test
-
-Analyse the OpenAPI Description to confirm all supported methods are either `post`, `put`, `get`, `delete`, or `patch`.
 
 ### [H00x] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
 
 API operations **MUST** adhere to HTTP safety and idempotency semantics for operations. 
 
-Request methods are considered **safe **if their defined semantics are essentially read-only. The client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource.
+Request methods are considered **safe** if their defined semantics are essentially read-only. The client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource.
 
-**Idempotency **essentially means that the effect of a successfully performed request on a server resource is independent of the number of times it is executed. For example, in arithmetic, adding zero to a number is an idempotent operation. An idempotent HTTP method is a method that can be invoked many times without different outcomes. It should not matter if the method has been called only once, or ten times over. The result should always be the same.
+**Idempotency** essentially means that the effect of a successfully performed request on a server resource is independent of the number of times it is executed. For example, in arithmetic, adding zero to a number is an idempotent operation. An idempotent HTTP method is a method that can be invoked many times without different outcomes. It should not matter if the method has been called only once, or ten times over. The result should always be the same.
 
 The following table describes which HTTP methods **MUST** behave as safe and/or idempotent:
 
-| Method    | Safe | Idempotent |
-| --------- | ---- | ---------- |
-| `GET`     | Yes  | Yes        |
-| `HEAD`    | Yes  | Yes        |
-| `OPTIONS` | Yes  | Yes        |
-| `POST`    | No   | No         |
-| `PUT`     | No   | Yes        |
-| `PATCH`   | No   | No         |
-| `DELETE`  | No   | Yes        |
+| Method    | Safe   | Idempotent |
+| --------- | ------ | ---------- |
+| `GET`     | ✔ Yes | ✔ Yes     |
+| `HEAD`    | ✔ Yes | ✔ Yes     |
+| `OPTIONS` | ✔ Yes | ✔ Yes     |
+| `POST`    | ❌ No  | ❌ No      |
+| `PUT`     | ❌ No  | ✔ Yes     |
+| `PATCH`   | ❌ No  | ❌  No     |
+| `DELETE`  | ❌ No  | ✔ Yes     |
 
 Rationale
 
@@ -407,45 +395,44 @@ The HTTP protocol [[rfc9110]] specifies whether an HTTP method **SHOULD** be con
 
 Request methods are considered *safe* if their defined semantics are essentially read-only; i.e., the client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource. A request method is considered *idempotent* if the intended effect on the server of multiple identical requests with that method is the same as the effect for a single such request.
 
+Inherited ADR:
+
+- [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
+
 ### [H00x] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
 
 API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](https://www.rfc-editor.org/rfc/rfc9110#name-status-codes) ([[rfc9110]]) for the response.
 
-Rationale
+In case of an error, the server **SHOULD NOT** pass technical details (e.g. call stacks or other internal hints) to the client. The error message **SHOULD** be generic to avoid revealing additional details and expose internal information which can be used with malicious intent.
 
-The server **SHOULD NOT** only use `200` for success and `404` for error states. Use the semantically appropriate status code for success or failure.
+Inherited ADR:
 
-In case of an error, the server **SHOULD NOT** pass technical details (e.g. call stacks or other internal hints) to the client. The error message **SHOULD **be generic to avoid revealing additional details and expose internal information which can be used with malicious intent.
+- [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 
-## Statelessness
+### [H00x] `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** support standard response codes
 
-One of the key constraints of the REST architectural style is stateless communication between client and server. It means that every request from client to server must contain all of the information necessary to understand the request. The server cannot take advantage of any stored session context on the server as it didn’t memorize previous requests. Session state must therefore reside entirely on the client.
+The HTTP operations  `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support the following response codes
 
-To properly understand this constraint, it is important to make a distinction between two different kinds of state:
+| Operation                                                          | Result                                                                                               | Response code                                               |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `GET` on collection resource<br>(with or without query parameters) | successful response returning list with **0** of more items. <br>bad request (f.i. malformed query parameters)<br>authentication failed<br>internal server error | `200`<br>`400`<br>`401`<br>`500`                            |
+| `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (f.i. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`400`<br>`401`<br>`404`<br>`500`                   |
+| `POST`                                                             | successful response after creation of the new resource<br>succesful response after acceptance of the new resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`500`          |
+| `PUT`                                                              | successful response after updating the resource<br>succesful response after acceptance of the updated resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
+| `PATCH`                                                            | successful response after partially updating the resource<br>succesful response after acceptance of the partial updated resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
+| `DELETE`                                                           | successful response after deleting the resource<br>succesful response after acceptance the request for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
 
-- *Session state*: information about the interactions of an end user with a particular client application within the same user session, such as the last page being viewed, the login state or form data in a multi-step registration process. Session state must reside entirely on the client (e.g. in the user's browser).
-- *Resource state*: information that is permanently stored on the server beyond the scope of a single user session, such as the user's profile, a product purchase or information about a building. Resource state is persisted on the server and must be exchanged between client and server (in both directions) using representations as part of the request or response payload. This is actually where the term *REpresentational State Transfer (REST)* originates from.
+Remarks:
 
-It is a misconception that there should be no state at all. The stateless communication constraint should be seen from the server's point of view and states that the server should not be aware of any *session state*.
+A `GET`request on a **collection** resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A '`GET`request on an singleton resource (with a resource identifiers in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not found`is returned to the client.
 
-Stateless communication offers many advantages, including:
+### [H00x] The `PUT` method **MUST NOT** be used as an insert-or-update operation 
 
-- *Simplicity* is increased because the server does not have to memorize or retrieve session state while processing requests
-- *Scalability* is improved because not having to incorporate session state across multiple requests enables higher concurrency and performance
-- *Observability* is improved since every request can be monitored or analyzed in isolation without having to incorporate session context from other requests
-- *Reliability* is improved because it eases the task of recovering from partial failures since the server does not have to maintain, update or communicate session state. One failing request does not influence other requests (depending on the nature of the failure of course).
+A `PUT`request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not found`error and **MUST NOT** be processed as an update-or-insert operation. 
 
-Do not maintain session state on the server
+### [H00x] The HTTP `401 Not authorized` error code MUST only be used  for authentication failure
 
-Statement
-
-In the context of REST APIs, the server MUST NOT maintain or require any notion of the functionality of the client application and the corresponding end user interactions.
-
-Rationale
-
-To achieve full decoupling between client and server, and to benefit from the advantages mentioned above, session state MUST NOT reside on the server. Session state MUST therefore reside entirely on the client.
-
-The client of a REST API could be a variety of applications such as a browser application, a mobile or desktop application and even another server serving as a backend component for another client. REST APIs should therefore be completely client-agnostic.
+Although the standard description of the HTTP `401` error is: `Not "authorized"`this error **MUST** only be returned as a result of a failed **authentication **(token) validation. In case a client is succesfully authenticated and performs a request on a resource he is not **authorized** (allowed) to, an `403 Forbidden` **SHOULD** be returned. Alternatively an `404 Not found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
 ## Relationships
 
@@ -501,183 +488,8 @@ There are resource operations which might not seem to fit well in the CRUD inter
 2. Treat the operation as a sub-resource. For example, model a sub-collection resource `/inzendingen/12/beoordelingen` and add an approval or rejection by issuing a `POST` request. To be able to retrieve the review history (and to consistently adhere to the REST principles), also support the `GET` method for this resource. The `/inzendingen/12` resource might still provide a `goedgekeurd` boolean attribute (same as approach 1) which gets automatically updated in the background after adding a review. This attribute SHOULD however be read-only.
 3. In exceptional cases, the approaches above still do not offer an appropriate solution. An example of such an operation is a global search across multiple resources. In this case, the creation of a dedicated resource, possibly nested under an existing resource, is the most obvious solution. Use the imperative mood of a verb, maybe even prefix it with a underscore to distinguish these resources from regular resources. For example: `/search` or `/_search`. Depending on the operation characteristics, `GET` and/or `POST` method MAY be supported for such a resource.
 
-## Documentation
-
-An API is as good as the accompanying documentation. The documentation has to be easily findable, searchable and publicly accessible. Most developers will first read the documentation before they start implementing. Hiding the technical documentation in PDF documents and/or behind a login creates a barrier for both developers and search engines.
-
-Use OpenAPI Specification for documentation
-
-Statement
-
-API documentation MUST be provided in the form of an OpenAPI definition document which conforms to the OpenAPI Specification (from v3 onwards).
-
-Rationale
-
-The OpenAPI Specification (OAS) [[OPENAPIS]] defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
-
- API documentation MUST be provided in the form of an OpenAPI definition document which conforms to the OpenAPI Specification (from v3 onwards). As a result, a variety of tools can be used to render the documentation (e.g. Swagger UI or ReDoc) or automate tasks such as testing or code generation. The OAS document SHOULD provide clear descriptions and examples.
-
-How to test
-
-Parse the resource at the provided location as an OpenAPI Description and confirm all $refs are resolvable and paths are defined.
-
-Document contact information for publicly available APIs
-
-Statement
-
-OpenAPI definition document SHOULD include the [`info.contact`](https://spec.openapis.org/oas/v3.0.1.html#contact-object) object for publicly available APIs. Contact information SHOULD NOT be a generic contact address for the whole organisation.
-
-Rationale
-
-The OpenAPI Specification (OAS) [[OPENAPIS]] can include contact information to make clear how to reach out to API owners in case of issues or questions. This is relevant for publicly available APIs (such as OData) where no pre-existing communication channel exists between provider and consumer of the API. For internal APIs (where communication channels such as chat or issue trackers are likely already known), the `info.contact` MAY be provided.
-
-Relevant contact information can include an email address and issue tracker.
-
-```
-{
-  "name": "Gebouwen API beheerder",
-  "url": "https://www.github.com/ministerie/gebouwen/issues",
-  "email": "teamgebouwen@ministerie.nl"
-}
-```
-
-How to test
-
-Parse the OpenAPI Description to confirm the `info.contact` object is present.
-
-Publish documentation in Dutch unless there is existing documentation in English
-
-Statement
-
-You SHOULD write the OAS document in Dutch.
-
-Rationale
-
-In line with design rule [/core/interface-language](#/core/interface-language), the OAS document (e.g. descriptions and examples) SHOULD be written in Dutch. If relevant, you MAY refer to existing documentation written in English.
-
-Publish OAS document at a standard location in JSON-format
-
-Statement
-
-To make the OAS document easy to find and to facilitate self-discovering clients, there SHOULD be one standard location where the OAS document is available for download.
-
-Rationale
-
-It MUST be possible for clients (such as Swagger UI or ReDoc) to retrieve the document without having to authenticate. Furthermore, the CORS policy for this [=URI=] MUST allow external domains to read the documentation from a browser environment.
-
-The standard location for the OAS document is a URI called `openapi.json` or `openapi.yaml` within the base path of the API. This can be convenient, because OAS document updates can easily become part of the CI/CD process.
-
-At least the JSON format MUST be supported. When having multiple (major) versions of an API, every API version SHOULD provide its own OAS document(s).
-
-An API having base path `https://api.example.org/v1` MUST publish the OAS document at:
-
-https://api.example.org/v1/openapi.json
-
-Optionally, the same OAS document MAY be provided in YAML format:
-
-https://api.example.org/v1/openapi.yaml
-
-How to test
-
-- Step 1: The API MUST meet the prerequisites to be tested. These include that an OAS file (openapi.json) is publicly available, parsable, all $refs are resolvable and paths are defined.
-- Step 2: The openapi.yaml document MAY be available. If available it MUST contain YAML, be readable and parsable.
-- Step 3: The openapi.yaml document MUST contain the same OpenAPI Description as the openapi.json document.
+- 
 - Step 4: The CORS header Access-Control-Allow-Origin MUST allow all origins.
-
-## Versioning
-
-Changes in APIs are inevitable. APIs should therefore always be versioned, facilitating the transition between changes.
-
-Include a deprecation schedule when deprecating features or versions
-
-Statement
-
-Implement well-documented deprecation schedules that are communicated in a timely fashion.
-
-Rationale
-
-Managing change is important. In general, good documentation and timely communication regarding deprecation schedules are the most important for API users. When deprecating features or versions, a deprecation schedule MUST be published. This document SHOULD be published on a public web page. Furthermore, active clients SHOULD be informed by e-mail once the schedule has been updated or when versions have reached end-of-life.
-
-Schedule a fixed transition period for a new major API version
-
-Statement
-
-Old versions MUST remain available for a limited and fixed deprecation period.
-
-Rationale
-
-When releasing a new major API version, the old version MUST remain available for a limited and fixed deprecation period. Offering a deprecation period allows clients to carefully plan and execute the migration from the old to the new API version, as long as they do this prior to the end of the deprecation period. A maximum of 2 major API versions MAY be published concurrently.
-
-Include the major version number in the URI
-
-Statement
-
-The [=URI=] of an API MUST include the major version number.
-
-Rationale
-
-The [=URI=] of an API (base path) MUST include the major version number, prefixed by the letter `v`. This allows the exploration of multiple versions of an API in the browser. The minor and patch version numbers are not part of the [=URI=] and MAY not have any impact on existing client implementations.
-
-An example of an `openapi.yaml` for an API with a base path `https://api.example.org/v1` and current version 1.0.2:
-
-```
-openapi: 3.0.0
-   info:
-      version: '1.0.2'
-   servers:
-      - description: test environment
-      url: https://api.test.example.org/v1
-      - description: production environment
-      url: https://api.example.org/v1
-```
-
-How to test
-
-Parse the `url` field in the `servers` mentioned in the OpenAPI Description to confirm that a version number is present with prefix `v` and only contains the *major* version number.
-
-Publish a changelog for API changes between versions
-
-Statement
-
-Publish a changelog.
-
-Rationale
-
-When releasing new (major, minor or patch) versions, all API changes MUST be documented properly in a publicly available changelog.
-
-Adhere to the Semantic Versioning model when releasing API changes
-
-Statement
-
-Implement Semantic Versioning.
-
-Rationale
-
-Version numbering MUST follow the Semantic Versioning [[SemVer]] model to prevent breaking changes when releasing new API versions. Release versions are formatted using the `major.minor.patch` template (examples: 1.0.2, 1.11.0). Pre-release versions MAY be denoted by appending a hyphen and a series of dot separated identifiers (examples: 1.0.2-rc.1, 2.0.0-beta.3). When releasing a new version which contains backwards-incompatible changes, a new major version MUST be released. Minor and patch releases MUST only contain backwards compatible changes (e.g. the addition of an endpoint or an optional attribute).
-
-How to test
-
-Parse the `info.version` field in the OpenAPI Description to confirm it adheres to the Semantic Versioning format.
-
-Return the full version number in a response header
-
-Statement
-
-Return the API-Version header.
-
-Rationale
-
-Since the URI only contains the major version, it is useful to provide the full version number in the response headers for every API call. This information could then be used for logging, debugging or auditing purposes. In cases where an intermediate networking component returns an error response (e.g. a reverse proxy enforcing access policies), the version number MAY be omitted.
-
-The version number MUST be returned in an HTTP response header named `API-Version` (case-insensitive) and SHOULD NOT be prefixed.
-
-An example of an API version response header:
-
-API-Version: 1.0.2
-
-How to test
-
-A response includes a header "API-Version" with a number matching the version number set in the `info.version` field of the OpenAPI Description.
 
 ## Transport Security
 
@@ -875,65 +687,3 @@ It is common for REST services to allow multiple response types (e.g. `applicati
 Services (potentially) including script code (e.g. JavaScript) in their responses MUST be especially careful to defend against header injection attacks.
 
 - Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
-
-## Normative modules
-
-The following modules are normative for all REST API's.
-
-Apply the geospatial module for geospatial data
-
-Statement
-
-The [[[ADR-GEO]]] version 1.0.x MUST be applied when providing geospatial data or functionality.
-
-Geospatial data refers to information that is associated with a physical location on Earth, often expressed by its 2D/3D coordinates.
-
-Rationale
-
-The [[[ADR-GEO]]] formalizes as set of rules regarding:
-
-1. How to encode geospatial data in request and response payloads.
-2. How resource collections can be filtered by a given bounding box.
-3. How to deal with different coordinate systems (CRS).
-
-Apply the signing module for signing payloads
-
-Statement
-
-The [[[ADR-signing]]] version 1.0.x MUST be applied when signing payloads.
-
-This rule does not dictate signing.
-
- Instead, it only applies in situations where there is a need for assurance of end to end message integrity and authenticity between client application and server application.
-
- In those situations, [[[ADR-signing]]] specifies how to sign.
-
-Rationale
-
-The [[[ADR-signing]]] formalizes as set of rules regarding:
-
-1. How to sign data in request and response payloads.
-2. Which header to specify the signature.
-
-Apply the encryption module for encrypting payloads
-
-Statement
-
-The [[[ADR-encryption]]] version 1.0.x MUST be applied when encrypting payloads.
-
-This rule does not dictate encryption.
-
- Instead, it only applies in situations where there is a need for end to end message payload confidentiality between client application and server application.
-
- In those situations, [[[ADR-encryption]]] specifies how to encrypt.
-
-Rationale
-
-The [[[ADR-encryption]]] formalizes as set of rules regarding:
-
-1. How to encrypt data in request and response payloads.
-2. The flow of operations between client and server.
-
-If both the signing and encryption modules apply, use the following flow of operations:
-
-Signing in combination with encryption
