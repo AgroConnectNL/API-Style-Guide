@@ -14,27 +14,27 @@ Conny Graumans ([AgroConnect](www.agroconnect.nl))
 
 #### Credits
 
-This document has been prepared with grateful use of the documentation of the API Design Rules from the [Kennisplatform API's](https://developer.overheid.nl/communities/kennisplatform-apis). We also used the [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/restful-api-guidelines/) as a source of inspiration.
+This document has been prepared with grateful acknowledgement of the documentation of the API Design Rules from the [Kennisplatform API's](https://developer.overheid.nl/communities/kennisplatform-apis). We also used the [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/RESTful-api-guidelines/) as a source of inspiration.
 
 ---
 
 ## Status of This Document
 
-This is a draft that could be altered, removed or replaced by other documents. It is not a recommendation approved by AgroConnect.
+This is a draft that could be altered, removed or be replaced by other documents. It is not a recommendation approved by AgroConnect.
 
 ## Conformance
 
-As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative.
+_As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative._
 
-The key words *MAY*, *MUST*, *MUST NOT*, *NOT RECOMMENDED*, *SHOULD*, and *SHOULD NOT* in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")] [[RFC8174](https://logius-standaarden.github.io/API-Design-Rules/#bib-rfc8174 "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words")] when, and only when, they appear in all capitals, as shown here.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://datatracker.ietf.org/doc/html/rfc2119)]  [[RFC8174](https://datatracker.ietf.org/doc/html/rfc8174)] when, and only when, they appear in all capitals, as shown here.
 
 ## 1. Introduction
 
-More and more organizations in the Agri- and Food domain offer REST APIs (henceforth abbreviated as APIs), in addition to existing interfaces like SOAP and WFS. AgroConnect supports this development. These APIs aim to be developer-friendly and easy to implement. While this is a commendable aim, it does not shield a developer from a steep learning curve getting to know every new API, in particular when every individual API is designed using different patterns and conventions.
+More and more organizations in the Agri- and Food domain offer REST APIs (abbreviated as APIs), in addition to existing interfaces like SOAP and WFS. AgroConnect supports this development. These APIs aim to be developer-friendly and easy to implement. While this is a commendable aim, it does not shield a developer from a steep learning curve getting to know every new API, in particular when every individual API is designed using different patterns and conventions.
 
-This document aims to describe a widely applicable set of design rules for the unambiguous provisioning of REST (aka RESTFul) APIs. The primary goal is to offer guidance for organizations designing new APIs, with the purpose of increasing developer experience (DX) and interoperability between APIs. Hopefully, many organizations (especially AgroConnect members) will adopt these design rules in their corporate API strategies and provide feedback about exceptions and additions to subsequently improve these design rules.
+This document aims to describe a widely applicable set of design rules for the unambiguous provisioning of REST (aka RESTful) APIs. The primary goal is to offer guidance for organizations designing new APIs, with the purpose of increasing developer experience (DX) and interoperability between APIs. Hopefully, many organizations (especially AgroConnect members) will adopt these design rules in their corporate API strategies and provide feedback about exceptions and additions to subsequently improve these design rules.
 
-With this in mind, AgroConnect adopts "API First" as a key engineering principle. API development begins with API specification outside the code and ideally involves ample peer-review feedback to achieve high-quality APIs. API First encompasses a set of quality-related standards. We encourage organization in the Agri-0 and Food domein to follow them to ensure that APIs:
+With this in mind, AgroConnect adopts "API First" as a key engineering principle. API development begins with API specification outside the code and ideally involves ample peer-review feedback to achieve high-quality APIs. API First encompasses a set of quality-related standards. We encourage organizations in the Agri- and Food domain to follow them to ensure that APIs:
 
 - are easy to understand and learn
 - are general and abstracted from specific implementation and use cases
@@ -51,7 +51,7 @@ The list of API Design Rules in the *AGRI API Style Guide* is partially based on
 
 - rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
 - rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
-- rules which are not part of the _REST-API Design Rules_ and whoch are specifically designed for this *AGRI API Style Guide*.
+- rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
 
 ### 2.1 Our rules
 
@@ -73,7 +73,7 @@ Inherited ADR:
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
 - `#/info/title` a (unique) identifying, functional descriptive name of the API
-- `#/info/version` the API specification document version following [**MUST** use semantic versioning](https://opensource.zalando.com/restful-api-guidelines/#116)
+- `#/info/version` the API specification document version following [**MUST** use semantic versioning](https://opensource.zalando.com/RESTful-api-guidelines/#116)
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
@@ -83,7 +83,7 @@ Inherited ADR:
 
 ### [M003] API Specification **MUST** be written using U.S. English
 
-API specification **MUST** be wrtiten in U.S. English. 
+The API specification **MUST** be written in U.S. English. 
 
 Customized ADR:
 
@@ -94,12 +94,12 @@ This rule differs slightly from the ADR rules which allow English but prefer Dut
 
 ### [M004] API Specification and implementation **MUST** use semantic versioning
 
-OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/restful-api-guidelines/#terminology).
+OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/RESTful-api-guidelines/#terminology).
 
-We expect API designers to comply to [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format `major.minor.patch` as follows:
+We expect API designers to comply with [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format `major.minor.patch` as follows:
 
 - Increment the `MAJOR` version when you make incompatible API changes after having aligned the changes with consumers. Consumers *have to adapt* their clients to be able to use this version
-- Increment the `MINOR` version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though can use existing features from earlier versions working without modifying their client software implementation
+- Increment the `MINOR` version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though they can use existing features from earlier versions working without modifying their client software implementation
 - Optionally increment the `PATCH` version when you make backwards-compatible bug fixes or editorial changes not affecting the functionality. Consumers do not have to modify their software implementation to use this newer version
 
 Inherited ADR:
@@ -131,9 +131,9 @@ Inherited ADR:
 
 ### [M007] The identification of the client software package **MAY** be specified in the HTTP request header
 
-Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP header `User-Agent`.
+Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header `User-Agent`.
 
-### [M008] A unique, server-side assigned request identfier **MUST** be returned in the HTTP response header
+### [M008] A unique, server-side assigned request identifier **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST** be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself.
 
@@ -150,7 +150,7 @@ Related ADR Rules:
 - [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
 - [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
 
-### 2.1.3 URLs and Resources ([Uxxx]
+### 2.1.3 URLs and Resources ([Uxxx])
 
 The key abstraction of information in REST is a Resource. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier ([=URI=]), which is part of the Uniform Resource Locator ([=URL=]). This section defines the rules for naming resources and constructing URLs.
 
@@ -168,7 +168,7 @@ Inherited ADR:
 
 ### [U003] Resource names **MUST** be plural
 
-Resources respresent collections and therefore always **MUST** be referred to with a plural noun
+Resources represent collections and therefore always **MUST** be referred to with a plural noun
 
 Inherited ADR:
 
@@ -183,11 +183,11 @@ Inherited ADR:
 - [/core/nested-child](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/nested-child): Use nested URIs for child resources
 - [/core/resource-operations](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/resource-operations): Model resource operations as a sub-resource or dedicated resource
 
-### [U004] All path segments identifying the resource **MUST** use be written in kebab-case 
+### [U004] All path segments identifying the resource **MUST** be written in kebab-case 
 
-Path segments of a [=URI=] **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to deliniate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Followin gthis rule a [=URI=] must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
+Path segments of a [=URI=] **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rul, a [=URI=] must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
-Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a [=URI=]. Resources **SHOULD **use the `Accept` header for content negotation.
+Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a [=URI=]. Resources **SHOULD** use the `Accept` header for content negotiation.
 
 The last path segment **MAY** start with `_`, which is used as a convention to implement [operations](#/core/resource-operations)
 
@@ -195,9 +195,9 @@ Rationale
 
 Some web servers and frameworks do not handle case sensitivity or special characters of URIs well. The use of kebab-case path segments ensures compatibility with a broad range of systems. It is a more common implementation choice for path segments than camelCase or snake_case. Information (such as names of objects) that requires special characters can be part of the request body instead of being in the URI.
 
-### [U005] URL Paths **MUST** use be normalized without empty path segments and trailing slashes
+### [U005] URL Paths **MUST** be normalized without empty path segments and trailing slashes
 
-You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST** also not specify or use path variables with empty string values.
+You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
 
 When requesting a resource including a trailing slash, this **MUST** result in a `404` (not found) error response and not a redirect. This forces API consumers to use the correct [=URI=].
 
@@ -219,13 +219,13 @@ Rationale
 
 Query keys are often converted to JSON object keys, where camelCase is the naming convention to avoid compatibility issues with JavaScript when deserializing objects.
 
-### 2.1.4 Adherance to RESTFul principles [Rxxx]
+### 2.1.4 Adherence to RESTful principles [Rxxx]
 
-The REST architectural style prescribes [six principles](https://restfulapi.net/) that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
+The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
 
 ### [R001] APIs **MUST** be Stateless
 
-APIs **MUST** be stateless and therefore servers **MUST NOT** store any session state information of client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
+APIs **MUST** be stateless and therefore servers **MUST NOT** store any session state information of the client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
 One of the key constraints of the REST architectural style is stateless communication between client and server. It means that every request from client to server must contain all of the information necessary to understand the request. The server cannot take advantage of any stored session context on the server as it didn’t memorize previous requests. Session state must therefore reside entirely on the client.
 
@@ -251,9 +251,9 @@ Inherited ADR:
 
 As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST** be provided.
 
-### [R003] A server side unique identifier **MUST** be assigned to each created resource and returned to the client
+### [R003] A server-side unique identifier **MUST** be assigned to each created resource and returned to the client
 
-As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For succeeding operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
+As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For subsequent  operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
@@ -263,7 +263,7 @@ The Layered System principle allows an architecture to be composed of hierarchic
 
 - The primary motivation behind this design rule is that an API design **MUST** focus on usability for the client, regardless of the implementation details under the hood.
 - The API, application and infrastructure **MUST** be able to evolve independently to ease the task of maintaining backwards compatibility for APIs during an agile development process.
-- The API design of Convenience,- and Process API types **SHOULD NOT** be a 1-on-1 mapping of the underlying domain- or persistence model.
+- The API design of Convenience- and Process API types **SHOULD NOT** be a 1-on-1 mapping of the underlying domain- or persistence model.
 - The API design of a System API type **MAY** be a mapping of the underlying persistence model.
 - The API **SHOULD NOT** expose information about the technical components being used, such as development platforms/frameworks or database systems.
 - The API **SHOULD** offer client-friendly attribute names and values, while persisted data may contain abbreviated terms or serializations which might be cumbersome for consumption.
@@ -272,9 +272,11 @@ Inherited ADR:
 
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
 
-### [R005] APIs **SHOULD NOT** support client side caching
+### [R005] APIs **MAY** support client-side caching
 
-Although one of the six REST principles is cacheable data, API platforms **SHOULD NOT** implement client-side caching of data retrieved via API calls unless it is strictly necessary for performance optimization.
+The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag `and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
+
+APIs **MUST NOT** use caching in other operations than `GET`.
 
 ### 2.1.5 Payloads
 
@@ -286,15 +288,15 @@ APIs **MUST** use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to repr
 
 ### [P002] APIs **MUST** use standard JSON media types
 
-The standard media types `application/json` (normal operation), `application/json-patch+json` (`PATCH` opererations) or `application/problem+json` (to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `Content-Type` (or `Accept`) header information.
+The standard media types `application/json` (normal operations), `application/json-patch+json` (`PATCH` operations) or `application/problem+json` (to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `Content-Type` (or `Accept`) header information.
 
 ### [P003] Property names **MUST** be lowerCamelCase
 
 All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
-### [P004] Array properties **SHOULD** have a plural names
+### [P004] Array properties **MUST** have a plural name
 
-Properties names of arrays **SHOULD** be pluralized to indicate that they contain multiple values. This implies in turn that object names **SHOULD** be singular 
+Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
 ### [P005] Properties with value `null` and absent properties **MUST** be handled the same way
 
@@ -313,13 +315,13 @@ Properties representing dates (without time) **MUST** use `date` format and **MU
 
 ### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 formats
 
-OpenAPI does not know an date, datetime or time datatype, though respresent dates, dateimes and times as strings with an apropriate format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
+OpenAPI does not know date, datetime or time datatypes, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
 
-| Field type | ISO8601 format | OpenAPI format         | Syntax                                                | Examples                                              |
-| ---------- | -------------- | ---------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| Date       | full-date      | "format": "date"       | `YYYY-DD-MM`                                          | `2026-04-08`                                          |
-| Datetime   | date-time      | "format": "date-time"  | `YYYY-DD-MMThh:mi:ssZ`<br>`YYYY-DD-MMThh:mi:ss±hh:mm` | `2026-04-08T13:17:00Z`<br>`2026-04-08T15:17:00+02:00` |
-| Time       | partial-time   | "format": "time-local" | `hh:mm`                                               | `15:17`                                               |
+| Field type | ISO8601 format | OpenAPI format (yaml)                  | Syntax                                                                                               | Examples                                                                                             |
+| ---------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Date       | full-date      | `type: string`<br>`format: date`       | `YYYY-DD-MM`                                                                                         | `2026-04-08`                                                                                         |
+| Datetime   | date-time      | `type: string`<br>`format: date-time`  | `YYYY-DD-MMThh:mi:ssZ`<br>`YYYY-DD-MMThh:mi:ss±hh:mm`<br>`YYYY-DD-MMThh:mi:ss.sssZ`<br>`YYYY-DD-MMThh:mi:ss.sss±hh:mm` | `2026-04-08T13:17:49Z`<br>`2026-04-08T15:17:49+02:00`<br>`2026-04-08T13:17:49.824Z`<br>`2026-04-08T15:17:49.824+02:00` |
+| Time       | partial-time   | `type: string`<br>`format: time-local` | `hh:mm:ss`                                                                                           | `15:17:49`                                                                                           |
 
 RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
 
@@ -331,17 +333,17 @@ RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations
 
 APIs **MUST** accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
 
-### [P009] `GET` and `DEL`operations MUST NOT have a request payload 
+### [P009] `GET` and `DELETE`operations **MUST NOT** have a request payload 
 
-Because of their nature (retrieving and removing resources) `GET` and `DELETE` operations **MUST NOT** have a request payload
+Because of their nature (retrieving and removing resources) `GET` and `DELETE` operations **MUST NOT** have a request payload.
 
-### [P010] `PATCH` operations MUST use the standard _JavaScript Object Notation (JSON) Patch_ payload 
+### [P010] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
 
-`PATCH`operations MUST NOT use the normal resource respresentation in the request payload, but MUST use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`.
+`PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: XXXXXXX).
 
-### [P011] Response payloads of erroneous requests **MUST** use the standard error payload
+### [P011] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
 
-When an API request results in an error (HTTP 4xx of HTTP-5xx), the reponse payload **MUST** contain the "Problem Details for HTTP APIs" as speciffied in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457). The `Accept`variable in the HTTP response header **MUST** be set to `application/problem+json`to inform the client about the responded content. 
+When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
 ### 2.1.6 HTTP methods and responses [Hxxx]
 
@@ -351,11 +353,11 @@ Although the REST architectural style does not impose a specific protocol, REST 
 
 An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [[RFC9110]].
 
-The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. Exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
+The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
-The following table shows on which resource type (single or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (succesful) request.
+The following table shows on which resource type (single or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (successful) request.
 
-| Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Single Resouce (e.g. /growers/com.gs1.codelists.gln/8700292113955)                                   |
+| Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Single Resource (e.g. /growers/com.gs1.codelists.gln/8700292113955)                                  |
 | -------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given [=URI=]. Data is only retrieved and never modified. | ✔ Retrieve a single resource representation for the given [=URI=]. Data is only retrieved and never modified. |
 | `POST`   | Create                 | ✔ Create a new resource instance as part of a collection.                                           | ❌ Avoid using `POST` on a single resource. Return `405 Method Not Allowed`                          |
@@ -413,26 +415,26 @@ Inherited ADR:
 
 The HTTP operations  `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support the following response codes
 
-| Operation                                                          | Result                                                                                               | Response code                                               |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `GET` on collection resource<br>(with or without query parameters) | successful response returning list with **0** of more items. <br>bad request (f.i. malformed query parameters)<br>authentication failed<br>internal server error | `200`<br>`400`<br>`401`<br>`500`                            |
-| `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (f.i. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`400`<br>`401`<br>`404`<br>`500`                   |
-| `POST`                                                             | successful response after creation of the new resource<br>succesful response after acceptance of the new resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`500`          |
-| `PUT`                                                              | successful response after updating the resource<br>succesful response after acceptance of the updated resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
-| `PATCH`                                                            | successful response after partially updating the resource<br>succesful response after acceptance of the partial updated resource for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
-| `DELETE`                                                           | successful response after deleting the resource<br>succesful response after acceptance the request for further processing (asynchroneously)<br>bad request (f.i. malformed payload)<br>authentication failed<br>forbidden (f.i. when posting sub resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>internal server error | `200`<br>`202`<br>`400`<br>`401`<br>`403`<br>`404`<br>`500` |
+| Operation                                                          | Result                                                                                               | Response code                                                                                        |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `GET` on collection resource<br>(with or without query parameters) | successful response returning list with **0** of more items. <br>bad request (e.g. malformed query parameters)<br>authentication failed<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`500 Internal Server Error`                   |
+| `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (e.g. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`404 Not Found`<br>`500 Internal Server Error`   |
+| `POST`                                                             | successful creation of the new resource<br>successful acceptance of the `POST`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when posting new instances to a resource collection the client is not allowed to)<br>(unspecified) server-side error | `201 Created`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`500 Internal Server Error` |
+| `PUT`                                                              | successful replace of the resource<br>successful acceptance of the `PUT`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when replacing an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `PATCH`                                                            | successful partial update the resource<br>successful acceptance of the `PATCH` request further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when updating an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `DELETE`                                                           |  successful removal of the resource<br>successful acceptance of the `DELETE` request for further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when posting sub-resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `204 No content`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
 
 Remarks:
 
-A `GET`request on a **collection** resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A '`GET`request on an singleton resource (with a resource identifiers in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not found`is returned to the client.
+A `GET` request on a **collection** resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on an singleton resource (with a resource identifiers in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
 
 ### [H00x] The `PUT` method **MUST NOT** be used as an insert-or-update operation 
 
-A `PUT`request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not found`error and **MUST NOT** be processed as an update-or-insert operation. 
+A `PUT` request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an update-or-insert operation. 
 
-### [H00x] The HTTP `401 Not authorized` error code MUST only be used  for authentication failure
+### [H00x] The HTTP `401 Unauthorized` error code MUST only be used  for authentication failures
 
-Although the standard description of the HTTP `401` error is: `Not "authorized"`this error **MUST** only be returned as a result of a failed **authentication **(token) validation. In case a client is succesfully authenticated and performs a request on a resource he is not **authorized** (allowed) to, an `403 Forbidden` **SHOULD** be returned. Alternatively an `404 Not found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
+Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. token) validation. In case clients are successfully authenticated and perform a request on a resource they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
 ## Relationships
 
