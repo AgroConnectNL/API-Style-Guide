@@ -355,12 +355,12 @@ An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
-The following table shows on which resource type (single or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (successful) request.
+The following table shows on which resource type (singleton or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (successful) request.
 
-| Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Single Resource (e.g. /growers/com.gs1.codelists.gln/8700292113955)                                  |
+| Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Singleton Resource (e.g. /growers/com.gs1.codelists.gln/8700292113955)                               |
 | -------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given [=URI=]. Data is only retrieved and never modified. | ✔ Retrieve a single resource representation for the given [=URI=]. Data is only retrieved and never modified. |
-| `POST`   | Create                 | ✔ Create a new resource instance as part of a collection.                                           | ❌ Avoid using `POST` on a single resource. Return `405 Method Not Allowed`                          |
+| `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given [=URI=]. Data is only retrieved and never modified. | ✔ Retrieve a singleton resource representation for the given [=URI=]. Data is only retrieved and never modified. |
+| `POST`   | Create                 | ✔ Create a new singleton resource as part of a collection.                                          | ❌ Avoid using `POST` on a singleton resource. Return `405 Method Not Allowed`                       |
 | `PUT`    | Update/Replace         | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given [=URI=] (full update). The resource MAY be created when does not exist |
 | `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially updates an existing resource.                                                           |
 | `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given [=URI=].                                                         |
@@ -373,7 +373,7 @@ If an optional HTTP request method is sent to a server and the server does not s
 
 ### [H00x] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
 
-API operations **MUST** adhere to HTTP safety and idempotency semantics for operations. 
+API operations **MUST** adhere to HTTP safety and idempotency semantics for operations a specified in the HTTP protocol [RFC9110](https://www.rfc-editor.org/rfc/rfc9110). These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
 
 Request methods are considered **safe** if their defined semantics are essentially read-only. The client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource.
 
@@ -390,12 +390,6 @@ The following table describes which HTTP methods **MUST** behave as safe and/or 
 | `PUT`     | ❌ No  | ✔ Yes     |
 | `PATCH`   | ❌ No  | ❌  No     |
 | `DELETE`  | ❌ No  | ✔ Yes     |
-
-Rationale
-
-The HTTP protocol [RFC9110](https://www.rfc-editor.org/rfc/rfc9110) specifies whether an HTTP method **SHOULD** be considered safe and/or idempotent. These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
-
-Request methods are considered *safe* if their defined semantics are essentially read-only; i.e., the client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource. A request method is considered *idempotent* if the intended effect on the server of multiple identical requests with that method is the same as the effect for a single such request.
 
 Inherited ADR:
 
@@ -434,7 +428,7 @@ A `PUT` request on a resource (identified by the given resource id) which does n
 
 ### [H00x] The HTTP `401 Unauthorized` error code MUST only be used  for authentication failures
 
-Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. token) validation. In case clients are successfully authenticated and perform a request on a resource they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
+Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform a request on a resource they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
 ## Relationships
 
