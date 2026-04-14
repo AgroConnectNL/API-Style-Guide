@@ -123,7 +123,7 @@ This rule differs from the ADR rule [/core/uri-version](https://gitdocumentatie.
 
 ### [M006] The full API version **MUST** be returned in the HTTP response header
 
-For tracing and debugging purposes, the full API version (i.e., `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
+For tracing and debugging purposes, the full API version (i.e. `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
 
 Inherited ADR:
 
@@ -141,7 +141,7 @@ For tracing and debugging purposes, a unique, server-side assigned request ident
 
 For tracing and debugging purposes, a unique, server-side generated date-time timestamp **MUST** be returned to the client in the `Request-Date-Time` HTTP response header. 
 
-### 2.1.2 Security [Sxxx]
+### 2.1.2 Security [Sxxx] (under construction)
 
 Related ADR Rules:
 
@@ -199,7 +199,7 @@ Some web servers and frameworks do not handle case sensitivity or special charac
 
 You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
 
-When requesting a resource including a trailing slash, this **MUST** result in a `404` (not found) error response and not a redirect. This forces API consumers to use the correct [=URI=].
+When requesting a resource including a trailing slash, this **MUST** result in a `404 Not Found` error response and not a redirect. This forces API consumers to use the correct [=URI=].
 
 This rule does not apply to the root resource (append `/` to the service root URL).
 
@@ -274,7 +274,7 @@ Inherited ADR:
 
 ### [R005] APIs **MAY** support client-side caching
 
-The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag `and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
+The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag`and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
 
 APIs **MUST NOT** use caching in other operations than `GET`.
 
@@ -315,7 +315,7 @@ Properties representing dates (without time) **MUST** use `date` format and **MU
 
 ### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 formats
 
-OpenAPI does not know date, datetime or time datatypes, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `"type":"string"` and set `"format"` to the OpenAPI format as listed in the following table:
+OpenAPI does not know date, datetime or time datatypes, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
 | Field type | ISO8601 format | OpenAPI format (yaml)                  | Syntax                                                                                               | Examples                                                                                             |
 | ---------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -347,11 +347,11 @@ When an API request results in an error (HTTP 4xx of HTTP-5xx), the response pay
 
 ### 2.1.6 HTTP methods and responses [Hxxx]
 
-Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP [[RFC9110]].
+Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC9110](https://www.rfc-editor.org/rfc/rfc9110).
 
 ### [H001] API Operations **MUST** use only standard HTTP methods
 
-An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [[RFC9110]].
+An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [RFC9110](https://www.rfc-editor.org/rfc/rfc9110).
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
@@ -393,7 +393,7 @@ The following table describes which HTTP methods **MUST** behave as safe and/or 
 
 Rationale
 
-The HTTP protocol [[rfc9110]] specifies whether an HTTP method **SHOULD** be considered safe and/or idempotent. These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
+The HTTP protocol [RFC9110](https://www.rfc-editor.org/rfc/rfc9110) specifies whether an HTTP method **SHOULD** be considered safe and/or idempotent. These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
 
 Request methods are considered *safe* if their defined semantics are essentially read-only; i.e., the client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource. A request method is considered *idempotent* if the intended effect on the server of multiple identical requests with that method is the same as the effect for a single such request.
 
@@ -403,7 +403,7 @@ Inherited ADR:
 
 ### [H00x] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
 
-API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](https://www.rfc-editor.org/rfc/rfc9110#name-status-codes) ([[rfc9110]]) for the response.
+API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](https://www.rfc-editor.org/rfc/rfc9110#name-status-codes) for the response.
 
 In case of an error, the server **SHOULD NOT** pass technical details (e.g. call stacks or other internal hints) to the client. The error message **SHOULD** be generic to avoid revealing additional details and expose internal information which can be used with malicious intent.
 
@@ -411,18 +411,18 @@ Inherited ADR:
 
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 
-### [H00x] `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** support standard response codes
+### [H00x] `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support standard response codes
 
 The HTTP operations  `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support the following response codes
 
 | Operation                                                          | Result                                                                                               | Response code                                                                                        |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `GET` on collection resource<br>(with or without query parameters) | successful response returning list with **0** of more items. <br>bad request (e.g. malformed query parameters)<br>authentication failed<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`500 Internal Server Error`                   |
-| `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (e.g. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`404 Not Found`<br>`500 Internal Server Error`   |
+| `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (e.g. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`404 Not Found`<br>`500 Internal Server Error` |
 | `POST`                                                             | successful creation of the new resource<br>successful acceptance of the `POST`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when posting new instances to a resource collection the client is not allowed to)<br>(unspecified) server-side error | `201 Created`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`500 Internal Server Error` |
 | `PUT`                                                              | successful replace of the resource<br>successful acceptance of the `PUT`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when replacing an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
 | `PATCH`                                                            | successful partial update the resource<br>successful acceptance of the `PATCH` request further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when updating an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
-| `DELETE`                                                           |  successful removal of the resource<br>successful acceptance of the `DELETE` request for further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when posting sub-resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `204 No content`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `DELETE`                                                           | successful removal of the resource<br>successful acceptance of the `DELETE` request for further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when posting sub-resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `204 No content`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
 
 Remarks:
 
@@ -430,7 +430,7 @@ A `GET` request on a **collection** resulting in a response with no items found 
 
 ### [H00x] The `PUT` method **MUST NOT** be used as an insert-or-update operation 
 
-A `PUT` request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an update-or-insert operation. 
+A `PUT` request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an insert-or-update operation. 
 
 ### [H00x] The HTTP `401 Unauthorized` error code MUST only be used  for authentication failures
 
