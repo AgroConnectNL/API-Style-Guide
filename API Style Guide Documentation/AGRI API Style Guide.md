@@ -2,11 +2,13 @@
 
 ## AgroConnect Standard
 
-#### Draft February 2026
+Draft version April 2026
 
-#### Authors
+This document replaces the current  _Guideline API Development Agrifood, v2.2.0_ (20260209.AgroConnect_Guideline_API_developement_v2_2_0.docx)
 
-Bernard van Raaij (Van Raaij Advies)
+#### Author
+
+Bernard van Raaij ([Van Raaij Advies](mailto:bernard@vanraaijadvies.nl))
 
 #### Contributors
 
@@ -26,7 +28,7 @@ This is a draft that could be altered, removed or be replaced by other documents
 
 _As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative._
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://datatracker.ietf.org/doc/html/rfc2119)]  [[RFC8174](https://datatracker.ietf.org/doc/html/rfc8174)] when, and only when, they appear in all capitals, as shown here.
+The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**NOT RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://datatracker.ietf.org/doc/html/rfc2119)]  [[RFC8174](https://datatracker.ietf.org/doc/html/rfc8174)] when, and only when, they appear in all capitals, as shown here.
 
 ## 1. Introduction
 
@@ -47,15 +49,22 @@ Ideally, all APIs in the Agri- and Food domain will look as if the same author c
 
 ## 2. Normative API Design Rules
 
-The list of API Design Rules in the *AGRI API Style Guide* is partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). Our set of rules is composed of:
+This chapter containts the list of API Design Rules in the *AGRI API Style Guide. The rules concern the followig categories:*
+
+1. Basic Meta information and Versioning
+2. Security 
+3. URLs and Resources
+4. Adherence to RESTful principles
+5. Payloads
+6. HTTP methods and responses 
+
+The list of API Design Rules in this Guide is partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). Our set of rules is composed of:
 
 - rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
 - rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
 - rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
 
-### 2.1 Our rules
-
-### 2.1.1 Basic Meta Information and Versioning [Mxxx]
+### 2.1 Basic Meta Information and Versioning [Mxxx]
 
 The API specification, also referred to as the API contract, serves as the primary reference for third parties developing client implementations. Its objective is to provide client developers with comprehensive details required to implement conformant clients. The rules in this section define the mandated publication format and the specific elements that must be included in the specification. This section also defines the versioning rules for the specification to ensure controlled evolution and maintain backward compatibility after the initial formal release.
 
@@ -111,7 +120,7 @@ Inherited ADR:
 
 ### [M005] The MAJOR version **MUST** be specified in the HTTP request header
 
-To support simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API version in the HTTP headers using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
+To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
 
 URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
 
@@ -135,13 +144,13 @@ Although APIs are client-agnostic, the client **MAY** pass the name and software
 
 ### [M008] A unique, server-side assigned request identifier **MUST** be returned in the HTTP response header
 
-For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST** be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself.
+For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST** be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself, which can be subject of multiple different requests.
 
 ### [M009] The request date-time **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, a unique, server-side generated date-time timestamp **MUST** be returned to the client in the `Request-Date-Time` HTTP response header. 
 
-### 2.1.2 Security [Sxxx] (under construction)
+### 2.2 Security [Sxxx] (under construction)
 
 Related ADR Rules:
 
@@ -150,13 +159,18 @@ Related ADR Rules:
 - [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
 - [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
 
-### 2.1.3 URLs and Resources ([Uxxx])
+### 2.3 URLs and Resources ([Uxxx])
 
-The key abstraction of information in REST is a Resource. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier ([=URI=]), which is part of the Uniform Resource Locator ([=URL=]). This section defines the rules for naming resources and constructing URLs.
+The key abstraction of information in REST is a _resource_. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier (URI), which is part of the Uniform Resource Locator (URL). We distinghuish two types of resources:
+
+- **Collection** (resources): a resource that represents a _set of items_ of the same type. An example is the collection (list) of growers on a crop management platform which can be accessed with the URI `.../growers`
+- **Singleton** (resources): a resource that represents _one specific item_ from that set. An example is a specific grower on a crop management platform who has GLN (Global Location Number) issued by GS1 with value 8700292113955 as unique identification which can be accessed with the URI `.../growers/com.gs1.codelists.gln/8700292113955`
+
+This section defines the rules for naming resources and constructing URLs to identify them.
 
 ### [U001] URLs **SHOULD NOT** use /api as base path
 
-In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
+URLs **SHOULD NOT** use `/api` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
 ### [U002] Nouns **MUST** be used to name resources
 
@@ -168,7 +182,7 @@ Inherited ADR:
 
 ### [U003] Resource names **MUST** be plural
 
-Resources represent collections and therefore always **MUST** be referred to with a plural noun
+Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.
 
 Inherited ADR:
 
@@ -176,7 +190,7 @@ Inherited ADR:
 
 ### [U003] Resources and sub-(or child-)resources **MUST** be identified via path segments
 
-Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the [=URI=] path.
+Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the URI path.
 
 Inherited ADR:
 
@@ -185,9 +199,9 @@ Inherited ADR:
 
 ### [U004] All path segments identifying the resource **MUST** be written in kebab-case 
 
-Path segments of a [=URI=] **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rul, a [=URI=] must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
+Path segments of a URI **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rule, each URI-segment must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
-Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a [=URI=]. Resources **SHOULD** use the `Accept` header for content negotiation.
+Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a URI). Resources **SHOULD** use the `Accept` header for content negotiation.
 
 The last path segment **MAY** start with `_`, which is used as a convention to implement [operations](#/core/resource-operations)
 
@@ -197,15 +211,11 @@ Some web servers and frameworks do not handle case sensitivity or special charac
 
 ### [U005] URL Paths **MUST** be normalized without empty path segments and trailing slashes
 
-You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `/growers//crops` or `/growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
+You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `.../growers//crops` or `.../growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
 
-When requesting a resource including a trailing slash, this **MUST** result in a `404 Not Found` error response and not a redirect. This forces API consumers to use the correct [=URI=].
+When requesting a resource including a trailing slash, this **MUST** result in a `404 Not Found` error response and not in a redirect. This forces API consumers to use the correct URI.
 
 This rule does not apply to the root resource (append `/` to the service root URL).
-
-Rationale
-
-Leaving off trailing slashes, and not implementing a redirect, forces API consumers to use the correct URI. This avoids confusion and ambiguity.
 
 Customized ADR:
 
@@ -213,19 +223,19 @@ Customized ADR:
 
 ### [U006] Query parameters **MUST** be written in lowerCamelCase 
 
-Query parameters (a.k.a query keys) in a [=URI=] **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits, where the first letter of each word is capitalized, except for the first letter (MUST NOT be a digit) of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters MUST be omitted.
+Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letterwhere (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
 
 Rationale
 
-Query keys are often converted to JSON object keys, where camelCase is the naming convention to avoid compatibility issues with JavaScript when deserializing objects.
+Query keys are often converted to JSON object keys, where lowerCamelCase is the naming convention to avoid compatibility issues with JavaScript when deserializing objects.
 
-### 2.1.4 Adherence to RESTful principles [Rxxx]
+### 2.4 Adherence to RESTful principles [Rxxx]
 
-The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms must adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
+The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms **SHOULD** adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
 
 ### [R001] APIs **MUST** be Stateless
 
-APIs **MUST** be stateless and therefore servers **MUST NOT** store any session state information of the client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
+APIs **MUST** be stateless and therefore servers **MUST NOT** store any _session_ _state _information of the client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
 One of the key constraints of the REST architectural style is stateless communication between client and server. It means that every request from client to server must contain all of the information necessary to understand the request. The server cannot take advantage of any stored session context on the server as it didn’t memorize previous requests. Session state must therefore reside entirely on the client.
 
@@ -251,9 +261,9 @@ Inherited ADR:
 
 As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST** be provided.
 
-### [R003] A server-side unique identifier **MUST** be assigned to each created resource and returned to the client
+### [R003] A server-side unique resource identifier **MUST** be assigned to each created resource and returned to the client
 
-As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response. For subsequent  operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
+As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-side generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response as the `id`. For subsequent  operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
@@ -272,15 +282,15 @@ Inherited ADR:
 
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
 
-### [R005] APIs **MAY** support client-side caching
+### [R005] APIs **MAY** support client-side caching in `GET` operations
 
 The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag`and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
 
 APIs **MUST NOT** use caching in other operations than `GET`.
 
-### 2.1.5 Payloads
+### 2.5 Payloads
 
-Additional information in an API request or response that is not part of the HTTP method, [=URL=], or headers must be exchanged in the payload. The rules in this section apply to the payloads.
+Additional information in an API request or response that is not part of the HTTP method, URL, or headers must be exchanged in the payload. The rules in this section apply to the payloads.
 
 ### [P001] APIs **MUST** use JSON as payload data interchange format
 
@@ -311,17 +321,21 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 
 ### [P006] Date properties **MUST NOT** have a time component if only the date is relevant
 
-Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions leads to timezone conversion errors where clients may interpret 2026-03-25T00:00:00 as local midnight
+Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
+
+Inherited ADR:
+
+- /core/date-time/date-omit-time-portion: Omit time portion for date fields
 
 ### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 formats
 
-OpenAPI does not know date, datetime or time datatypes, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
+OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
 | Field type | ISO8601 format | OpenAPI format (yaml)                  | Syntax                                                                                               | Examples                                                                                             |
 | ---------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Date       | full-date      | `type: string`<br>`format: date`       | `YYYY-DD-MM`                                                                                         | `2026-04-08`                                                                                         |
 | Datetime   | date-time      | `type: string`<br>`format: date-time`  | `YYYY-DD-MMThh:mi:ssZ`<br>`YYYY-DD-MMThh:mi:ss±hh:mm`<br>`YYYY-DD-MMThh:mi:ss.sssZ`<br>`YYYY-DD-MMThh:mi:ss.sss±hh:mm` | `2026-04-08T13:17:49Z`<br>`2026-04-08T15:17:49+02:00`<br>`2026-04-08T13:17:49.824Z`<br>`2026-04-08T15:17:49.824+02:00` |
-| Time       | partial-time   | `type: string`<br>`format: time-local` | `hh:mm:ss`                                                                                           | `15:17:49`                                                                                           |
+| Time       | partial-time   | `type: string`<br>`format: time-local` | `hh:mm`<br>`hh:mm:ss`                                                                                | `15:17`<br>`15:17:49`                                                                                |
 
 RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
 
@@ -329,9 +343,17 @@ RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations
 - The timezone offset "Z" (meaning UTC) **MUST** be uppercase.
 - "-00:00" **MUST NOT** be used as timezone offset. "+00:00" **MAY** be used as timezone offset to indicate an offset of 0h and 0m.
 
+Inherited ADR:
+
+- /core/date-time/format: Use standard format for date, datetime and time
+
 ### [P008] APIs **MUST** allow all timezone offsets in requests and **SHOULD** use UTC in responses
 
 APIs **MUST** accept any timezone offset in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
+
+Inherited ADR:
+
+- /core/date-time/timezone: Allow all timezone offsets in requests and use UTC in responses
 
 ### [P009] `GET` and `DELETE`operations **MUST NOT** have a request payload 
 
@@ -345,7 +367,7 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 
 When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
-### 2.1.6 HTTP methods and responses [Hxxx]
+### 2.6 HTTP methods and responses [Hxxx]
 
 Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC9110](https://www.rfc-editor.org/rfc/rfc9110).
 
@@ -359,11 +381,11 @@ The following table shows on which resource type (singleton or collection) a HTT
 
 | Method   | Operation              | Collection Resource (e.g. /growers)                                                                  | Singleton Resource (e.g. /growers/com.gs1.codelists.gln/8700292113955)                               |
 | -------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given [=URI=]. Data is only retrieved and never modified. | ✔ Retrieve a singleton resource representation for the given [=URI=]. Data is only retrieved and never modified. |
+| `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given URI. Data is only retrieved and never modified. | ✔ Retrieve a singleton resource representation for the given URI. Data is only retrieved and never modified. |
 | `POST`   | Create                 | ✔ Create a new singleton resource as part of a collection.                                          | ❌ Avoid using `POST` on a singleton resource. Return `405 Method Not Allowed`                       |
-| `PUT`    | Update/Replace         | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given [=URI=] (full update). The resource MAY be created when does not exist |
+| `PUT`    | Update/Replace         | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given URI (full update). The resource MAY be created when does not exist |
 | `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially updates an existing resource.                                                           |
-| `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given [=URI=].                                                         |
+| `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given URI.                                                             |
 
 Inherited ADR:
 
@@ -405,87 +427,30 @@ Inherited ADR:
 
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 
-### [H00x] `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support standard response codes
+### [H00x] `POST`, `PUT`, `PATCH`, `DELETE` and `GET` operations **MUST** at least support standard response codes
 
-The HTTP operations  `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support the following response codes
+The HTTP operations `POST`, `PUT`, `PATCH`, `DELETE` and `GET` **MUST** at least support the following response codes
 
 | Operation                                                          | Result                                                                                               | Response code                                                                                        |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `GET` on collection resource<br>(with or without query parameters) | successful response returning list with **0** of more items. <br>bad request (e.g. malformed query parameters)<br>authentication failed<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`500 Internal Server Error`                   |
 | `GET` on singleton resource<br>(with resource id in the URI)       | successful response returning list with exactly **1** item.<br>bad request (e.g. malformed query parameters)<br>authentication failed<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`404 Not Found`<br>`500 Internal Server Error` |
-| `POST`                                                             | successful creation of the new resource<br>successful acceptance of the `POST`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when posting new instances to a resource collection the client is not allowed to)<br>(unspecified) server-side error | `201 Created`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`500 Internal Server Error` |
-| `PUT`                                                              | successful replace of the resource<br>successful acceptance of the `PUT`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when replacing an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
-| `PATCH`                                                            | successful partial update the resource<br>successful acceptance of the `PATCH` request further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when updating an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
-| `DELETE`                                                           | successful removal of the resource<br>successful acceptance of the `DELETE` request for further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when posting sub-resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `204 No content`<br>`202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `POST`                                                             | successful creation of the new resource or successful acceptance of the `POST`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when posting new instances to a resource collection the client is not allowed to)<br>(unspecified) server-side error | `201 Created` or `202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`500 Internal Server Error` |
+| `PUT`                                                              | successful replace of the resource or successful acceptance of the `PUT`request for further processing (asynchronously)<br>bad request (e.g. malformed request payload)<br>authentication failed<br>forbidden (e.g. when replacing an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK` or `202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `PATCH`                                                            | successful partial update the resource or successful acceptance of the `PATCH` request further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when updating an instance of a resource the client is not allowed to)<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `200 OK` or `202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
+| `DELETE`                                                           | successful removal of the resource or successful acceptance of the `DELETE` request for further processing (asynchronously)<br>bad request (e.g. malformed payload)<br>authentication failed<br>forbidden (e.g. when posting sub-resources to a resource on which the client is not allowed to<br>resource indicated is not found (does not exist or client has no access to the resource)<br>(unspecified) server-side error | `204 No content` or `202 Accepted`<br>`400 Bad Request`<br>`401 Unauthorized`<br>`403 Forbidden`<br>`404 Not Found`<br>`500 Internal Server Error` |
 
 Remarks:
 
-A `GET` request on a **collection** resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on an singleton resource (with a resource identifiers in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
+A `GET` request on a **collection** resource resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on a specific **singleton** resource (with a resource identifier in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
 
-### [H00x] The `PUT` method **MUST NOT** be used as an insert-or-update operation 
+### [H00x] The `PUT` method **MUST NOT** be implemented as an insert-or-update operation 
 
-A `PUT` request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an insert-or-update operation. 
+A `PUT` request on a singleton resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an alternative create (insert) operation. 
 
-### [H00x] The HTTP `401 Unauthorized` error code MUST only be used  for authentication failures
+### [H00x] The HTTP `401 Unauthorized` error code **MUST** only be used  for authentication failures
 
-Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform a request on a resource they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
-
-## Relationships
-
-Resources are often interconnected by relationships. Relationships can be modelled in different ways depending on the cardinality, semantics and more importantly, the use cases and access patterns the REST API needs to support.
-
-Use nested URIs for child resources
-
-Statement
-
-When having a child resource which can only exist in the context of a parent resource, the [=URI=] SHOULD be nested.
-
-Rationale
-
-In this use case, the child resource does not necessarily have a top-level collection resource. The best way to explain this design rule is by example.
-
-When modelling resources for a news platform including the ability for users to write comments, it might be a good strategy to model the [=collection resources=] hierarchically:
-
-https://api.example.org/v1/articles/123/comments
-
-The platform might also offer a photo section, where the same commenting functionality is offered. In the same way as for articles, the corresponding sub-collection resource might be published at:
-
-https://api.example.org/v1/photos/456/comments
-
-These nested sub-collection resources can be used to post a new comment (`POST` method) and to retrieve a list of comments (`GET` method) belonging to the parent resource, i.e. the article or photo. An important consideration is that these comments could never have existed without the existence of the parent resource.
-
-From the consumer's perspective, this approach makes logical sense, because the most obvious use case is to show comments below the parent article or photo (e.g. on the same web page) including the possibility to paginate through the comments. The process of posting a comment is separate from the process of publishing a new article. Another client use case might also be to show a global *latest comments* section in the sidebar. For this use case, an additional resource could be provided:
-
-https://api.example.org/v1/comments
-
-If this would have not been a meaningful use case, this resource should not exist at all. Because it does not make sense to post a new comment from a global context, this resource would be read-only (only `GET` method is supported) and may possibly provide a more compact representation than the parent-specific sub-collections.
-
-The [=singular resources=] for comments, referenced from all 3 collections, could still be modelled on a higher level to avoid deep nesting of URIs (which might increase complexity or problems due to the URI length):
-
-https://api.example.org/v1/comments/123
-
-https://api.example.org/v1/comments/456
-
-Although this approach might seem counterintuitive from a technical perspective (we simply could have modelled a single `/comments` resource with optional filters for article and photo) and might introduce partially redundant functionality, it makes perfect sense from the perspective of the consumer, which increases developer experience.
-
-## Operations
-
-Model resource operations as a sub-resource or dedicated resource
-
-Statement
-
-Model resource operations as a sub-resource or dedicated resource.
-
-Rationale
-
-There are resource operations which might not seem to fit well in the CRUD interaction model. For example, approving a submission or notifying a customer. Depending on the type of the operation, there are three possible approaches:
-
-1. Re-model the resource to incorporate extra fields supporting the particular operation. For example, an approval operation can be modelled in a boolean attribute `goedgekeurd` that can be modified by issuing a `PATCH` request against the resource. A drawback of this approach is that the resource does not contain any metadata about the operation (when and by whom was the approval given? Was the submission rejected in an earlier stage?). Furthermore, this requires a fine-grained authorization model, since approval might require a specific role.
-2. Treat the operation as a sub-resource. For example, model a sub-collection resource `/inzendingen/12/beoordelingen` and add an approval or rejection by issuing a `POST` request. To be able to retrieve the review history (and to consistently adhere to the REST principles), also support the `GET` method for this resource. The `/inzendingen/12` resource might still provide a `goedgekeurd` boolean attribute (same as approach 1) which gets automatically updated in the background after adding a review. This attribute SHOULD however be read-only.
-3. In exceptional cases, the approaches above still do not offer an appropriate solution. An example of such an operation is a global search across multiple resources. In this case, the creation of a dedicated resource, possibly nested under an existing resource, is the most obvious solution. Use the imperative mood of a verb, maybe even prefix it with a underscore to distinguish these resources from regular resources. For example: `/search` or `/_search`. Depending on the operation characteristics, `GET` and/or `POST` method MAY be supported for such a resource.
-
-- 
-- Step 4: The CORS header Access-Control-Allow-Origin MUST allow all origins.
+Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform an operation they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
 ## Transport Security
 
@@ -683,3 +648,20 @@ It is common for REST services to allow multiple response types (e.g. `applicati
 Services (potentially) including script code (e.g. JavaScript) in their responses MUST be especially careful to defend against header injection attacks.
 
 - Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
+
+## 3. Conformation
+
+- [API Design Rules version 2.1.0](https://gitdocumentatie.logius.nl/publicatie/api/adr/) of the NL API Strategie (Dutch API Strategy)\r\n
+- [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.\r\n
+- [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard. \r\n
+- [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke, IETF. June 2022. Standards Track. \r\n
+- [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice. 
+- [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; Nottingham, IETF. April 2013. Proposed Standard.
+- [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
+- [IETF Draft: Health Check Response Format for HTTP APIs](https://datatracker.ietf.org/doc/draft-inadarei-api-health-check/). I. Nadareishvili. IETF. April 19th 2022. (Unknown)
+- [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html). M. Kelly. IETF.  April 21th, 2024 Informational (Draft)
+- ISO-3166 country codes
+- ISO-8601 Date and time format
+- [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma;Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
+- [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
+- [OpenAPI Specification](https://www.openapis.org/). Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
