@@ -28,6 +28,6 @@ De *AGRI API Style Guide* bestaat uit:
 - de API Style Guide Documentatie (Engelstalig)
 - ready-to-use OpenAPI.yaml en .json files die als basis gebruikt kunnen worden bij de opzet van een nieuw platform (in ontwikkeling)
 
-Wij overwegen aanvullend een set Linter rules te publiceren waarmee een (aangepaste) OpenAPI-file gevalideerd kan worden op compliancy van (een deel van de) richtlijnen 
+Wij overwegen aanvullend een set Linter rules te publiceren waarmee een (aangepaste) OpenAPI-file gevalideerd kan worden op compliancy van (een deel van de) richtlijnen.
 
 *Let op: voor de opzet van nieuwe API platforms die op één van de sectorstandaarden gebaseerd zijn (vb eCrop, ePigs), zijn in de betreffende repositories kant en klare OpenAPI specificaties gepubliceerd die, naast de basis specificaties, ook de sector-specifieke definities bevatten.*
