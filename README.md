@@ -17,10 +17,8 @@ Een API Style Guide bevordert standaardisatie en consistentie bij RESTful API-on
 
 AgroConnect ondersteunt de [NL API Strategie](https://docs.geostandaarden.nl/api/API-Strategie/) zoals deze is opgezet door het [Kennisplatform API's](https://developer.overheid.nl/communities/kennisplatform-apis). De normatieve onderdelen van de NL API Strategie worden vastgesteld en gepubliceerd door [Forum Standaardisatie](https://www.forumstandaardisatie.nl/) op de  [Pas-toe-of-leg-uit-lijst](https://www.forumstandaardisatie.nl/open-standaarden/verplicht).
 
-De AGRI API Style Guide maakt gebruik van de volgende standaarden van deze lijst:
-
+De AGRI API Style Guide maakt gebruik van de [REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules) die in deze lijst gepubliceerd zijn. Daarnaast adopteren we de volgende standaarden van de [Pas-toe-of-leg-uit-lijst](https://www.forumstandaardisatie.nl/open-standaarden/verplicht):
 - [Geo-Standaarden | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/geo-standaarden)
-- [REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)
 - [OpenAPI Specification | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/openapi-specification)
 
 ## Waar bestaat de *AGRI API Style Guide* uit
@@ -28,7 +26,8 @@ De AGRI API Style Guide maakt gebruik van de volgende standaarden van deze lijst
 De *AGRI API Style Guide* bestaat uit:
 
 - de API Style Guide Documentatie (Engelstalig)
-- ready-to-use OpenAPI.yaml en .json files die als basis gebruikt kunnen worden bij de opzet van een nieuw platform
-- een set Linter rules waarmee een (aangepaste) OpenAPI-file gevalideerd kan worden op compliancy van (een deel van de) richtlijnen 
+- ready-to-use OpenAPI.yaml en .json files die als basis gebruikt kunnen worden bij de opzet van een nieuw platform (in ontwikkeling)
+
+Wij overwegen aanvullend een set Linter rules te publiceren waarmee een (aangepaste) OpenAPI-file gevalideerd kan worden op compliancy van (een deel van de) richtlijnen 
 
 *Let op: voor de opzet van nieuwe API platforms die op één van de sectorstandaarden gebaseerd zijn (vb eCrop, ePigs), zijn in de betreffende repositories kant en klare OpenAPI specificaties gepubliceerd die, naast de basis specificaties, ook de sector-specifieke definities bevatten.*
