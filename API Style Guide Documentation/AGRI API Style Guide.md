@@ -152,6 +152,203 @@ For tracing and debugging purposes, a unique, server-side generated date-time ti
 
 ### 2.2 Security [Sxxx] (under construction)
 
+### Transport Security
+
+This section describes security principles, concepts and technologies to apply when working with APIs.
+
+Controls need to be applied for the security objectives of integrity, confidentiality and availability of the API (which includes the services and data provided thereby).
+
+The [architecture section of the API strategy](https://docs.geostandaarden.nl/api/API-Strategie-architectuur/) contains architecture patterns for implementing transport security.
+
+The scope of this section is limited to generic security controls that directly influence the visible parts of an API.
+
+Effectively, only security standards directly applicable to interactions are discussed here.
+
+In order to meet the complete security objectives, every implementer MUST also apply a range of controls not mentioned in this section.
+
+Note: security controls for signing and encrypting of application level messages are part of separate extensions: [Signing](https://geonovum.github.io/KP-APIs/API-strategie-modules/signing-jades/) and [Encryption](https://geonovum.github.io/KP-APIs/API-strategie-modules/encryption/).
+
+Secure connections using TLS
+
+Statement
+
+One should secure all APIs assuming they can be accessed from any location on the internet. Information MUST be exchanged over TLS-based secured connections. No exceptions, so everywhere and always. This is [required by law](https://wetten.overheid.nl/BWBR0048156/2023-07-01).
+
+One MUST follow the latest NCSC guidelines [[NCSC 2025]].
+
+Rationale
+
+Since the connection is always secured, the access method can be straightforward. This allows the application of basic access tokens instead of encrypted access tokens.
+
+How to test
+
+The usage of TLS is machine testable. Follow the latest NCSC guidelines on what is required to test. The serverside is what will be tested, only control over the server is assumed for testing. A testing client will be employed to test adherence of the server. Supporting any protocols, algorithms, key sizes, options or ciphers that are deemed insufficient or phased out by NCSC will lead to failure on the automated test. Both positive and negative scenarios are part of the test: testing that a subset of *Good* and *Sufficient* configurations are supported and configurations deemed *Insufficient* or marked for *Phase out*. A manual exception to the automated test results can be made when configurations designated for *Phase out* are supported; The API provider will have to provide clear documentation regarding the phase out schedule.
+
+No sensitive information in URIs
+
+Statement
+
+Do not put any sensitive information in URIs
+
+Rationale
+
+Even when using TLS connections, information in URIs is not secured. URIs can be cached and logged outside of the servers controlled by clients and servers. Any information contained in them should therefore be considered readable by anyone with access to the network (in the case of the internet, the whole world) and MUST NOT contain any sensitive information. This includes client secrets used for authentication, privacy sensitive information such as BSNs or any other information which should not be shared.
+
+Be aware that queries (anything after the '?' in a URI) are also part of a URI.
+
+### HTTP-level Security
+
+The guidelines and principles defined in this section are client agnostic.
+
+When implementing a client agnostic API, one SHOULD at least facilitate that multi-purpose generic HTTP-clients like browsers are able to securely interact with the API.
+
+When implementing an API for a specific client it may be possible to limit measures as long as it ensures secure access for this specific client.
+
+Nevertheless it is advised to review the following security measures, which are mostly inspired by the [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html).
+
+Even while remaining client agnostic, clients can be classified in four major groups.
+
+This is in line with common practice in [[[?OAuth2]]].
+
+The groups are:
+
+1. Web applications.
+2. Native applications.
+3. Browser-based applications.
+4. System-to-system applications.
+
+This section contains elements that apply to the generic classes of clients listed above.
+
+Although not every client implementation has a need for all the specifications referenced below, a client agnostic API SHOULD provide these to facilitate any client to implement relevant security controls.
+
+Most specifications referenced in this section are applicable to the first three classes of clients listed above.
+
+Security considerations for native applications are provided in [[[rfc8252]]], much of which can help non-OAuth2 based implementations as well.
+
+For browser-based applications a subsection is included with additional details and information.
+
+System-to-system (sometimes called machine-to-machine) may have a need for the listed specifications as well.
+
+Note that different usage patterns may be applicable in contexts with system-to-system clients, see above under Client Authentication.
+
+Realizations may rely on internal usage of HTTP-Headers.
+
+Information for processing requests and responses can be passed between components, that can have security implications.
+
+For instance, this is common practice between a reverse proxy or TLS-offloader and an application server.
+
+Additional HTTP headers are used in such example to pass an original IP-address or client certificate.
+
+Implementations MUST consider filtering both inbound and outbound traffic for HTTP-headers used internally.
+
+The primary focus of inbound filtering is to prevent injection of malicious headers on requests.
+
+For outbound filtering, the main concern is leaking of information.
+
+Use mandatory security headers in all API responses
+
+Statement
+
+Return API security headers in all server responses to instruct the client to act in a secure manner
+
+Rationale
+
+There are a number of security related headers that can be returned in the HTTP responses to instruct browsers to act in specific ways. However, some of these headers are intended to be used with HTML responses, and as such may provide little or no security benefits on an API that does not return HTML. The following headers SHOULD be included in all API responses:
+
+| Header                                            | Rationale                                                                                            |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Cache-Control: no-store`                         | Prevent sensitive information from being cached.                                                     |
+| `Content-Security-Policy: frame-ancestors 'none'` | To protect against drag-and-drop style clickjacking attacks.                                         |
+| `Content-Type`                                    | To specify the content type of the response. This SHOULD be `application/json` for JSON responses.   |
+| `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                       |
+| `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML. |
+| `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
+| `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [/core/transport/cors](#/core/transport/cors) for more information. |
+
+The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You SHOULD include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
+
+| Header                                        | Rationale                                                              |
+| --------------------------------------------- | ---------------------------------------------------------------------- |
+| `Content-Security-Policy: default-src 'none'` | The majority of CSP functionality only affects pages rendered as HTML. |
+| `Feature-Policy: 'none'`                      | Feature policies only affect pages rendered as HTML.                   |
+| `Referrer-Policy: no-referrer`                | Non-HTML responses should not trigger additional requests.             |
+
+In addition to the above listed HTTP security headers, web- and browser-based applications SHOULD apply [[[SRI]]]. When using third-party hosted contents, e.g. using a Content Delivery Network, this is even more relevant. While this is primarily a client implementation concern, it may affect the API when it is not strictly segregated or for example when shared supporting libraries are offered.
+
+How to test
+
+The presence of the mandatory security headers can be tested in an automated way. A test client makes a call to the API root. The response is tested for the presence of mandatory headers.
+
+Use CORS to control access
+
+Statement
+
+Use CORS to restrict access from other domains for applicable resources
+
+Rationale
+
+Different resources can have different uses, as some resources are publicly available whereas others are restricted to several domains.
+
+ Modern web browsers use Cross-Origin Resource Sharing (CORS) to minimize the risk associated with cross-site HTTP-requests.
+
+By default browsers only allow 'same origin' access to resources.
+
+ This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser.
+
+ To enable cross-site requests APIs can return a `Access-Control-Allow-Origin` response header.
+
+An allowlist SHOULD be used to determine the validity of different cross-site requests.
+
+ To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist.
+
+ If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
+
+Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is NOT RECOMMENDED, because it disables CORS-security measures.
+
+ However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
+
+How to test
+
+Tests of this design rule can only be performed when the intended client is known to the tester. A test can be performed when this information is provided by the API provider. Otherwise no conclusive test result can be reached.
+
+### Browser-based applications
+
+A specific subclass of clients are browser-based applications, that require the presence of particular security controls to facilitate secure implementation.
+
+Clients in this class are also known as *user-agent-based* or *single-page-applications* (SPA).
+
+All browser-based applications SHOULD follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22).
+
+These applications can be split into three architectural patterns:
+
+- JavaScript applications with a backend; with this class of applications, the backend is the confidential client and should intermediate any interaction, with tokens never ending up in the browser.
+
+  Effectively, these are not different from regular web-application for this security facet, even though they leverage JavaScript for implementation.
+- JavaScript applications that share a domain with the API (resource server); these can leverage cookies marked as HTTP-Only, Secure and SameSite.
+- JavaScript applications without a backend; these clients are considered public clients, and are potentially more vulnerable to several types of attacks, including Cross-Site Scripting (XSS), Cross Site Request Forgery (CSRF) and OAuth token theft.
+
+  In order to support these clients, the Cross-Origin Resource Sharing (CORS) policy mentioned above is critical and MUST be supported.
+
+### Validate content types
+
+A REST request or response body SHOULD match the intended content type in the header.
+
+Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
+
+- Reject requests containing unexpected or missing content type headers with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
+- Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`.
+
+  This avoids XXE-attack vectors for example.
+
+It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`, and the client specifies the preferred order of response types by the Accept header in the request.
+
+- Do NOT simply copy the `Accept` header to the `Content-type` header of the response.
+- Reject the request (ideally with a `406 Not Acceptable` response) if the Accept header does not specifically contain one of the allowable types.
+
+Services (potentially) including script code (e.g. JavaScript) in their responses MUST be especially careful to defend against header injection attacks.
+
+- Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
+
 Related ADR Rules:
 
 - [/core/transport/tls](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/tls): Secure connections using TLS
@@ -452,209 +649,12 @@ A `PUT` request on a singleton resource (identified by the given resource id) wh
 
 Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform an operation they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
-## Transport Security
-
-This section describes security principles, concepts and technologies to apply when working with APIs.
-
-Controls need to be applied for the security objectives of integrity, confidentiality and availability of the API (which includes the services and data provided thereby).
-
-The [architecture section of the API strategy](https://docs.geostandaarden.nl/api/API-Strategie-architectuur/) contains architecture patterns for implementing transport security.
-
-The scope of this section is limited to generic security controls that directly influence the visible parts of an API.
-
-Effectively, only security standards directly applicable to interactions are discussed here.
-
-In order to meet the complete security objectives, every implementer MUST also apply a range of controls not mentioned in this section.
-
-Note: security controls for signing and encrypting of application level messages are part of separate extensions: [Signing](https://geonovum.github.io/KP-APIs/API-strategie-modules/signing-jades/) and [Encryption](https://geonovum.github.io/KP-APIs/API-strategie-modules/encryption/).
-
-Secure connections using TLS
-
-Statement
-
-One should secure all APIs assuming they can be accessed from any location on the internet. Information MUST be exchanged over TLS-based secured connections. No exceptions, so everywhere and always. This is [required by law](https://wetten.overheid.nl/BWBR0048156/2023-07-01).
-
-One MUST follow the latest NCSC guidelines [[NCSC 2025]].
-
-Rationale
-
-Since the connection is always secured, the access method can be straightforward. This allows the application of basic access tokens instead of encrypted access tokens.
-
-How to test
-
-The usage of TLS is machine testable. Follow the latest NCSC guidelines on what is required to test. The serverside is what will be tested, only control over the server is assumed for testing. A testing client will be employed to test adherence of the server. Supporting any protocols, algorithms, key sizes, options or ciphers that are deemed insufficient or phased out by NCSC will lead to failure on the automated test. Both positive and negative scenarios are part of the test: testing that a subset of *Good* and *Sufficient* configurations are supported and configurations deemed *Insufficient* or marked for *Phase out*. A manual exception to the automated test results can be made when configurations designated for *Phase out* are supported; The API provider will have to provide clear documentation regarding the phase out schedule.
-
-No sensitive information in URIs
-
-Statement
-
-Do not put any sensitive information in URIs
-
-Rationale
-
-Even when using TLS connections, information in URIs is not secured. URIs can be cached and logged outside of the servers controlled by clients and servers. Any information contained in them should therefore be considered readable by anyone with access to the network (in the case of the internet, the whole world) and MUST NOT contain any sensitive information. This includes client secrets used for authentication, privacy sensitive information such as BSNs or any other information which should not be shared.
-
-Be aware that queries (anything after the '?' in a URI) are also part of a URI.
-
-### HTTP-level Security
-
-The guidelines and principles defined in this section are client agnostic.
-
-When implementing a client agnostic API, one SHOULD at least facilitate that multi-purpose generic HTTP-clients like browsers are able to securely interact with the API.
-
-When implementing an API for a specific client it may be possible to limit measures as long as it ensures secure access for this specific client.
-
-Nevertheless it is advised to review the following security measures, which are mostly inspired by the [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html).
-
-Even while remaining client agnostic, clients can be classified in four major groups.
-
-This is in line with common practice in [[[?OAuth2]]].
-
-The groups are:
-
-1. Web applications.
-2. Native applications.
-3. Browser-based applications.
-4. System-to-system applications.
-
-This section contains elements that apply to the generic classes of clients listed above.
-
-Although not every client implementation has a need for all the specifications referenced below, a client agnostic API SHOULD provide these to facilitate any client to implement relevant security controls.
-
-Most specifications referenced in this section are applicable to the first three classes of clients listed above.
-
-Security considerations for native applications are provided in [[[rfc8252]]], much of which can help non-OAuth2 based implementations as well.
-
-For browser-based applications a subsection is included with additional details and information.
-
-System-to-system (sometimes called machine-to-machine) may have a need for the listed specifications as well.
-
-Note that different usage patterns may be applicable in contexts with system-to-system clients, see above under Client Authentication.
-
-Realizations may rely on internal usage of HTTP-Headers.
-
-Information for processing requests and responses can be passed between components, that can have security implications.
-
-For instance, this is common practice between a reverse proxy or TLS-offloader and an application server.
-
-Additional HTTP headers are used in such example to pass an original IP-address or client certificate.
-
-Implementations MUST consider filtering both inbound and outbound traffic for HTTP-headers used internally.
-
-The primary focus of inbound filtering is to prevent injection of malicious headers on requests.
-
-For outbound filtering, the main concern is leaking of information.
-
-Use mandatory security headers in all API responses
-
-Statement
-
-Return API security headers in all server responses to instruct the client to act in a secure manner
-
-Rationale
-
-There are a number of security related headers that can be returned in the HTTP responses to instruct browsers to act in specific ways. However, some of these headers are intended to be used with HTML responses, and as such may provide little or no security benefits on an API that does not return HTML. The following headers SHOULD be included in all API responses:
-
-| Header                                            | Rationale                                                                                            |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `Cache-Control: no-store`                         | Prevent sensitive information from being cached.                                                     |
-| `Content-Security-Policy: frame-ancestors 'none'` | To protect against drag-and-drop style clickjacking attacks.                                         |
-| `Content-Type`                                    | To specify the content type of the response. This SHOULD be `application/json` for JSON responses.   |
-| `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                       |
-| `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML. |
-| `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
-| `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [/core/transport/cors](#/core/transport/cors) for more information. |
-
-The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You SHOULD include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
-
-| Header                                        | Rationale                                                              |
-| --------------------------------------------- | ---------------------------------------------------------------------- |
-| `Content-Security-Policy: default-src 'none'` | The majority of CSP functionality only affects pages rendered as HTML. |
-| `Feature-Policy: 'none'`                      | Feature policies only affect pages rendered as HTML.                   |
-| `Referrer-Policy: no-referrer`                | Non-HTML responses should not trigger additional requests.             |
-
-In addition to the above listed HTTP security headers, web- and browser-based applications SHOULD apply [[[SRI]]]. When using third-party hosted contents, e.g. using a Content Delivery Network, this is even more relevant. While this is primarily a client implementation concern, it may affect the API when it is not strictly segregated or for example when shared supporting libraries are offered.
-
-How to test
-
-The presence of the mandatory security headers can be tested in an automated way. A test client makes a call to the API root. The response is tested for the presence of mandatory headers.
-
-Use CORS to control access
-
-Statement
-
-Use CORS to restrict access from other domains for applicable resources
-
-Rationale
-
-Different resources can have different uses, as some resources are publicly available whereas others are restricted to several domains.
-
- Modern web browsers use Cross-Origin Resource Sharing (CORS) to minimize the risk associated with cross-site HTTP-requests.
-
-By default browsers only allow 'same origin' access to resources.
-
- This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser.
-
- To enable cross-site requests APIs can return a `Access-Control-Allow-Origin` response header.
-
-An allowlist SHOULD be used to determine the validity of different cross-site requests.
-
- To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist.
-
- If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
-
-Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is NOT RECOMMENDED, because it disables CORS-security measures.
-
- However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
-
-How to test
-
-Tests of this design rule can only be performed when the intended client is known to the tester. A test can be performed when this information is provided by the API provider. Otherwise no conclusive test result can be reached.
-
-### Browser-based applications
-
-A specific subclass of clients are browser-based applications, that require the presence of particular security controls to facilitate secure implementation.
-
-Clients in this class are also known as *user-agent-based* or *single-page-applications* (SPA).
-
-All browser-based applications SHOULD follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22).
-
-These applications can be split into three architectural patterns:
-
-- JavaScript applications with a backend; with this class of applications, the backend is the confidential client and should intermediate any interaction, with tokens never ending up in the browser.
-
-  Effectively, these are not different from regular web-application for this security facet, even though they leverage JavaScript for implementation.
-- JavaScript applications that share a domain with the API (resource server); these can leverage cookies marked as HTTP-Only, Secure and SameSite.
-- JavaScript applications without a backend; these clients are considered public clients, and are potentially more vulnerable to several types of attacks, including Cross-Site Scripting (XSS), Cross Site Request Forgery (CSRF) and OAuth token theft.
-
-  In order to support these clients, the Cross-Origin Resource Sharing (CORS) policy mentioned above is critical and MUST be supported.
-
-### Validate content types
-
-A REST request or response body SHOULD match the intended content type in the header.
-
-Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
-
-- Reject requests containing unexpected or missing content type headers with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
-- Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`.
-
-  This avoids XXE-attack vectors for example.
-
-It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`, and the client specifies the preferred order of response types by the Accept header in the request.
-
-- Do NOT simply copy the `Accept` header to the `Content-type` header of the response.
-- Reject the request (ideally with a `406 Not Acceptable` response) if the Accept header does not specifically contain one of the allowable types.
-
-Services (potentially) including script code (e.g. JavaScript) in their responses MUST be especially careful to defend against header injection attacks.
-
-- Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
-
 ## 3. Conformation
 
-- [API Design Rules version 2.1.0](https://gitdocumentatie.logius.nl/publicatie/api/adr/) of the NL API Strategie (Dutch API Strategy)\r\n
-- [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.\r\n
-- [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard. \r\n
-- [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke, IETF. June 2022. Standards Track. \r\n
+- [API Design Rules version 2.1.0](https://gitdocumentatie.logius.nl/publicatie/api/adr/) of the NL API Strategie (Dutch API Strategy)
+- [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
+- [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
+- [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke, IETF. June 2022. Standards Track. 
 - [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice. 
 - [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; Nottingham, IETF. April 2013. Proposed Standard.
 - [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
@@ -665,3 +665,4 @@ Services (potentially) including script code (e.g. JavaScript) in their response
 - [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma;Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
 - [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
 - [OpenAPI Specification](https://www.openapis.org/). Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
+
