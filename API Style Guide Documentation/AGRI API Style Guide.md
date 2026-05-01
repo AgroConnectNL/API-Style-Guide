@@ -82,7 +82,7 @@ Inherited ADR:
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
 - `#/info/title` a (unique) identifying, functional descriptive name of the API
-- `#/info/version` the API specification document version following [**MUST** use semantic versioning](#M004)
+- `#/info/version` the API specification document version following **MUST** use [semantic versioning](#m004)
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
@@ -101,7 +101,7 @@ This rule differs slightly from the ADR rules which allow English but prefer Dut
 - [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
 - [/core/interface-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/interface-language): Define interfaces in Dutch unless there is an official English glossary available
 
-### <a id="M004">[M004]</a>API Specification and implementation **MUST** use semantic versioning
+### <a id="m004"></a>[M004]API Specification and implementation **MUST** use semantic versioning
 
 OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version.
 
