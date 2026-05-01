@@ -82,7 +82,7 @@ Inherited ADR:
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
 - `#/info/title` a (unique) identifying, functional descriptive name of the API
-- `#/info/version` the API specification document version following [**MUST** use semantic versioning](https://opensource.zalando.com/RESTful-api-guidelines/#116)
+- `#/info/version` the API specification document version following [**MUST** use semantic versioning](#M004)
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
@@ -101,11 +101,11 @@ This rule differs slightly from the ADR rules which allow English but prefer Dut
 - [/core/doc-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/doc-language): Publish documentation in Dutch unless there is existing documentation in English
 - [/core/interface-language](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/interface-language): Define interfaces in Dutch unless there is an official English glossary available
 
-### [M004] API Specification and implementation **MUST** use semantic versioning
+### <a id="M004">[M004]</a>API Specification and implementation **MUST** use semantic versioning
 
-OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version — see [Basic Terminology](https://opensource.zalando.com/RESTful-api-guidelines/#terminology).
+OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version.
 
-We expect API designers to comply with [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) with the standard version format `major.minor.patch` as follows:
+API designers **MUST** comply with [Semantic Versioning 2.0](#semver) with the standard version format `major.minor.patch` as follows:
 
 - Increment the `MAJOR` version when you make incompatible API changes after having aligned the changes with consumers. Consumers *have to adapt* their clients to be able to use this version
 - Increment the `MINOR` version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though they can use existing features from earlier versions working without modifying their client software implementation
@@ -651,12 +651,10 @@ Although the standard description of the HTTP `401` error is: `Unauthorized` thi
 
 ## 3. Conformation
 
-
-
 The following references are used in this style guide:
 
-- <a id="bcp14"></a> [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
-- <a id="rfc2119"></a> [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
+- <a id="bcp14"></a> [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
+- <a id="rfc2119"></a> [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
 - <a id="rfc3986"></a> [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986): Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
 - <a id="rfc6902"></a> [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; E. Nottingham. IETF. April 2013. Proposed Standard.
 - <a id="rfc7159"></a> [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
