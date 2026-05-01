@@ -28,7 +28,7 @@ This is a draft that could be altered, removed or be replaced by other documents
 
 _As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative._
 
-The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**NOT RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) [[RFC2119](https://datatracker.ietf.org/doc/html/rfc2119)]  [[RFC8174](https://datatracker.ietf.org/doc/html/rfc8174)] when, and only when, they appear in all capitals, as shown here.
+The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**NOT RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this document are to be interpreted as described in [BCP 14](#bcp14) [RFC 2119](#rfc2119) [RFC 8174](#rfc8174) when, and only when, they appear in all capitals, as shown here.
 
 ## 1. Introduction
 
@@ -70,7 +70,7 @@ The API specification, also referred to as the API contract, serves as the prima
 
 ### [M001] API Specification **MUST** be specified and published using OpenAPI
 
-We use the standard provided by the [OpenAPI Initiative](https://www.openapis.org/) to define API specifications, so the API contract **MUST** be specified using OpenAPI. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
+We use the standard provided by the [OpenAPI Initiative](#openapi-specification) to define API specifications, so the API contract **MUST** be specified using OpenAPI. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
 
 Inherited ADR:
 
@@ -223,7 +223,7 @@ Although not every client implementation has a need for all the specifications r
 
 Most specifications referenced in this section are applicable to the first three classes of clients listed above.
 
-Security considerations for native applications are provided in [[[rfc8252]]], much of which can help non-OAuth2 based implementations as well.
+Security considerations for native applications are provided in [RFC 8252](#rfc8252), much of which can help non-OAuth2 based implementations as well.
 
 For browser-based applications a subsection is included with additional details and information.
 
@@ -491,7 +491,7 @@ Additional information in an API request or response that is not part of the HTT
 
 ### [P001] APIs **MUST** use JSON as payload data interchange format
 
-APIs **MUST** use JSON ([RFC 7159](https://tools.ietf.org/html/rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
+APIs **MUST** use JSON ([RFC 7159](#rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
 
 ### [P002] APIs **MUST** use standard JSON media types
 
@@ -524,9 +524,9 @@ Inherited ADR:
 
 - /core/date-time/date-omit-time-portion: Omit time portion for date fields
 
-### [P007] Date, datetime and time properties **MUST** use RFC9745/ISO8601 formats
+### [P007] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
 
-OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [[RFC9557]] and [[ISO8601-1]] formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
+OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [RFC 9557](#rfc9557) and [ISO 8601](#iso-8601-date-and-time-format) formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
 | Field type | ISO8601 format | OpenAPI format (yaml)                  | Syntax                                                                                               | Examples                                                                                             |
 | ---------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -558,19 +558,19 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 
 ### [P010] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
 
-`PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](https://www.rfc-editor.org/rfc/rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: XXXXXXX).
+`PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: XXXXXXX).
 
 ### [P011] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
 
-When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
+When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](#rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
 ### 2.6 HTTP methods and responses [Hxxx]
 
-Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC9110](https://www.rfc-editor.org/rfc/rfc9110).
+Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC 9110](#rfc9110).
 
 ### [H001] API Operations **MUST** use only standard HTTP methods
 
-An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [RFC9110](https://www.rfc-editor.org/rfc/rfc9110).
+An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [RFC 9110](#rfc9110).
 
 The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
 
@@ -588,11 +588,11 @@ Inherited ADR:
 
 - [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
 
-If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](https://www.rfc-editor.org/rfc/rfc9110#name-405-method-not-allowed).
+If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](#rfc9110).
 
 ### [H00x] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
 
-API operations **MUST** adhere to HTTP safety and idempotency semantics for operations a specified in the HTTP protocol [RFC9110](https://www.rfc-editor.org/rfc/rfc9110). These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
+API operations **MUST** adhere to HTTP safety and idempotency semantics for operations a specified in the HTTP protocol [RFC 9110](#rfc9110). These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
 
 Request methods are considered **safe** if their defined semantics are essentially read-only. The client does not request, and does not expect, any state change on the origin server as a result of applying a safe method to a target resource.
 
@@ -616,7 +616,7 @@ Inherited ADR:
 
 ### [H00x] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
 
-API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](https://www.rfc-editor.org/rfc/rfc9110#name-status-codes) for the response.
+API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](#rfc9110) for the response.
 
 In case of an error, the server **SHOULD NOT** pass technical details (e.g. call stacks or other internal hints) to the client. The error message **SHOULD** be generic to avoid revealing additional details and expose internal information which can be used with malicious intent.
 
@@ -651,18 +651,21 @@ Although the standard description of the HTTP `401` error is: `Unauthorized` thi
 
 ## 3. Conformation
 
-- [API Design Rules version 2.1.0](https://gitdocumentatie.logius.nl/publicatie/api/adr/) of the NL API Strategie (Dutch API Strategy)
-- [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
-- [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
-- [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke, IETF. June 2022. Standards Track. 
-- [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice. 
-- [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; Nottingham, IETF. April 2013. Proposed Standard.
-- [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
-- [IETF Draft: Health Check Response Format for HTTP APIs](https://datatracker.ietf.org/doc/draft-inadarei-api-health-check/). I. Nadareishvili. IETF. April 19th 2022. (Unknown)
-- [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html). M. Kelly. IETF.  April 21th, 2024 Informational (Draft)
-- ISO-3166 country codes
-- ISO-8601 Date and time format
-- [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma;Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
-- [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
-- [OpenAPI Specification](https://www.openapis.org/). Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
+The following references are used in this style guide:
 
+<a id="bcp14"></a>- [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
+<a id="rfc2119"></a>- [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.
+<a id="rfc3986"></a>- [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986): Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
+<a id="rfc6902"></a>- [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; E. Nottingham. IETF. April 2013. Proposed Standard.
+<a id="rfc7159"></a>- [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
+<a id="rfc8174"></a>- [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174): Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice.
+<a id="rfc8252"></a>- [IETF RFC 8252](https://datatracker.ietf.org/doc/html/rfc8252): OAuth 2.0 for Native Apps. B. Campbell; E. Mortensen; J. Bradley; et al. IETF. October 2017.
+<a id="rfc9110"></a>- [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110): HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke. IETF. June 2022. Standards Track.
+<a id="rfc9457"></a>- [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs. M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
+<a id="rfc9557"></a>- [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma; Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
+<a id="draft-health-check-response-format"></a>- [IETF Draft: Health Check Response Format for HTTP APIs](https://datatracker.ietf.org/doc/draft-inadarei-api-health-check/): I. Nadareishvili. IETF. April 19, 2022.
+<a id="draft-json-hal"></a>- [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html): M. Kelly. IETF. April 21, 2024. Informational Draft.
+<a id="iso-3166-country-codes"></a>- ISO-3166 country codes
+<a id="iso-8601-date-and-time-format"></a>- ISO-8601 Date and time format
+<a id="openapi-specification"></a>- [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
+<a id="semver"></a>- [SemVer](https://semver.org): Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
