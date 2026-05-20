@@ -58,11 +58,7 @@ This chapter containts the list of API Design Rules in the *AGRI API Style Guide
 5. Payloads
 6. HTTP methods and responses 
 
-The list of API Design Rules in this Guide is partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). Our set of rules is composed of:
-
-- rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
-- rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
-- rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
+The list of API Design Rules in this Guide is partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#c3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR .
 
 ### 2.1 Basic Meta Information and Versioning [Mxxx]
 
@@ -649,7 +645,58 @@ A `PUT` request on a singleton resource (identified by the given resource id) wh
 
 Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform an operation they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
-## 3. Conformation
+## <a id="c3"></a>3. Compliancy matrix NLGov REST API Design Rules
+
+The AGRI API Style Guide follows the API Design Rules from the NL API Strategie published in the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/).  Our set of rules is composed of:
+
+- rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
+- rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
+- rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
+
+Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).
+
+| AASG Rule | ADR Rule                                                                                   | Adoption   | Remark                                            |
+| --------- | ------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------- |
+| `M001`    | `/core/doc-openapi`, `/core/publish-openapi`                                               | Inherited  | OpenAPI specification required                    |
+| `M002`    | `/core/doc-openapi-contact`                                                                | Inherited  | API meta information and contact required         |
+| `M003`    | `/core/doc-language`, `/core/interface-language`                                           | Customized | Force U.S. English in specification               |
+| `M004`    | `/core/semver`, `/core/deprecation-schedule`, `/core/transition-period`, `/core/changelog` | Inherited  | Semantic versioning required                      |
+| `M005`    | `/core/uri-version`                                                                        | Customized | Major version in request header, not URI          |
+| `M006`    | `/core/version-header`                                                                     | Inherited  | Full API version in response header               |
+| `M007`    | None                                                                                       | AGRI only  | Optional client software identifier header        |
+| `M008`    | None                                                                                       | AGRI only  | Server-side request identifier in response        |
+| `M009`    | None                                                                                       | AGRI only  | Request date-time in response header              |
+| `U001`    | None                                                                                       | AGRI only  | Do not use `/api` as base path                    |
+| `U002`    | `/core/naming-resources`                                                                   | Inherited  | Resource names must be nouns                      |
+| `U003`    | `/core/naming-collections`                                                                 | Inherited  | Collection resource names must be plural          |
+| `U003`    | `/core/nested-child`, `/core/resource-operations`                                          | Inherited  | Child resources identified via path segments      |
+| `U004`    | None                                                                                       | AGRI only  | Path segments must use kebab-case                 |
+| `U005`    | `/core/no-trailing-slash`                                                                  | Customized | Normalize paths without trailing slashes          |
+| `U006`    | None                                                                                       | AGRI only  | Query parameters must be lowerCamelCase           |
+| `R001`    | `/core/stateless`                                                                          | Inherited  | APIs must be stateless                            |
+| `R002`    | None                                                                                       | AGRI only  | Must return full resource representation          |
+| `R003`    | None                                                                                       | AGRI only  | Unique resource ID assigned and returned          |
+| `R004`    | `/core/hide-implementation`                                                                | Inherited  | Hide implementation details from clients          |
+| `R005`    | None                                                                                       | AGRI only  | GET operations may support client-side caching    |
+| `P001`    | None                                                                                       | AGRI only  | JSON is required as payload format                |
+| `P002`    | None                                                                                       | AGRI only  | Standard JSON media types must be used            |
+| `P003`    | None                                                                                       | AGRI only  | Property names must be lowerCamelCase             |
+| `P004`    | None                                                                                       | AGRI only  | Array properties must have plural names           |
+| `P005`    | None                                                                                       | AGRI only  | Null and absent properties handled identically    |
+| `P006`    | `/core/date-time/date-omit-time-portion`                                                   | Inherited  | Date-only fields omit time components             |
+| `P007`    | `/core/date-time/format`                                                                   | Inherited  | Use RFC9557/ISO8601 formats                       |
+| `P008`    | `/core/date-time/timezone`                                                                 | Inherited  | Accept all offsets, prefer UTC responses          |
+| `P009`    | None                                                                                       | AGRI only  | GET and DELETE must not have request payload      |
+| `P010`    | None                                                                                       | AGRI only  | PATCH must use JSON Patch                         |
+| `P011`    | None                                                                                       | AGRI only  | Error responses use Problem Details               |
+| `H001`    | `/core/http-methods`                                                                       | Inherited  | Only use standard HTTP methods                    |
+| `H00x`    | `/core/http-safety`                                                                        | Inherited  | HTTP safety and idempotency semantics required    |
+| `H00x`    | `/core/http-response-code`                                                                 | Inherited  | Use standard HTTP status codes for errors         |
+| `H00x`    | `/core/http-response-code`                                                                 | Inherited  | Support standard response codes for methods       |
+| `H00x`    | None                                                                                       | AGRI only  | PUT must not be insert-or-update                  |
+| `H00x`    | None                                                                                       | AGRI only  | 401 must only be used for authentication failures |
+
+## 4. Conformation
 
 The following references are used in this style guide:
 
