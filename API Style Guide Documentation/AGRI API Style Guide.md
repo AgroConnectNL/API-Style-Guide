@@ -81,7 +81,7 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 
 The API specification **MUST** be written in U.S. English. 
 
-### <a id="m004"></a>[M004]API Specification and implementation **MUST** use semantic versioning
+### <a id="m004"></a>[M004] API Specification and implementation **MUST** use semantic versioning
 
 OpenAPI requires the definition of API specification version via `#/info/version`. Note, this API specification document version is distinct from the OpenAPI Specification version (also required, e.g. `openapi: 3.0.4`), or the API Implementation version.
 
