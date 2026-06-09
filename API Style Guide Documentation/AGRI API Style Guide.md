@@ -64,11 +64,11 @@ This chapter containts the list of API Design Rules in the *AGRI API Style Guide
 
 The API specification, also referred to as the API contract, serves as the primary reference for third parties developing client implementations. Its objective is to provide client developers with comprehensive details required to implement conformant clients. The rules in this section define the mandated publication format and the specific elements that must be included in the specification. This section also defines the versioning rules for the specification to ensure controlled evolution and maintain backward compatibility after the initial formal release.
 
-### [M001] API Specification **MUST** be specified and published using OpenAPI
+### <a id="m001"></a>[M001] API Specification **MUST** be specified and published using OpenAPI
 
 We use the standard provided by the [OpenAPI Initiative](#openapi-specification) to define API specifications, so the API contract **MUST** be specified using OpenAPI. API designers **SHOULD** provide the API specification using a single self-contained YAML file for better readability. The specification **MAY** be published using a single JSON file.
 
-### [M002] API Specification **MUST** contain API meta information 
+### <a id="m002"></a>[M002] API Specification **MUST** contain API meta information
 
 API specifications **MUST** contain the following [OpenAPI meta information](https://spec.openapis.org/oas/latest.html#info-object):
 
@@ -77,7 +77,7 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
-### [M003] API Specification **MUST** be written using U.S. English
+### <a id="m003"></a>[M003] API Specification **MUST** be written using U.S. English
 
 The API specification **MUST** be written in U.S. English. 
 
@@ -91,87 +91,53 @@ API designers **MUST** comply with [Semantic Versioning 2.0](#semver) with the
 - Increment the `MINOR` version when you add new functionality in a backwards-compatible manner. Consumers only have to adapt their clients to the new version to be able to use the new features, though they can continue using existing features from earlier versions without modifying their client software implementation
 - Increment the `PATCH` version when you make backwards-compatible bug fixes or editorial changes not affecting the functionality. Consumers _do not have to modify their software_ implementation to use this newer version
 
-### [M005] An API platform **SHOULD** at most deploy two `major`versions simultaneously
+### <a id="m005"></a>[M005] An API platform **SHOULD** at most deploy two `major`versions simultaneously
 
 When breaking changes in an existing API implementation are unavoidable, a new `major`version **MUST** be deployed. We recommend to deploy at most two `major`versions simultaneously and to schedule a fixed transition period for a new major API version. Ideally, a deprecation schedule **MAY** be included when features or versions will be deprecated, so client know when the have to migratie to the newer version. Every version **SHOULD** contain a changelog which shows API changes between versions
 
-### [M006] The MAJOR version **MUST** be specified in the HTTP request header
+### <a id="m006"></a>[M006] The MAJOR version **MUST** be specified in the HTTP request header
 
 To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
 
 URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
 
-### [M007] The full API version **MUST** be returned in the HTTP response header
+### <a id="m007"></a>[M007] The full API version **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, the full API version (i.e. `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
 
-### [M008] The identification of the client software package **MAY** be specified in the HTTP request header
+### <a id="m008"></a>[M008] The identification of the client software package **MAY** be specified in the HTTP request header
 
 Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header. The client **MUST** use the standard `User-Agent` HTTP header field for this purpose.
 
-### [M009] A unique, server-side assigned request identifier **MUST** be returned in the HTTP response header
+### <a id="m009"></a>[M009] A unique, server-side assigned request identifier **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, a unique, server-side assigned request identifier (preferably a UUID) **MUST** be returned to the client in the `Request-Id` HTTP response header. Note that a request identifier tracks a specific request (and its downstream calls) on a resource, while a resource identifier (typically the URL path) uniquely identifies the target resource itself, which can be subject of multiple different requests.
 
-### [M010] The request date-time **MUST** be returned in the HTTP response header
+### <a id="m010"></a>[M010] The request date-time **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, a unique, server-side generated date-time UTC timestamp (in msecs) **MUST** be returned to the client in the `Request-Date-Time` HTTP response header, using the format `YYYY-MM-DDThh:mi:ss.sssZ`. 
 
 ### 2.2 Security [Sxxx] (under construction)
 
-### Transport Security
+#### 2.2.1 Transport Security
 
-This section describes security principles, concepts and technologies to apply when working with APIs.
+This section describes security principles, concepts and technologies to apply when working with APIs. Controls need to be applied for the security objectives of integrity, confidentiality and availability of the API (which includes the services and data provided thereby). The scope of this section is limited to generic security controls that directly influence the visible parts of an API. Effectively, only security standards directly applicable to interactions are discussed here. In order to meet the complete security objectives, every implementer **MUST** also apply a range of controls not mentioned in this section.
 
-Controls need to be applied for the security objectives of integrity, confidentiality and availability of the API (which includes the services and data provided thereby).
+### <a id="s001"></a>[S001] Connections **MUST** be secured using TLS
 
-The [architecture section of the API strategy](https://docs.geostandaarden.nl/api/API-Strategie-architectuur/) contains architecture patterns for implementing transport security.
+One should secure all APIs assuming they can be accessed from any location on the internet. Information **MUST** be exchanged over TLS-based secured connections. No exceptions — everywhere and always. Although this is [required by law](https://wetten.overheid.nl/BWBR0048156/2023-07-01) for government organisations, this rule MUST be interpreted as equally required for non-governmental organisations. One **MUST** follow the latest NCSC guidelines [[NCSC 2025]].
 
-The scope of this section is limited to generic security controls that directly influence the visible parts of an API.
+### <a id="s002"></a>[S002] URIs **MUST NOT** contain any sensitive information
 
-Effectively, only security standards directly applicable to interactions are discussed here.
-
-In order to meet the complete security objectives, every implementer MUST also apply a range of controls not mentioned in this section.
-
-Note: security controls for signing and encrypting of application level messages are part of separate extensions: [Signing](https://geonovum.github.io/KP-APIs/API-strategie-modules/signing-jades/) and [Encryption](https://geonovum.github.io/KP-APIs/API-strategie-modules/encryption/).
-
-### [S001] Secure connections using TLS
-
-One should secure all APIs assuming they can be accessed from any location on the internet. Information **MUST** be exchanged over TLS-based secured connections. No exceptions, so everywhere and always. This is [required by law](https://wetten.overheid.nl/BWBR0048156/2023-07-01).
-
-One MUST follow the latest NCSC guidelines [[NCSC 2025]].
-
-Rationale
-
-Since the connection is always secured, the access method can be straightforward. This allows the application of basic access tokens instead of encrypted access tokens.
-
-How to test
-
-The usage of TLS is machine testable. Follow the latest NCSC guidelines on what is required to test. The serverside is what will be tested, only control over the server is assumed for testing. A testing client will be employed to test adherence of the server. Supporting any protocols, algorithms, key sizes, options or ciphers that are deemed insufficient or phased out by NCSC will lead to failure on the automated test. Both positive and negative scenarios are part of the test: testing that a subset of *Good* and *Sufficient* configurations are supported and configurations deemed *Insufficient* or marked for *Phase out*. A manual exception to the automated test results can be made when configurations designated for *Phase out* are supported; The API provider will have to provide clear documentation regarding the phase out schedule.
-
-No sensitive information in URIs
-
-Statement
-
-### [S002] Do not put any sensitive information in URIs
-
-Even when using TLS connections, information in URIs is not secured. URIs can be cached and logged outside of the servers controlled by clients and servers. Any information contained in them should therefore be considered readable by anyone with access to the network (in the case of the internet, the whole world) and MUST NOT contain any sensitive information. This includes client secrets used for authentication, privacy sensitive information such as BSNs or any other information which should not be shared.
+Even when using TLS connections, information in URIs is not secured. URIs can be cached and logged outside of the servers controlled by clients and servers. Any information contained in them should therefore be considered readable by anyone with access to the network (in the case of the internet, the whole world) and **MUST NOT** contain any sensitive information. This includes client secrets used for authentication, privacy sensitive information such as BSNs or any other information which should not be shared.
 
 Be aware that queries (anything after the '?' in a URI) are also part of a URI.
 
-### HTTP-level Security
+#### 2.2.2 HTTP-level Security
 
-The guidelines and principles defined in this section are client agnostic.
+The guidelines and principles defined in this section are client agnostic. When implementing a client agnostic API, one SHOULD at least facilitate that multi-purpose generic HTTP-clients like browsers are able to securely interact with the API. When implementing an API for a specific client it may be possible to limit measures as long as it ensures secure access for this specific client. Nevertheless it is advised to review the following security measures, which are mostly inspired by the [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html). 
 
-When implementing a client agnostic API, one SHOULD at least facilitate that multi-purpose generic HTTP-clients like browsers are able to securely interact with the API.
-
-When implementing an API for a specific client it may be possible to limit measures as long as it ensures secure access for this specific client.
-
-Nevertheless it is advised to review the following security measures, which are mostly inspired by the [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html).
-
-Even while remaining client agnostic, clients can be classified in four major groups.
-
-This is in line with common practice in [[[?OAuth2]]].
+Even while remaining client agnostic, clients can be classified in four major groups. This is in line with common practice in [The OAuth 2.0 Authorization Framework](rfc6749).
 
 The groups are:
 
@@ -180,43 +146,17 @@ The groups are:
 3. Browser-based applications.
 4. System-to-system applications.
 
-This section contains elements that apply to the generic classes of clients listed above.
+This section contains elements that apply to the generic classes of clients listed above. Although not every client implementation has a need for all the specifications referenced below, a client agnostic API **SHOULD** provide these to facilitate any client to implement relevant security controls. 
 
-Although not every client implementation has a need for all the specifications referenced below, a client agnostic API SHOULD provide these to facilitate any client to implement relevant security controls.
+Most specifications referenced in this section are applicable to the first three classes of clients listed above. Security considerations for native applications are provided in [RFC 8252](#rfc8252), much of which can help non-OAuth2 based implementations as well. For browser-based applications a subsection is included with additional details and information. System-to-system (sometimes called machine-to-machine) may have a need for the listed specifications as well. Note that different usage patterns may be applicable in contexts with system-to-system clients, see above under Client Authentication.
 
-Most specifications referenced in this section are applicable to the first three classes of clients listed above.
+Realizations may rely on internal usage of HTTP-Headers. Information for processing requests and responses can be passed between components, that can have security implications. For instance, this is common practice between a reverse proxy or TLS-offloader and an application server. Additional HTTP headers are used in such example to pass an original IP-address or client certificate.
 
-Security considerations for native applications are provided in [RFC 8252](#rfc8252), much of which can help non-OAuth2 based implementations as well.
+Implementations **MUST** consider filtering both inbound and outbound traffic for HTTP-headers used internally. The primary focus of inbound filtering is to prevent injection of malicious headers on requests. For outbound filtering, the main concern is leaking of information. Use mandatory security headers in all API responses
 
-For browser-based applications a subsection is included with additional details and information.
+### <a id="s003"></a>[S003] API security headers **MUST** be returned in all server responses to instruct the client to act in a secure manner
 
-System-to-system (sometimes called machine-to-machine) may have a need for the listed specifications as well.
-
-Note that different usage patterns may be applicable in contexts with system-to-system clients, see above under Client Authentication.
-
-Realizations may rely on internal usage of HTTP-Headers.
-
-Information for processing requests and responses can be passed between components, that can have security implications.
-
-For instance, this is common practice between a reverse proxy or TLS-offloader and an application server.
-
-Additional HTTP headers are used in such example to pass an original IP-address or client certificate.
-
-Implementations MUST consider filtering both inbound and outbound traffic for HTTP-headers used internally.
-
-The primary focus of inbound filtering is to prevent injection of malicious headers on requests.
-
-For outbound filtering, the main concern is leaking of information.
-
-Use mandatory security headers in all API responses
-
-Statement
-
-Return API security headers in all server responses to instruct the client to act in a secure manner
-
-Rationale
-
-There are a number of security related headers that can be returned in the HTTP responses to instruct browsers to act in specific ways. However, some of these headers are intended to be used with HTML responses, and as such may provide little or no security benefits on an API that does not return HTML. The following headers SHOULD be included in all API responses:
+There are a number of security related headers that can be returned in the HTTP responses to instruct browsers to act in specific ways. However, some of these headers are intended to be used with HTML responses, and as such may provide little or no security benefits on an API that does not return HTML. The following headers **SHOULD** be included in all API responses:
 
 | Header                                            | Rationale                                                                                            |
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -228,7 +168,7 @@ There are a number of security related headers that can be returned in the HTTP 
 | `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
 | `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [/core/transport/cors](#/core/transport/cors) for more information. |
 
-The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You SHOULD include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
+The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You **SHOULD** include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
 
 | Header                                        | Rationale                                                              |
 | --------------------------------------------- | ---------------------------------------------------------------------- |
@@ -238,51 +178,23 @@ The headers below are only intended to provide additional security when response
 
 In addition to the above listed HTTP security headers, web- and browser-based applications SHOULD apply [[[SRI]]]. When using third-party hosted contents, e.g. using a Content Delivery Network, this is even more relevant. While this is primarily a client implementation concern, it may affect the API when it is not strictly segregated or for example when shared supporting libraries are offered.
 
-How to test
+### <a id="s004"></a>[S004] CORS MUST be used to restrict access from other domains for applicable resources
 
-The presence of the mandatory security headers can be tested in an automated way. A test client makes a call to the API root. The response is tested for the presence of mandatory headers.
+Different resources can have different uses, as some resources are publicly available whereas others are restricted to several domains. Modern web browsers use Cross-Origin Resource Sharing (CORS) to minimize the risk associated with cross-site HTTP-requests.
 
-Use CORS to control access
+By default browsers only allow 'same origin' access to resources. This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser. To enable cross-site requests APIs can return a `Access-Control-Allow-Origin response` header.
 
-Statement
+An allowlist SHOULD be used to determine the validity of different cross-site requests.  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist. If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
 
-Use CORS to restrict access from other domains for applicable resources
+Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
 
-Rationale
+#### 2.2.4 Browser-based applications
 
-Different resources can have different uses, as some resources are publicly available whereas others are restricted to several domains.
+A specific subclass of clients are browser-based applications, that require the presence of particular security controls to facilitate secure implementation. Clients in this class are also known as *user-agent-based* or *single-page-applications* (SPA). 
 
- Modern web browsers use Cross-Origin Resource Sharing (CORS) to minimize the risk associated with cross-site HTTP-requests.
+### <a id="s005"></a>[S005] All browser-based applications **SHOULD** follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22). 
 
-By default browsers only allow 'same origin' access to resources.
-
- This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser.
-
- To enable cross-site requests APIs can return a `Access-Control-Allow-Origin` response header.
-
-An allowlist SHOULD be used to determine the validity of different cross-site requests.
-
- To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist.
-
- If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
-
-Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is NOT RECOMMENDED, because it disables CORS-security measures.
-
- However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
-
-How to test
-
-Tests of this design rule can only be performed when the intended client is known to the tester. A test can be performed when this information is provided by the API provider. Otherwise no conclusive test result can be reached.
-
-### Browser-based applications
-
-A specific subclass of clients are browser-based applications, that require the presence of particular security controls to facilitate secure implementation.
-
-Clients in this class are also known as *user-agent-based* or *single-page-applications* (SPA).
-
-All browser-based applications SHOULD follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22).
-
-These applications can be split into three architectural patterns:
+All browser-based applications **SHOULD** follow the best practices specified in [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-22). These applications can be split into three architectural patterns:
 
 - JavaScript applications with a backend; with this class of applications, the backend is the confidential client and should intermediate any interaction, with tokens never ending up in the browser.
 
@@ -292,23 +204,21 @@ These applications can be split into three architectural patterns:
 
   In order to support these clients, the Cross-Origin Resource Sharing (CORS) policy mentioned above is critical and MUST be supported.
 
-### Validate content types
+#### 2.2.4 Validate content types
 
-A REST request or response body SHOULD match the intended content type in the header.
+### <a id="s006"></a>[S006] A REST request or response body **SHOULD** match the intended content type in the header.
 
-Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
+A REST request or response body **SHOULD** match the intended content type in the header. Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
 
-- Reject requests containing unexpected or missing content type headers with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
-- Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`.
+- Requests containing unexpected or missing content type headers **MUST** be rejected with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
+- Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`. This avoids XXE-attack vectors for example.
 
-  This avoids XXE-attack vectors for example.
-
-It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`, and the client specifies the preferred order of response types by the Accept header in the request.
+It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`), and the client specifies the preferred order of response types by the `Accept` header in the request.
 
 - Do NOT simply copy the `Accept` header to the `Content-type` header of the response.
-- Reject the request (ideally with a `406 Not Acceptable` response) if the Accept header does not specifically contain one of the allowable types.
+- A request with an `Accept` header which does not specifically contain one of the allowable types **MUST** be rejected with `406 Not Acceptable` response.
 
-Services (potentially) including script code (e.g. JavaScript) in their responses MUST be especially careful to defend against header injection attacks.
+Services (potentially) including script code (e.g. JavaScript) in their responses **MUST** be especially careful to defend against header injection attacks.
 
 - Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
 
@@ -328,19 +238,15 @@ The key abstraction of information in REST is a _resource_. Any information that
 
 This section defines the rules for naming resources and constructing URLs to identify them.
 
-### [U001] URLs **SHOULD NOT** use /api as base path
+### <a id="u001"></a>[U001] URLs **SHOULD NOT** use /api as base path
 
 URLs **SHOULD NOT** use `/api` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
-### [U002] Nouns **MUST** be used to name resources
+### <a id="u002"></a>[U002] Nouns **MUST** be used to name resources
 
-Resources **MUST** be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer. 
+Resources **MUST** be referred to using nouns (instead of verbs) that represent entities meaningful to the API consumer.
 
-Inherited ADR:
-
-- [/core/naming-resources](https://gitdocumentatie.logius.nl/publicatie/api/adr/#/core/naming-resources): Use nouns to name resources
-
-### [U003] Resource names **MUST** be plural
+### <a id="u003"></a>[U003] Resource names **MUST** be plural
 
 Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.
 
@@ -348,16 +254,11 @@ Inherited ADR:
 
 - [/core/naming-collections](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-collections): Use plural nouns to name collection resources
 
-### [U003] Resources and sub-(or child-)resources **MUST** be identified via path segments
+### <a id="u004"></a>[U004] Resources and sub-(or child-)resources **MUST** be identified via path segments
 
 Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the URI path.
 
-Inherited ADR:
-
-- [/core/nested-child](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/nested-child): Use nested URIs for child resources
-- [/core/resource-operations](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/resource-operations): Model resource operations as a sub-resource or dedicated resource
-
-### [U004] All path segments identifying the resource **MUST** be written in kebab-case 
+### <a id="u005"></a>[U005] All path segments identifying the resource **MUST** be written in kebab-case 
 
 Path segments of a URI **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rule, each URI-segment must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
@@ -369,7 +270,7 @@ Rationale
 
 Some web servers and frameworks do not handle case sensitivity or special characters of URIs well. The use of kebab-case path segments ensures compatibility with a broad range of systems. It is a more common implementation choice for path segments than camelCase or snake_case. Information (such as names of objects) that requires special characters can be part of the request body instead of being in the URI.
 
-### [U005] URL Paths **MUST** be normalized without empty path segments and trailing slashes
+### <a id="u006"></a>[U006] URL Paths **MUST** be normalized without empty path segments and trailing slashes
 
 You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `.../growers//crops` or `.../growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
 
@@ -381,7 +282,7 @@ Customized ADR:
 
 - [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
 
-### [U006] Query parameters **MUST** be written in lowerCamelCase 
+### <a id="u007"></a>[U007] Query parameters **MUST** be written in lowerCamelCase 
 
 Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letterwhere (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
 
@@ -393,9 +294,9 @@ Query keys are often converted to JSON object keys, where lowerCamelCase is the 
 
 The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms **SHOULD** adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
 
-### [R001] APIs **MUST** be Stateless
+### <a id="r001"></a>[R001] APIs **MUST** be Stateless
 
-APIs **MUST** be stateless and therefore servers **MUST NOT** store any _session_ _state _information of the client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
+APIs **MUST** be stateless and therefore servers **MUST NOT** store any _session state_ information of the client. This mandates that each request from the client to the server **MUST** contain all of the information necessary to understand and complete the request. The server cannot take advantage of any previously stored context information on the server. For this reason, the client application must entirely keep the session state.
 
 One of the key constraints of the REST architectural style is stateless communication between client and server. It means that every request from client to server must contain all of the information necessary to understand the request. The server cannot take advantage of any stored session context on the server as it didn’t memorize previous requests. Session state must therefore reside entirely on the client.
 
@@ -417,17 +318,17 @@ Inherited ADR:
 
 - [core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
 
-### [R002] APIs **MUST** provide a full representation of the resource in the response payload
+### <a id="r002"></a>[R002] APIs **MUST** provide a full representation of the resource in the response payload
 
 As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST** be provided.
 
-### [R003] A server-side unique resource identifier **MUST** be assigned to each created resource and returned to the client
+### <a id="r003"></a>[R003] A server-side unique resource identifier **MUST** be assigned to each created resource and returned to the client
 
 As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-side generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response as the `id`. For subsequent  operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
-### [R004] APIs **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
+### <a id="r004"></a>[R004] APIs **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
 
 The Layered System principle allows an architecture to be composed of hierarchical layers by constraining component behavior. In a layered system, each component cannot see beyond the immediate layer they are interacting with. APIs therefore **MUST** hide irrelevant implementation details. An API **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models because:
 
@@ -442,33 +343,33 @@ Inherited ADR:
 
 - [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
 
-### [R005] APIs **MAY** support client-side caching in `GET` operations
+### <a id="r005"></a>[R005] APIs **MAY** support client-side caching in `GET` operations
 
 The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag`and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
 
-APIs **MUST NOT** use caching in other operations than `GET`.
+APIs **MUST NOT** use caching in other operations than `GET`.  According to [AASG Rule S003](#s003) APIs **SHOULD** prevent sensible data from being cached using the response header variable `Cache-Control: no-store`.  
 
 ### 2.5 Payloads
 
 Additional information in an API request or response that is not part of the HTTP method, URL, or headers must be exchanged in the payload. The rules in this section apply to the payloads.
 
-### [P001] APIs **MUST** use JSON as payload data interchange format
+### <a id="p001"></a>[P001] APIs **MUST** use JSON as payload data interchange format
 
 APIs **MUST** use JSON ([RFC 7159](#rfc7159)) to represent structured (resource) data passed with HTTP requests and responses as body payload. 
 
-### [P002] APIs **MUST** use standard JSON media types
+### <a id="p002"></a>[P002] APIs **MUST** use standard JSON media types
 
 The standard media types `application/json` (normal operations), `application/json-patch+json` (`PATCH` operations) or `application/problem+json` (to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `Content-Type` (or `Accept`) header information.
 
-### [P003] Property names **MUST** be lowerCamelCase
+### <a id="p003"></a>[P003] Property names **MUST** be lowerCamelCase
 
 All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
-### [P004] Array properties **MUST** have a plural name
+### <a id="p004"></a>[P004] Array properties **MUST** have a plural name
 
 Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
-### [P005] Properties with value `null` and absent properties **MUST** be handled the same way
+### <a id="p005"></a>[P005] Properties with value `null` and absent properties **MUST** be handled the same way
 
 OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (as in: `{}`) or can have the value `null` (as in: `{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases **MUST** be handled in the exact same manner by specification.
 
@@ -479,7 +380,7 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 | true     | false    | ❌ No  | ❌ No              |
 | false    | false    | ✔ Yes | ❌ No              |
 
-### [P006] Date properties **MUST NOT** have a time component if only the date is relevant
+### <a id="p006"></a>[P006] Date properties **MUST NOT** have a time component if only the date is relevant
 
 Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
 
@@ -487,7 +388,7 @@ Inherited ADR:
 
 - /core/date-time/date-omit-time-portion: Omit time portion for date fields
 
-### [P007] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
+### <a id="p007"></a>[P007] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
 
 OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [RFC 9557](#rfc9557) and [ISO 8601](#iso-8601-date-and-time-format) formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
@@ -507,7 +408,7 @@ Inherited ADR:
 
 - /core/date-time/format: Use standard format for date, datetime and time
 
-### [P008] APIs **MUST** accept all timezone offsets in requests and **SHOULD** use UTC in responses
+### <a id="p008"></a>[P008] APIs **MUST** accept all timezone offsets in requests and **SHOULD** use UTC in responses
 
 APIs **MUST** accept any timezone offset (inluding "Z") in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
 
@@ -515,15 +416,15 @@ Inherited ADR:
 
 - /core/date-time/timezone: Allow all timezone offsets in requests and use UTC in responses
 
-### [P009] `GET` and `DELETE`operations **MUST NOT** have a request payload 
+### <a id="p009"></a>[P009] `GET` and `DELETE`operations **MUST NOT** have a request payload 
 
 Because of their nature (retrieving and removing resources) `GET` and `DELETE` operations **MUST NOT** have a request payload. Whenever a client does pass a request payload to a `GET` or `DEL` operation, a `400 Bad Request`error **MUST** be returned.
 
-### [P010] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
+### <a id="p010"></a>[P010] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
 
 `PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: XXXXXXX).
 
-### [P011] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
+### <a id="p011"></a>[P011] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
 
 When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](#rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
@@ -531,7 +432,7 @@ When an API request results in an error (HTTP 4xx of HTTP-5xx), the response pay
 
 Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC 9110](#rfc9110).
 
-### [H001] API Operations **MUST** use only standard HTTP methods
+### <a id="h001"></a>[H001] API Operations **MUST** use only standard HTTP methods
 
 An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [RFC 9110](#rfc9110).
 
@@ -553,7 +454,7 @@ Inherited ADR:
 
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](#rfc9110).
 
-### [H00x] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
+### <a id="h002"></a>[H002] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
 
 API operations **MUST** adhere to HTTP safety and idempotency semantics for operations a specified in the HTTP protocol [RFC 9110](#rfc9110). These characteristics are important for clients and middleware applications, because they **SHOULD** be taken into account when implementing caching and fault tolerance strategies.
 
@@ -577,7 +478,7 @@ Inherited ADR:
 
 - [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
 
-### [H00x] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
+### <a id="h003"></a>[H003] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
 
 API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](#rfc9110) for the response.
 
@@ -587,7 +488,7 @@ Inherited ADR:
 
 - [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 
-### [H00x] `GET`, `POST`, `PUT`, `PATCH` and `DELETE` operations **MUST** at least support standard response codes
+### <a id="h004"></a>[H004] `GET`, `POST`, `PUT`, `PATCH` and `DELETE` operations **MUST** at least support standard response codes
 
 The HTTP operations `GET`, `POST`, `PUT`, `PATCH` and `DELETE` **MUST** at least support the following response codes
 
@@ -604,15 +505,15 @@ Remarks:
 
 A `GET` request on a **collection** resource resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on a specific **singleton** resource (with a resource identifier in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
 
-### [H00x] The `PUT` method **MUST NOT** be implemented as an insert-or-update operation 
+### <a id="h005"></a>[H005] The `PUT` method **MUST NOT** be implemented as an insert-or-update operation 
 
 A `PUT` request on a singleton resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an alternative create (insert) operation. 
 
-### [H00x] The HTTP `401 Unauthorized` error code **MUST** only be used  for authentication failures
+### <a id="h006"></a>[H006] The HTTP `401 Unauthorized` error code **MUST** only be used  for authentication failures
 
 Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform an operation they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
-## <a id="chapter3"></a>3. Compliancy matrix NLGov REST API Design Rules
+## <a id="chapter3"></a>3. Compliancy matrixes NLGov REST API Design Rules
 
 The AGRI API Style Guide follows the API Design Rules from the NL API Strategie published in the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/).  Our set of rules is composed of:
 
@@ -620,7 +521,7 @@ The AGRI API Style Guide follows the API Design Rules from the NL API Strategie 
 - rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
 - rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
 
-Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).
+Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).í
 
 | AASG Rule | ADR Rule                                                                       | Adoption   | Remark                                                                           |
 | --------- | ------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
@@ -664,6 +565,51 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | `H00x`    | None                                                                           | AGRI only  | PUT must not be insert-or-update                                                 |
 | `H00x`    | None                                                                           | AGRI only  | 401 must only be used for authentication failures                                |
 
+## Reverse Compliance Matrix: ADR Rules to AASG Rules
+
+The following table provides a reverse lookup showing how each ADR (REST-API Design Rules) rule is adopted in the AGRI API Style Guide (AASG).
+
+| ADR Rule                                 | AASG Rule | Adoption   | Remark                                         |
+| ---------------------------------------- | --------- | ---------- | ---------------------------------------------- |
+| List of technical rules                  |           |            |                                                |
+| `/core/no-trailing-slash`                | `U005`    | Customized | Normalize paths without trailing slashes       |
+| `/core/path-segments-kebab-case`         | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/query-keys-camel-case`            | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/date-time/format`                 | `P007`    | Inherited  | Use RFC9557/ISO8601 formats                    |
+| `/core/date-time/date-omit-time-portion` | `P006`    | Inherited  | Date-only fields omit time components          |
+| `/core/error-handling/problem-details`   | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/error-handling/invalid-input`     | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/doc-openapi`                      | `M001`    | Inherited  | OpenAPI specification required                 |
+| `/core/doc-openapi-contact`              | `M002`    | Inherited  | API meta information and contact required      |
+| `/core/publish-openapi`                  | `M001`    | Inherited  | OpenAPI specification required                 |
+| `/core/uri-version`                      | `M006`    | Customized | AASG prefers major version in request header   |
+| `/core/semver`                           | `M004`    | Inherited  | Semantic versioning required                   |
+| `/core/version-header`                   | `M007`    | Inherited  | Full API version in response header            |
+| `/core/transport/tls`                    | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/transport/security-headers`       | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/transport/cors`                   | -         | ADR Only   | Not explicitly implemented in AASG             |
+| List of functional rules                 |           |            |                                                |
+| `/core/naming-resources`                 | `U002`    | Inherited  | Resource names must be nouns                   |
+| `/core/naming-collections`               | `U003`    | Inherited  | Collection resource names must be plural       |
+| `/core/interface-language`               | `M003`    | Customized | AASG prefers U.S. English in specification     |
+| `/core/hide-implementation`              | `R004`    | Inherited  | Hide implementation details from clients       |
+| `/core/date-time/timezone`               | `P008`    | Inherited  | Accept all offsets, prefer UTC responses       |
+| `/core/http-methods`                     | `H001`    | Inherited  | Only use standard HTTP methods                 |
+| `/core/http-safety`                      | `H00x`    | Inherited  | HTTP safety and idempotency semantics required |
+| `/core/http-response-code`               | `H00x`    | Inherited  | Use standard HTTP status codes for errors      |
+| `/core/stateless`                        | `R001`    | Inherited  | APIs must be stateless                         |
+| `/core/nested-child`                     | `U003`    | Inherited  | Child resources identified via path segments   |
+| `/core/resource-operations`              | `U003`    | Inherited  | Child resources identified via path segments   |
+| `/core/error-handling/all-errors`        | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/doc-language`                     | `M003`    | Customized | AASG uses U.S. English documentation           |
+| `/core/deprecation-schedule`             | `M005`    | Customized | Transition between major versions              |
+| `/core/transition-period`                | `M005`    | Customized | Transition between major versions              |
+| `/core/changelog`                        | `M005`    | Customized | Transition between major versions              |
+| `/core/transport/no-sensitive-uris`      | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/modules/geospatial`               | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/modules/signing`                  | -         | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/modules/encryption`               | -         | ADR Only   | Not explicitly implemented in AASG             |
+
 ## 4. Conformation
 
 The following references are used in this style guide:
@@ -671,6 +617,7 @@ The following references are used in this style guide:
 - <a id="bcp14"></a> [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
 - <a id="rfc2119"></a> [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
 - <a id="rfc3986"></a> [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986): Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
+- <a id="rfc6749"><a> [IETF RFC 6749](https://datatracker.ietf.org/doc/html/rfc6749): The OAuth 2.0 Authorization Framework. D. Hardt, Ed. October 2012. Standards Track.
 - <a id="rfc6902"></a> [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; E. Nottingham. IETF. April 2013. Proposed Standard.
 - <a id="rfc7159"></a> [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
 - <a id="rfc8174"></a> [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174): Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice.
