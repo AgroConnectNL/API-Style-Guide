@@ -184,9 +184,9 @@ Different resources can have different uses, as some resources are publicly avai
 
 By default browsers only allow 'same origin' access to resources. This means that responses on requests to another `[scheme]://[hostname]:[port]` than the `Origin` request header of the initial request will not be processed by the browser. To enable cross-site requests APIs can return a `Access-Control-Allow-Origin response` header.
 
-An allowlist SHOULD be used to determine the validity of different cross-site requests.  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist. If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
+An allowlist **SHOULD** be used to determine the validity of different cross-site requests.  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist. If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
 
-Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you MAY use `*`.
+Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you **MAY** use `*`.
 
 #### 2.2.4 Browser-based applications
 
@@ -238,7 +238,7 @@ The key abstraction of information in REST is a _resource_. Any information that
 
 This section defines the rules for naming resources and constructing URLs to identify them.
 
-### <a id="u001"></a>[U001] URLs **SHOULD NOT** use /api as base path
+### <a id="u001"></a>[U001] URLs **SHOULD NOT** use `/api` as base path
 
 URLs **SHOULD NOT** use `/api` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
