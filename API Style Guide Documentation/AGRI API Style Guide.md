@@ -93,7 +93,7 @@ API designers **MUST** comply with [Semantic Versioning 2.0](#semver) with the
 
 ### <a id="m005"></a>[M005] An API platform **SHOULD** at most deploy two `major`versions simultaneously
 
-When breaking changes in an existing API implementation are unavoidable, a new `major`version **MUST** be deployed. We recommend to deploy at most two `major`versions simultaneously and to schedule a fixed transition period for a new major API version. Ideally, a deprecation schedule **MAY** be included when features or versions will be deprecated, so client know when the have to migratie to the newer version. Every version **SHOULD** contain a changelog which shows API changes between versions
+When breaking changes in an existing API implementation are unavoidable, a new `major`version **MUST** be deployed. We recommend to deploy at most two `major`versions simultaneously and to schedule a fixed transition period for a new major API version. Ideally, a deprecation schedule **MAY** be included when features or versions will be deprecated, so client know when the have to migrate to the newer version. Every version **SHOULD** contain a changelog which shows API changes between versions
 
 ### <a id="m006"></a>[M006] The MAJOR version **MUST** be specified in the HTTP request header
 
@@ -166,7 +166,7 @@ There are a number of security related headers that can be returned in the HTTP 
 | `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                       |
 | `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML. |
 | `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
-| `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [/core/transport/cors](#/core/transport/cors) for more information. |
+| `Access-Control-Allow-Origin`                     | To relax the 'same origin' policy and allow cross-origin access. See [[S004](#s004)] for more information. |
 
 The headers below are only intended to provide additional security when responses are rendered as HTML. As such, if the API will never return HTML in responses, then these headers may not be necessary. You **SHOULD** include the headers as part of a defense-in-depth approach if there is any uncertainty about the function of the headers, the types of information that the API returns or information it may return in the future.
 
@@ -186,7 +186,7 @@ By default browsers only allow 'same origin' access to resources. This means tha
 
 An allowlist **SHOULD** be used to determine the validity of different cross-site requests.  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist. If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
 
-Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [/core/publish-openapi](#/core/publish-openapi)), you **MAY** use `*`.
+Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [[M001](#m001)]) , you **MAY** use `*`.
 
 #### 2.2.4 Browser-based applications
 
@@ -222,13 +222,6 @@ Services (potentially) including script code (e.g. JavaScript) in their response
 
 - Ensure the intended Content-Type headers are sent in the response, matching the body content, e.g. `application/json` and not `application/javascript`.
 
-Related ADR Rules:
-
-- [/core/transport/tls](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/tls): Secure connections using TLS
-- [/core/transport/security-headers](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/security-headers): Use mandatory security headers in API all responses
-- [/core/transport/cors](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/cors): Use CORS to control access
-- [/core/transport/no-sensitive-uris](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/transport/no-sensitive-uris): No sensitive information in URIs
-
 ### 2.3 URLs and Resources ([Uxxx])
 
 The key abstraction of information in REST is a _resource_. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier (URI), which is part of the Uniform Resource Locator (URL). We distinghuish two types of resources:
@@ -238,9 +231,9 @@ The key abstraction of information in REST is a _resource_. Any information that
 
 This section defines the rules for naming resources and constructing URLs to identify them.
 
-### <a id="u001"></a>[U001] URLs **SHOULD NOT** use `/api` as base path
+### <a id="u001"></a>[U001] URLs **SHOULD NOT** use `/api` or `/services`as base path
 
-URLs **SHOULD NOT** use `/api` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
+URLs **SHOULD NOT** use (something like) `/api` or `/services` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
 ### <a id="u002"></a>[U002] Nouns **MUST** be used to name resources
 
@@ -249,10 +242,6 @@ Resources **MUST** be referred to using nouns (instead of verbs) that represent 
 ### <a id="u003"></a>[U003] Resource names **MUST** be plural
 
 Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.
-
-Inherited ADR:
-
-- [/core/naming-collections](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/naming-collections): Use plural nouns to name collection resources
 
 ### <a id="u004"></a>[U004] Resources and sub-(or child-)resources **MUST** be identified via path segments
 
@@ -278,10 +267,6 @@ When requesting a resource including a trailing slash, this **MUST** result in a
 
 This rule does not apply to the root resource (append `/` to the service root URL).
 
-Customized ADR:
-
-- [/core/no-trailing-slash](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/no-trailing-slash): Leave off trailing slashes from URIs
-
 ### <a id="u007"></a>[U007] Query parameters **MUST** be written in lowerCamelCase 
 
 Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letterwhere (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
@@ -292,7 +277,7 @@ Query keys are often converted to JSON object keys, where lowerCamelCase is the 
 
 ### 2.4 Adherence to RESTful principles [Rxxx]
 
-The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms **SHOULD** adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle.
+The REST architectural style prescribes [six principles](https://RESTfulapi.net/) that API platforms **SHOULD** adhere to. This section defines rules to ensure the RESTfulness of the APIs. Since the HTTP protocol is intrinsically client-server, no additional rules are necessary to enforce this principle. Because the optional _code-on-demand_ principle is hardly implemented in practice, we did not include rules to supports this feature.
 
 ### <a id="r001"></a>[R001] APIs **MUST** be Stateless
 
@@ -314,13 +299,9 @@ Stateless communication offers many advantages, including:
 - *Observability* is improved since every request can be monitored or analyzed in isolation without having to incorporate session context from other requests
 - *Reliability* is improved because it eases the task of recovering from partial failures since the server does not have to maintain, update or communicate session state. One failing request does not influence other requests (depending on the nature of the failure of course).
 
-Inherited ADR:
-
-- [core/stateless](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/stateless): Do not maintain session state on the server
-
 ### <a id="r002"></a>[R002] APIs **MUST** provide a full representation of the resource in the response payload
 
-As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated. In case the resource does not exist (anymore) an empty body **MUST** be provided.
+As a consequence of the Uniform Interface principle, each response to an API request **MUST** contain the complete resource representation available on the server at the time that the response was generated in the reponse payload. In case the resource does not exist (anymore) an empty body **MUST** be provided.
 
 ### <a id="r003"></a>[R003] A server-side unique resource identifier **MUST** be assigned to each created resource and returned to the client
 
@@ -339,19 +320,15 @@ The Layered System principle allows an architecture to be composed of hierarchic
 - The API **SHOULD NOT** expose information about the technical components being used, such as development platforms/frameworks or database systems.
 - The API **SHOULD** offer client-friendly attribute names and values, while persisted data may contain abbreviated terms or serializations which might be cumbersome for consumption.
 
-Inherited ADR:
-
-- [/core/hide-implementation](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/hide-implementation): Hide irrelevant implementation details
-
 ### <a id="r005"></a>[R005] APIs **MAY** support client-side caching in `GET` operations
 
 The cacheable REST principle requires that APIs **MAY** support client-side caching of frequently accessed resources in `GET` operations. The response **MUST** implicitly or explicitly label itself as cacheable or non-cacheable, using the standard HTTP response header variables (`Expires`, `Cache-Control`, `ETag`and/or `Last-Modified`). If the response is cacheable, the client application gets the right to reuse the response data later for equivalent requests and a specified period.
 
-APIs **MUST NOT** use caching in other operations than `GET`.  According to [AASG Rule S003](#s003) APIs **SHOULD** prevent sensible data from being cached using the response header variable `Cache-Control: no-store`.  
+APIs **MUST NOT** use caching in other operations than `GET`.  According to [AASG Rule [S003](#s003) APIs **SHOULD** prevent sensible data from being cached using the response header variable `Cache-Control: no-store`.
 
 ### 2.5 Payloads
 
-Additional information in an API request or response that is not part of the HTTP method, URL, or headers must be exchanged in the payload. The rules in this section apply to the payloads.
+Additional information in an API request or response that is not part of the HTTP method, URL, or headers must be exchanged in the request and response payloads. The rules in this section apply to these payloads.
 
 ### <a id="p001"></a>[P001] APIs **MUST** use JSON as payload data interchange format
 
@@ -361,15 +338,23 @@ APIs **MUST** use JSON ([RFC 7159](#rfc7159)) to represent structured (resource)
 
 The standard media types `application/json` (normal operations), `application/json-patch+json` (`PATCH` operations) or `application/problem+json` (to support problem JSON, see: XXXXXXXXXX) **MUST** be used as `Content-Type` (or `Accept`) header information.
 
-### <a id="p003"></a>[P003] Property names **MUST** be lowerCamelCase
+### <a id="p003"></a>[P003] Schema names **MUST** be singular
+
+Since a schema represent a single instance of an entity, schema names **MUST** be singular.
+
+### <a id="p004"></a>[P004] Schema names **MUST** be CamelCase (PascalCase)
+
+All schema names MUST be CamelCase matching regex ``
+
+### <a id="p005"></a>[P005] Property names **MUST** be lowerCamelCase
 
 All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
-### <a id="p004"></a>[P004] Array properties **MUST** have a plural name
+### <a id="p006"></a>[P006] Array properties **MUST** have a plural name
 
 Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
-### <a id="p005"></a>[P005] Properties with value `null` and absent properties **MUST** be handled the same way
+### <a id="p007"></a>[P007] Properties with value `null` and absent properties **MUST** be handled the same way
 
 OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (as in: `{}`) or can have the value `null` (as in: `{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases **MUST** be handled in the exact same manner by specification.
 
@@ -380,15 +365,11 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 | true     | false    | ❌ No  | ❌ No              |
 | false    | false    | ✔ Yes | ❌ No              |
 
-### <a id="p006"></a>[P006] Date properties **MUST NOT** have a time component if only the date is relevant
+### <a id="p008"></a>[P008] Date properties **MUST NOT** have a time component if only the date is relevant
 
 Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
 
-Inherited ADR:
-
-- /core/date-time/date-omit-time-portion: Omit time portion for date fields
-
-### <a id="p007"></a>[P007] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
+### <a id="p009"></a>[P009] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
 
 OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [RFC 9557](#rfc9557) and [ISO 8601](#iso-8601-date-and-time-format) formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
@@ -404,27 +385,19 @@ RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations
 - The timezone offset "Z" (meaning UTC) **MUST** be uppercase.
 - "-00:00" **MUST NOT** be used as timezone offset. "+00:00" **MAY** be used as timezone offset to indicate an offset of 0h and 0m.
 
-Inherited ADR:
-
-- /core/date-time/format: Use standard format for date, datetime and time
-
-### <a id="p008"></a>[P008] APIs **MUST** accept all timezone offsets in requests and **SHOULD** use UTC in responses
+### <a id="p010"></a>[P010] APIs **MUST** accept all timezone offsets in requests and **SHOULD** use UTC in responses
 
 APIs **MUST** accept any timezone offset (inluding "Z") in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
 
-Inherited ADR:
-
-- /core/date-time/timezone: Allow all timezone offsets in requests and use UTC in responses
-
-### <a id="p009"></a>[P009] `GET` and `DELETE`operations **MUST NOT** have a request payload 
+### <a id="p011"></a>[P011] `GET` and `DELETE`operations **MUST NOT** have a request payload 
 
 Because of their nature (retrieving and removing resources) `GET` and `DELETE` operations **MUST NOT** have a request payload. Whenever a client does pass a request payload to a `GET` or `DEL` operation, a `400 Bad Request`error **MUST** be returned.
 
-### <a id="p010"></a>[P010] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
+### <a id="p012"></a>[P012] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
 
 `PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: XXXXXXX).
 
-### <a id="p011"></a>[P011] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
+### <a id="p013"></a>[P013] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
 
 When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](#rfc9457). The `Accept` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
@@ -448,10 +421,6 @@ The following table shows on which resource type (singleton or collection) a HTT
 | `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially updates an existing resource.                                                           |
 | `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given URI.                                                             |
 
-Inherited ADR:
-
-- [/core/http-methods](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-methods): Only apply standard HTTP methods
-
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](#rfc9110).
 
 ### <a id="h002"></a>[H002] API Operations **MUST** adhere to HTTP safety and idempotency semantics for operations
@@ -474,19 +443,11 @@ The following table describes which HTTP methods **MUST** behave as safe and/or 
 | `PATCH`   | ❌ No  | ❌  No     |
 | `DELETE`  | ❌ No  | ✔ Yes     |
 
-Inherited ADR:
-
-- [/core/http-safety](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-safety): Adhere to HTTP safety and idempotency semantics for operations
-
 ### <a id="h003"></a>[H003] API Responses **MUST** use standard HTTP status codes to convey appropriate errors
 
 API Responses **MUST** use standard HTTP status codes to convey appropriate errors. Always use the semantically appropriate HTTP [status code](#rfc9110) for the response.
 
 In case of an error, the server **SHOULD NOT** pass technical details (e.g. call stacks or other internal hints) to the client. The error message **SHOULD** be generic to avoid revealing additional details and expose internal information which can be used with malicious intent.
-
-Inherited ADR:
-
-- [/core/http-response-code](https://gitdocumentatie.logius.nl/publicatie/api/adr/2.1.0/#/core/http-response-code): Adhere to HTTP status codes to convey appropriate errors
 
 ### <a id="h004"></a>[H004] `GET`, `POST`, `PUT`, `PATCH` and `DELETE` operations **MUST** at least support standard response codes
 
@@ -515,100 +476,103 @@ Although the standard description of the HTTP `401` error is: `Unauthorized` thi
 
 ## <a id="chapter3"></a>3. Compliancy matrixes NLGov REST API Design Rules
 
-The AGRI API Style Guide follows the API Design Rules from the NL API Strategie published in the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/).  Our set of rules is composed of:
+The AGRI API Style Guide follows the API Design Rules from the NL API Strategie published in the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) (short: _ADR_).  Our set of rules is composed of:
 
-- rules **inherited** from the *REST-API Design Rules* (short: _ADR_): these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
-- rules adapted from the _REST-API Design Rules_ which are **customized** (including examples)
-- rules which are not part of the _REST-API Design Rules_ and which are specifically designed for this *AGRI API Style Guide*.
+- rules **inherited** from the *ADR* : these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
+- rules adapted from the _ADR_ which are **customized** (including examples)
+- rules which are not part of the _ADR_ and which are specifically designed for this *AGRI API Style Guide*.
 
 Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).í
 
-| AASG Rule | ADR Rule                                                                       | Adoption   | Remark                                                                           |
-| --------- | ------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
-| `M001`    | `/core/doc-openapi`<br>`/core/publish-openapi`                                 | Inherited  | OpenAPI specification required                                                   |
-| `M002`    | `/core/doc-openapi-contact`                                                    | Inherited  | API meta information and contact required                                        |
-| `M003`    | `/core/doc-language`<br>`/core/interface-language`                             | Customized | AASG prefers U.S. English in specification. ADR allows English but prefers Dutch |
-| `M004`    | `/core/semver`                                                                 | Inherited  | Semantic versioning required                                                     |
-| `M005`    | `/core/deprecation-schedule`<br>`/core/transition-period`<br>`/core/changelog` | Customized | Transition between major versions                                                |
-| `M006`    | `/core/uri-version`                                                            | Customized | AASG prefers major version in request header. ADR in URI                         |
-| `M007`    | `/core/version-header`                                                         | Inherited  | Full API version in response header                                              |
-| `M008`    | None                                                                           | AGRI only  | Optional client software identifier header                                       |
-| `M009`    | None                                                                           | AGRI only  | Server-side request identifier in response                                       |
-| `M010`    | None                                                                           | AGRI only  | Request date-time in response header                                             |
-| `U001`    | None                                                                           | AGRI only  | Do not use `/api` as base path                                                   |
-| `U002`    | `/core/naming-resources`                                                       | Inherited  | Resource names must be nouns                                                     |
-| `U003`    | `/core/naming-collections`                                                     | Inherited  | Collection resource names must be plural                                         |
-| `U003`    | `/core/nested-child`<br>`/core/resource-operations`                            | Inherited  | Child resources identified via path segments                                     |
-| `U004`    | None                                                                           | AGRI only  | Path segments must use kebab-case                                                |
-| `U005`    | `/core/no-trailing-slash`                                                      | Customized | Normalize paths without trailing slashes                                         |
-| `U006`    | None                                                                           | AGRI only  | Query parameters must be lowerCamelCase                                          |
-| `R001`    | `/core/stateless`                                                              | Inherited  | APIs must be stateless                                                           |
-| `R002`    | None                                                                           | AGRI only  | Must return full resource representation                                         |
-| `R003`    | None                                                                           | AGRI only  | Unique resource ID assigned and returned                                         |
-| `R004`    | `/core/hide-implementation`                                                    | Inherited  | Hide implementation details from clients                                         |
-| `R005`    | None                                                                           | AGRI only  | GET operations may support client-side caching                                   |
-| `P001`    | None                                                                           | AGRI only  | JSON is required as payload format                                               |
-| `P002`    | None                                                                           | AGRI only  | Standard JSON media types must be used                                           |
-| `P003`    | None                                                                           | AGRI only  | Property names must be lowerCamelCase                                            |
-| `P004`    | None                                                                           | AGRI only  | Array properties must have plural names                                          |
-| `P005`    | None                                                                           | AGRI only  | Null and absent properties handled identically                                   |
-| `P006`    | `/core/date-time/date-omit-time-portion`                                       | Inherited  | Date-only fields omit time components                                            |
-| `P007`    | `/core/date-time/format`                                                       | Inherited  | Use RFC9557/ISO8601 formats                                                      |
-| `P008`    | `/core/date-time/timezone`                                                     | Inherited  | Accept all offsets, prefer UTC responses                                         |
-| `P009`    | None                                                                           | AGRI only  | GET and DELETE must not have request payload                                     |
-| `P010`    | None                                                                           | AGRI only  | PATCH must use JSON Patch                                                        |
-| `P011`    | None                                                                           | AGRI only  | Error responses use Problem Details                                              |
-| `H001`    | `/core/http-methods`                                                           | Inherited  | Only use standard HTTP methods                                                   |
-| `H00x`    | `/core/http-safety`                                                            | Inherited  | HTTP safety and idempotency semantics required                                   |
-| `H00x`    | `/core/http-response-code`                                                     | Inherited  | Use standard HTTP status codes for errors                                        |
-| `H00x`    | `/core/http-response-code`                                                     | Inherited  | Support standard response codes for methods                                      |
-| `H00x`    | None                                                                           | AGRI only  | PUT must not be insert-or-update                                                 |
-| `H00x`    | None                                                                           | AGRI only  | 401 must only be used for authentication failures                                |
+| AASG Rule     | ADR Rule                                                                       | Adoption   | Remark                                                                           |
+| ------------- | ------------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
+| [M001](#m001) | `/core/doc-openapi`<br>`/core/publish-openapi`                                 | Inherited  | OpenAPI specification required                                                   |
+| [M002](#m002) | `/core/doc-openapi-contact`                                                    | Inherited  | API meta information and contact required                                        |
+| [M003](#m003) | `/core/doc-language`<br>`/core/interface-language`                             | Customized | AASG prefers U.S. English in specification. ADR allows English but prefers Dutch |
+| [M004](#m004) | `/core/semver`                                                                 | Inherited  | Semantic versioning required                                                     |
+| [M005](#m005) | `/core/deprecation-schedule`<br>`/core/transition-period`<br>`/core/changelog` | Customized | Transition between major versions                                                |
+| [M006](#m006) | `/core/uri-version`                                                            | Customized | AASG prefers major version in request header. ADR in URI                         |
+| [M007](#m007) | `/core/version-header`                                                         | Inherited  | Full API version in response header                                              |
+| [M008](#m008) | None                                                                           | AASG only  | Optional client software identifier header                                       |
+| [M009](#m009) | None                                                                           | AASG only  | Server-side request identifier in response                                       |
+| [M010](#m010) | None                                                                           | AASG only  | Request date-time in response header                                             |
+| [U001](#u001) | None                                                                           | AASG only  | Do not use `/api` or `/services` as base path                                    |
+| [U002](#u002) | `/core/naming-resources`                                                       | Inherited  | Resource names must be nouns                                                     |
+| [U003](#u003) | `/core/naming-collections`                                                     | Inherited  | Collection resource names must be plural                                         |
+| [U003](#u003) | `/core/nested-child`<br>`/core/resource-operations`                            | Inherited  | Child resources identified via path segments                                     |
+| [U004](#u004) | `/core/path-segments-kebab-case`                                               | Inherited  | Path segments must use kebab-case                                                |
+| [U005](#u005) | `/core/no-trailing-slash`                                                      | Customized | Normalize paths without trailing slashes                                         |
+| [U006](#u006) | `/core/query-keys-camel-case`                                                  | Inherited  | Query parameters must be lowerCamelCase                                          |
+| [R001](#r001) | `/core/stateless`                                                              | Inherited  | APIs must be stateless                                                           |
+| [R002](#r002) | None                                                                           | AASG only  | Must return full resource representation                                         |
+| [R003](#r003) | None                                                                           | AASG only  | Unique resource ID assigned and returned                                         |
+| [R004](#r004) | `/core/hide-implementation`                                                    | Inherited  | Hide implementation details from clients                                         |
+| [R005](#r005) | None                                                                           | AASG only  | GET operations may support client-side caching                                   |
+| [P001](#p001) | None                                                                           | AASG only  | JSON is required as payload format                                               |
+| [P002](#p002) | None                                                                           | AASG only  | Standard JSON media types must be used                                           |
+| [P003](#p003) | None                                                                           | AASG only  | Schema names must be singular                                                    |
+| [P004](#p004) | None                                                                           | AASG only  | Schema names must be CamelCase (PascalCase)                                      |
+| [P005](#p005) | None                                                                           | AASG only  | Property names must be lowerCamelCase                                            |
+| [P006](#p006) | None                                                                           | AASG only  | Array properties must have plural names                                          |
+| [P007](#p007) | None                                                                           | AASG only  | Null and absent properties handled identically                                   |
+| [P008](#p008) | `/core/date-time/date-omit-time-portion`                                       | Inherited  | Date-only fields omit time components                                            |
+| [P009](#p009) | `/core/date-time/format`                                                       | Inherited  | Use RFC9557/ISO8601 formats                                                      |
+| [P010](#p010) | `/core/date-time/timezone`                                                     | Inherited  | Accept all offsets, prefer UTC responses                                         |
+| [P011](#p011) | None                                                                           | AASG only  | GET and DELETE must not have request payload                                     |
+| [P012](#p012) | None                                                                           | AASG only  | PATCH must use JSON Patch                                                        |
+| [P013](#p013) | None                                                                           | AASG only  | Error responses use Problem Details                                              |
+| [H001](#h001) | `/core/http-methods`                                                           | Inherited  | Only use standard HTTP methods                                                   |
+| [H002](#h002) | `/core/http-safety`                                                            | Inherited  | HTTP safety and idempotency semantics required                                   |
+| [H003](#h003) | `/core/http-response-code`                                                     | Inherited  | Use standard HTTP status codes for errors                                        |
+| [H004](#h004) | `/core/http-response-code`                                                     | Inherited  | Support standard response codes for methods                                      |
+| [H005](#h005) | None                                                                           | AASG only  | PUT must not be insert-or-update                                                 |
+| [H006](#h006) | None                                                                           | AASG only  | 401 must only be used for authentication failures                                |
 
 ## Reverse Compliance Matrix: ADR Rules to AASG Rules
 
 The following table provides a reverse lookup showing how each ADR (REST-API Design Rules) rule is adopted in the AGRI API Style Guide (AASG).
 
-| ADR Rule                                 | AASG Rule | Adoption   | Remark                                         |
-| ---------------------------------------- | --------- | ---------- | ---------------------------------------------- |
-| List of technical rules                  |           |            |                                                |
-| `/core/no-trailing-slash`                | `U005`    | Customized | Normalize paths without trailing slashes       |
-| `/core/path-segments-kebab-case`         | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/query-keys-camel-case`            | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/date-time/format`                 | `P007`    | Inherited  | Use RFC9557/ISO8601 formats                    |
-| `/core/date-time/date-omit-time-portion` | `P006`    | Inherited  | Date-only fields omit time components          |
-| `/core/error-handling/problem-details`   | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/error-handling/invalid-input`     | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/doc-openapi`                      | `M001`    | Inherited  | OpenAPI specification required                 |
-| `/core/doc-openapi-contact`              | `M002`    | Inherited  | API meta information and contact required      |
-| `/core/publish-openapi`                  | `M001`    | Inherited  | OpenAPI specification required                 |
-| `/core/uri-version`                      | `M006`    | Customized | AASG prefers major version in request header   |
-| `/core/semver`                           | `M004`    | Inherited  | Semantic versioning required                   |
-| `/core/version-header`                   | `M007`    | Inherited  | Full API version in response header            |
-| `/core/transport/tls`                    | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/transport/security-headers`       | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/transport/cors`                   | -         | ADR Only   | Not explicitly implemented in AASG             |
-| List of functional rules                 |           |            |                                                |
-| `/core/naming-resources`                 | `U002`    | Inherited  | Resource names must be nouns                   |
-| `/core/naming-collections`               | `U003`    | Inherited  | Collection resource names must be plural       |
-| `/core/interface-language`               | `M003`    | Customized | AASG prefers U.S. English in specification     |
-| `/core/hide-implementation`              | `R004`    | Inherited  | Hide implementation details from clients       |
-| `/core/date-time/timezone`               | `P008`    | Inherited  | Accept all offsets, prefer UTC responses       |
-| `/core/http-methods`                     | `H001`    | Inherited  | Only use standard HTTP methods                 |
-| `/core/http-safety`                      | `H00x`    | Inherited  | HTTP safety and idempotency semantics required |
-| `/core/http-response-code`               | `H00x`    | Inherited  | Use standard HTTP status codes for errors      |
-| `/core/stateless`                        | `R001`    | Inherited  | APIs must be stateless                         |
-| `/core/nested-child`                     | `U003`    | Inherited  | Child resources identified via path segments   |
-| `/core/resource-operations`              | `U003`    | Inherited  | Child resources identified via path segments   |
-| `/core/error-handling/all-errors`        | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/doc-language`                     | `M003`    | Customized | AASG uses U.S. English documentation           |
-| `/core/deprecation-schedule`             | `M005`    | Customized | Transition between major versions              |
-| `/core/transition-period`                | `M005`    | Customized | Transition between major versions              |
-| `/core/changelog`                        | `M005`    | Customized | Transition between major versions              |
-| `/core/transport/no-sensitive-uris`      | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/modules/geospatial`               | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/modules/signing`                  | -         | ADR Only   | Not explicitly implemented in AASG             |
-| `/core/modules/encryption`               | -         | ADR Only   | Not explicitly implemented in AASG             |
+| ADR Rule                                 | AASG Rule     | Adoption   | Remark                                         |
+| ---------------------------------------- | ------------- | ---------- | ---------------------------------------------- |
+| List of technical rules                  |               |            |                                                |
+| `/core/no-trailing-slash`                | [U005](#u005) | Customized | Normalize paths without trailing slashes       |
+| `/core/path-segments-kebab-case`         | [U004](#u004) | Inherited  | Use kebab-case for path segments               |
+| `/core/query-keys-camel-case`            | [U006](#u006) | Inherited  | Use camelCase for query parameters             |
+| `/core/date-time/date-omit-time-portion` | [P006](#p006) | Inherited  | Date-only fields omit time components          |
+| `/core/date-time/format`                 | [P007](#p007) | Inherited  | Use RFC9557/ISO8601 formats                    |
+| `/core/date-time/timezone`               | [P008](#p008) | Inherited  | Accept all offsets, prefer UTC responses       |
+| `/core/error-handling/problem-details`   | -             | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/error-handling/invalid-input`     | -             | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/doc-openapi`                      | [M001](#m001) | Inherited  | OpenAPI specification required                 |
+| `/core/doc-openapi-contact`              | [M002](#m002) | Inherited  | API meta information and contact required      |
+| `/core/publish-openapi`                  | [M001](#m001) | Inherited  | OpenAPI specification required                 |
+| `/core/uri-version`                      | [M006](#m006) | Customized | AASG prefers major version in request header   |
+| `/core/semver`                           | [M004](#m004) | Inherited  | Semantic versioning required                   |
+| `/core/version-header`                   | [M007](#m007) | Inherited  | Full API version in response header            |
+| `/core/transport/tls`                    | [S001](#s001) | Inherited  | Use TLS for secure communication               |
+| `/core/transport/security-headers`       | [S003](#s003) | Inherited  | Use security headers                           |
+| `/core/transport/cors`                   | [S004](#s004) | Inherited  | Use CORS for cross-origin resource sharing     |
+| List of functional rules                 |               |            |                                                |
+| `/core/naming-resources`                 | [U002](#u002) | Inherited  | Resource names must be nouns                   |
+| `/core/naming-collections`               | [U003](#u003) | Inherited  | Collection resource names must be plural       |
+| `/core/interface-language`               | [M003](#m003) | Customized | AASG prefers U.S. English in specification     |
+| `/core/hide-implementation`              | [R004](#r004) | Inherited  | Hide implementation details from clients       |
+| `/core/http-methods`                     | [H001](#h001) | Inherited  | Only use standard HTTP methods                 |
+| `/core/http-safety`                      | [H002](#h002) | Inherited  | HTTP safety and idempotency semantics required |
+| `/core/http-response-code`               | [H003](#h003) | Inherited  | Use standard HTTP status codes for errors      |
+| `/core/http-response-code`               | [H004](#h004) | Inherited  | Support standard response codes for methods    |
+| `/core/stateless`                        | [R001](#r001) | Inherited  | APIs must be stateless                         |
+| `/core/nested-child`                     | [U003](#u003) | Inherited  | Child resources identified via path segments   |
+| `/core/resource-operations`              | [U003](#u003) | Inherited  | Child resources identified via path segments   |
+| `/core/error-handling/all-errors`        | -             | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation           |
+| `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions              |
+| `/core/transition-period`                | [M005](#m005) | Customized | Transition between major versions              |
+| `/core/changelog`                        | [M005](#m005) | Customized | Transition between major versions              |
+| `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs   |
+| `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG             |
+| `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG             |
 
 ## 4. Conformation
 
