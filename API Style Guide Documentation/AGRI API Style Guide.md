@@ -546,47 +546,47 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 
 The following table provides a reverse lookup showing how each ADR (REST-API Design Rules) rule is adopted in the AGRI API Style Guide (AASG).
 
-| ADR Rule                                 | AASG Rule     | Adoption   | Remark                                                 |
-| ---------------------------------------- | ------------- | ---------- | ------------------------------------------------------ |
-| List of technical rules                  |               |            |                                                        |
+| ADR Rule                                 | AASG Rule     | Adoption   | Remark                                                  |
+| ---------------------------------------- | ------------- | ---------- | ------------------------------------------------------- |
+| List of technical rules                  |               |            |                                                         |
 | `/core/no-trailing-slash`                | [U005](#u005) | Customized | AASG Inherits this rule and adds additional constraints |
-| `/core/path-segments-kebab-case`         | [U004](#u004) | Inherited  | Use kebab-case for path segments                       |
-| `/core/query-keys-camel-case`            | [U006](#u006) | Inherited  | Use camelCase for query parameters                     |
-| `/core/date-time/date-omit-time-portion` | [P006](#p006) | Inherited  | Date-only fields omit time components                  |
-| `/core/date-time/format`                 | [P007](#p007) | Inherited  | Use RFC9557/ISO8601 formats                            |
-| `/core/date-time/timezone`               | [P008](#p008) | Inherited  | Accept all offsets, prefer UTC responses               |
-| `/core/error-handling/problem-details`   | [P013](#p013) | Inherited  | Error responses use Standard Problem Details           |
-| `/core/error-handling/invalid-input`     | [H006](#h006) | Inherited  | Invalid input must result in 400 Bad Request           |
-| `/core/doc-openapi`                      | [M001](#m001) | Inherited  | OpenAPI specification required                         |
-| `/core/doc-openapi-contact`              | [M002](#m002) | Inherited  | API meta information and contact required              |
-| `/core/publish-openapi`                  | [M001](#m001) | Inherited  | OpenAPI specification required                         |
-| `/core/uri-version`                      | [M006](#m006) | Customized | AASG prefers major version in request header           |
-| `/core/semver`                           | [M004](#m004) | Inherited  | Semantic versioning required                           |
-| `/core/version-header`                   | [M007](#m007) | Inherited  | Full API version in response header                    |
-| `/core/transport/tls`                    | [S001](#s001) | Inherited  | Use TLS for secure communication                       |
-| `/core/transport/security-headers`       | [S003](#s003) | Inherited  | Use security headers                                   |
-| `/core/transport/cors`                   | [S004](#s004) | Inherited  | Use CORS for cross-origin resource sharing             |
-| List of functional rules                 |               |            |                                                        |
-| `/core/naming-resources`                 | [U002](#u002) | Inherited  | Resource names must be nouns                           |
-| `/core/naming-collections`               | [U003](#u003) | Inherited  | Collection resource names must be plural               |
-| `/core/interface-language`               | [M003](#m003) | Customized | AASG prefers U.S. English in specification             |
-| `/core/hide-implementation`              | [R004](#r004) | Inherited  | Hide implementation details from clients               |
-| `/core/http-methods`                     | [H001](#h001) | Inherited  | Only use standard HTTP methods                         |
-| `/core/http-safety`                      | [H002](#h002) | Inherited  | HTTP safety and idempotency semantics required         |
-| `/core/http-response-code`               | [H003](#h003) | Inherited  | Use standard HTTP status codes for errors              |
-| `/core/http-response-code`               | [H004](#h004) | Inherited  | Support standard response codes for methods            |
-| `/core/stateless`                        | [R001](#r001) | Inherited  | APIs must be stateless                                 |
-| `/core/nested-child`                     | [U003](#u003) | Inherited  | Child resources identified via path segments           |
-| `/core/resource-operations`              | [U003](#u003) | Inherited  | Child resources identified via path segments           |
-| `/core/error-handling/all-errors`        | [H007](#h007) | Inherited  | Bundle all bad request errors together in one response |
-| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                   |
-| `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                      |
-| `/core/transition-period`                | [M005](#m005) | Customized | Transition between major versions                      |
-| `/core/changelog`                        | [M005](#m005) | Customized | Transition between major versions                      |
-| `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs           |
-| `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG                     |
-| `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                     |
-| `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                     |
+| `/core/path-segments-kebab-case`         | [U004](#u004) | Inherited  | Use kebab-case for path segments                        |
+| `/core/query-keys-camel-case`            | [U006](#u006) | Inherited  | Use camelCase for query parameters                      |
+| `/core/date-time/date-omit-time-portion` | [P006](#p006) | Inherited  | Date-only fields omit time components                   |
+| `/core/date-time/format`                 | [P007](#p007) | Inherited  | Use RFC9557/ISO8601 formats                             |
+| `/core/date-time/timezone`               | [P008](#p008) | Inherited  | Accept all offsets, prefer UTC responses                |
+| `/core/error-handling/problem-details`   | [P013](#p013) | Inherited  | Error responses use Standard Problem Details            |
+| `/core/error-handling/invalid-input`     | [H006](#h006) | Inherited  | Invalid input must result in 400 Bad Request            |
+| `/core/doc-openapi`                      | [M001](#m001) | Inherited  | OpenAPI specification required                          |
+| `/core/doc-openapi-contact`              | [M002](#m002) | Inherited  | API meta information and contact required               |
+| `/core/publish-openapi`                  | [M001](#m001) | Inherited  | OpenAPI specification required                          |
+| `/core/uri-version`                      | [M006](#m006) | Customized | AASG prefers major version in request header            |
+| `/core/semver`                           | [M004](#m004) | Inherited  | Semantic versioning required                            |
+| `/core/version-header`                   | [M007](#m007) | Inherited  | Full API version in response header                     |
+| `/core/transport/tls`                    | [S001](#s001) | Inherited  | Use TLS for secure communication                        |
+| `/core/transport/security-headers`       | [S003](#s003) | Inherited  | Use security headers                                    |
+| `/core/transport/cors`                   | [S004](#s004) | Inherited  | Use CORS for cross-origin resource sharing              |
+| List of functional rules                 |               |            |                                                         |
+| `/core/naming-resources`                 | [U002](#u002) | Inherited  | Resource names must be nouns                            |
+| `/core/naming-collections`               | [U003](#u003) | Inherited  | Collection resource names must be plural                |
+| `/core/interface-language`               | [M003](#m003) | Customized | AASG prefers U.S. English in specification              |
+| `/core/hide-implementation`              | [R004](#r004) | Inherited  | Hide implementation details from clients                |
+| `/core/http-methods`                     | [H001](#h001) | Inherited  | Only use standard HTTP methods                          |
+| `/core/http-safety`                      | [H002](#h002) | Inherited  | HTTP safety and idempotency semantics required          |
+| `/core/http-response-code`               | [H003](#h003) | Inherited  | Use standard HTTP status codes for errors               |
+| `/core/http-response-code`               | [H004](#h004) | Inherited  | Support standard response codes for methods             |
+| `/core/stateless`                        | [R001](#r001) | Inherited  | APIs must be stateless                                  |
+| `/core/nested-child`                     | [U003](#u003) | Inherited  | Child resources identified via path segments            |
+| `/core/resource-operations`              | [U003](#u003) | Inherited  | Child resources identified via path segments            |
+| `/core/error-handling/all-errors`        | [H007](#h007) | Inherited  | Bundle all bad request errors together in one response  |
+| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
+| `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
+| `/core/transition-period`                | [M005](#m005) | Customized | Transition between major versions                       |
+| `/core/changelog`                        | [M005](#m005) | Customized | Transition between major versions                       |
+| `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs            |
+| `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
+| `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                      |
+| `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
 
 ## 4. Conformation
 
@@ -607,6 +607,6 @@ The following references are used in this style guide:
 - <a id="draft-json-hal"></a> [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html): M. Kelly. IETF. April 21, 2024. Informational Draft.
 - <a id="iso-3166-country-codes"></a> [ISO-3166-1](https://www.iso.org/standard/72482.html) Codes for the representation of names of countries and their subdivisions — Part 1: Country code. International Organization for Standardization (ISO) ISO 3166-1:2020.
 - <a id="iso-8601-date-and-time-format"></a> [ISO8601-1](https://www.iso.org/standard/70907.html) Date and time — Representations for information interchange — Part 1: Basic rules. International Organization for Standardization (ISO) ISO 8601-1:2019.
-- <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
+- <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
