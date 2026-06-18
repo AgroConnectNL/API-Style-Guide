@@ -95,6 +95,14 @@ API designers **MUST** comply with [Semantic Versioning 2.0](#semver) with the
 
 When breaking changes in an existing API implementation are unavoidable, a new `major`version **MUST** be deployed. We recommend to deploy at most two `major`versions simultaneously and to schedule a fixed transition period for a new major API version. Ideally, a deprecation schedule **MAY** be included when features or versions will be deprecated, so client know when the have to migrate to the newer version. Every version **SHOULD** contain a changelog which shows API changes between versions
 
+```yaml
+# Short comment explaining what makes this correct
+paths:
+  /parcels/{id}:
+    get:
+      summary: Retrieve a parcel by identifier
+```
+
 ### <a id="m006"></a>[M006] The MAJOR version **MUST** be specified in the HTTP request header
 
 To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `1`, `2` and so on. 
@@ -114,6 +122,7 @@ paths:
     get:
       summary: List all parcels
 ```
+
 </details>
 
 ### <a id="m007"></a>[M007] The full API version **MUST** be returned in the HTTP response header
@@ -629,4 +638,3 @@ The following references are used in this style guide:
 - <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
-
