@@ -77,7 +77,7 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
-### ✅ Correct
+### ✔ Correct example
 
 ```yaml
 openapi: 3.0.4
@@ -119,15 +119,15 @@ URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because
 
 Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header. The client **MUST** use the standard `User-Agent` HTTP header field for this purpose.
 
-### ✔ Correct
+### ✔ Correct example for rules [M006](#m006) and [M007](m007)
 
 ```http
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json 
-Major-Version: 1										 # ✔ Major version in HTTP header
-User-Agent: avs2025/v1               # ✔ User-Agent is used to identify the client software package
+Accept: application/json
+Major-Version: 1                                      # ✔ Major version in HTTP request header
+User-Agent: avs2025/v1                                # ✔ Client software package in User-Agent
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
@@ -142,14 +142,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 }
 ```
 
-### ❌ Incorrect
+### ❌ Incorrect example for rules [M006](#m006) and [M007](#m007)
 
 ```http
-POST /v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1   # ❌ Major version in URI
+POST v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1  # ❌ Major version in URL path
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json
-User-Agent: avs2025/v1              # ✔ User-Agent is used to identify the client software package
+Client-Software: avs2025/v1                          # ❌ Custom header instead of User-Agent
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
@@ -176,14 +176,14 @@ For tracing and debugging purposes, a unique, server-side assigned request ident
 
 For tracing and debugging purposes, a unique, server-side generated date-time UTC timestamp (in msecs) **MUST** be returned to the client in the `Request-Date-Time` HTTP response header, using the format `YYYY-MM-DDThh:mi:ss.sssZ`. 
 
-### ✅ Correct
+### ✅ Correct example for rules [M008](#m008), [M009](#m009) and [M010](m010)
 
 ```http
 HTTP/1.1 202 Accepted
 Content-Type: application/json
-API-Version: 1.0.3
-Request-Id: 123e4567-e89b-12d3-a456-426614174000
-Request-Date-Time: 2025-03-12T15:31:21.123Z
+API-Version: 1.0.3                                   	 # ✔ Full API version in HTTP reponse header
+Request-Id: 123e4567-e89b-12d3-a456-426614174000       # ✔ Unique request-id n in HTTP reponse header
+Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP reponse header
 
 {
   "id": {
@@ -318,6 +318,28 @@ This section defines the rules for naming resources and constructing URLs to ide
 ### <a id="u001"></a>[U001] URLs **SHOULD NOT** use `/api` or `/services`as base path
 
 URLs **SHOULD NOT** use (something like) `/api` or `/services` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
+
+### ✔ Correct example 
+
+```http
+POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+...
+```
+
+### ❌ Incorrect examples
+
+```http
+POST /api/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+...
+
+POST /services/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+...
+```
 
 ### <a id="u002"></a>[U002] Nouns **MUST** be used to name resources
 
