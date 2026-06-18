@@ -77,6 +77,20 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
+### ✅ Correct
+
+```yaml
+openapi: 3.0.4
+info:
+  title: AgroConnect eCrop API
+  version: 1.0.3
+  description: "## eCrop API based on **AgroConnect eCrop standard version 1.0.0**\n\nThis API concerns registration of crop related activities like application of crop protection products and fertilizers and energy and water consumption."
+  contact:
+    name: Bernard van Raaij
+    email: info@agroconnect.nl
+    url: 'https://www.agroconnect.nl/'
+```
+
 ### <a id="m003"></a>[M003] API Specification **MUST** be written using U.S. English
 
 The API specification **MUST** be written in U.S. English. 
@@ -95,43 +109,64 @@ API designers **MUST** comply with [Semantic Versioning 2.0](#semver) with the
 
 When breaking changes in an existing API implementation are unavoidable, a new `major`version **MUST** be deployed. We recommend to deploy at most two `major`versions simultaneously and to schedule a fixed transition period for a new major API version. Ideally, a deprecation schedule **MAY** be included when features or versions will be deprecated, so client know when the have to migrate to the newer version. Every version **SHOULD** contain a changelog which shows API changes between versions
 
-```yaml
-# Short comment explaining what makes this correct
-paths:
-  /parcels/{id}:
-    get:
-      summary: Retrieve a parcel by identifier
-```
-
 ### <a id="m006"></a>[M006] The MAJOR version **MUST** be specified in the HTTP request header
 
 To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `1`, `2` and so on. 
 
 URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
 
-<details>
-<summary>Full OpenAPI example</summary>
-
-```yaml
-openapi: "3.0.0"
-info:
-  title: Parcel API
-  version: "1.0"
-paths:
-  /parcels:
-    get:
-      summary: List all parcels
-```
-
-</details>
-
-### <a id="m007"></a>[M007] The full API version **MUST** be returned in the HTTP response header
-
-For tracing and debugging purposes, the full API version (i.e. `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
-
-### <a id="m008"></a>[M008] The identification of the client software package **MAY** be specified in the HTTP request header
+### <a id="m007"></a>[M007] The identification of the client software package **MAY** be specified in the HTTP request header
 
 Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header. The client **MUST** use the standard `User-Agent` HTTP header field for this purpose.
+
+### ✔ Correct
+
+```http
+POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json 
+Major-Version: 1										 # ✔ Major version in HTTP header
+User-Agent: avs2025/v1               # ✔ User-Agent is used to identify the client software package
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    {
+      "content": "12345",
+      "schemeId": "com.my-mps.codelist.teeltnummer"
+    }
+  ],
+  "name": "Spring Wheat",
+  ...
+}
+```
+
+### ❌ Incorrect
+
+```http
+POST /v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1   # ❌ Major version in URI
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json
+User-Agent: avs2025/v1              # ✔ User-Agent is used to identify the client software package
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    {
+      "content": "12345",
+      "schemeId": "com.my-mps.codelist.teeltnummer"
+    }
+  ],
+  "name": "Spring Wheat",
+  ...
+}
+```
+
+### <a id="m008"></a>[M008] The full API version **MUST** be returned in the HTTP response header
+
+For tracing and debugging purposes, the full API version (i.e. `major.minor.patch`) **MUST** be returned to the client in the `API-Version` HTTP response header.
 
 ### <a id="m009"></a>[M009] A unique, server-side assigned request identifier **MUST** be returned in the HTTP response header
 
@@ -140,6 +175,31 @@ For tracing and debugging purposes, a unique, server-side assigned request ident
 ### <a id="m010"></a>[M010] The request date-time **MUST** be returned in the HTTP response header
 
 For tracing and debugging purposes, a unique, server-side generated date-time UTC timestamp (in msecs) **MUST** be returned to the client in the `Request-Date-Time` HTTP response header, using the format `YYYY-MM-DDThh:mi:ss.sssZ`. 
+
+### ✅ Correct
+
+```http
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: 123e4567-e89b-12d3-a456-426614174000
+Request-Date-Time: 2025-03-12T15:31:21.123Z
+
+{
+  "id": {
+    "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c",
+    "schemeId": "com.my-mps.codelist.guid"
+  },
+  "thirdPartyIds": [
+    {
+      "content": "12345",
+      "schemeId": "com.my-mps.codelist.teeltnummer"
+    }
+  ],
+  "name": "Spring Wheat",
+  ...
+}
+```
 
 ### 2.2 Security [Sxxx] (under construction)
 
@@ -532,8 +592,8 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | [M004](#m004) | `/core/semver`                                                                 | Inherited  | Semantic versioning required                                                     |
 | [M005](#m005) | `/core/deprecation-schedule`<br>`/core/transition-period`<br>`/core/changelog` | Customized | Transition between major versions                                                |
 | [M006](#m006) | `/core/uri-version`                                                            | Customized | AASG prefers major version in request header. ADR in URI                         |
-| [M007](#m007) | `/core/version-header`                                                         | Inherited  | Full API version in response header                                              |
-| [M008](#m008) | None                                                                           | AASG only  | Optional client software identifier header                                       |
+| [M007](#m007) | None                                                                           | AASG only  | Optional client software identifier header                                       |
+| [M008](#m008) | `/core/version-header`                                                         | Inherited  | Full API version in response header                                              |
 | [M009](#m009) | None                                                                           | AASG only  | Server-side request identifier in response                                       |
 | [M010](#m010) | None                                                                           | AASG only  | Request date-time in response header                                             |
 | [U001](#u001) | None                                                                           | AASG only  | Do not use `/api` or `/services` as base path                                    |
@@ -590,7 +650,7 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/publish-openapi`                  | [M001](#m001) | Inherited  | OpenAPI specification required                          |
 | `/core/uri-version`                      | [M006](#m006) | Customized | AASG prefers major version in request header            |
 | `/core/semver`                           | [M004](#m004) | Inherited  | Semantic versioning required                            |
-| `/core/version-header`                   | [M007](#m007) | Inherited  | Full API version in response header                     |
+| `/core/version-header`                   | [M008](#m008) | Inherited  | Full API version in response header                     |
 | `/core/transport/tls`                    | [S001](#s001) | Inherited  | Use TLS for secure communication                        |
 | `/core/transport/security-headers`       | [S003](#s003) | Inherited  | Use security headers                                    |
 | `/core/transport/cors`                   | [S004](#s004) | Inherited  | Use CORS for cross-origin resource sharing              |
