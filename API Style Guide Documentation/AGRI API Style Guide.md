@@ -97,9 +97,24 @@ When breaking changes in an existing API implementation are unavoidable, a new `
 
 ### <a id="m006"></a>[M006] The MAJOR version **MUST** be specified in the HTTP request header
 
-To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `v1`, `v2`, and so on. 
+To support multiple simultaneously deployed `major` versions, clients **MUST** indicate the targeted major API-version in the HTTP request header using the `Major-Version` header parameter. The recommended format is `1`, `2` and so on. 
 
 URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because the URL represents the unique address of a resource (and not the API), which itself is not versioned.
+
+<details>
+<summary>Full OpenAPI example</summary>
+
+```yaml
+openapi: "3.0.0"
+info:
+  title: Parcel API
+  version: "1.0"
+paths:
+  /parcels:
+    get:
+      summary: List all parcels
+```
+</details>
 
 ### <a id="m007"></a>[M007] The full API version **MUST** be returned in the HTTP response header
 
@@ -186,7 +201,7 @@ By default browsers only allow 'same origin' access to resources. This means tha
 
 An allowlist **SHOULD** be used to determine the validity of different cross-site requests.  To do this, check the `Origin` header of the incoming request and check if the domain in this header is on the allowlist. If this is the case, set the incoming `Origin` header in the `Access-Control-Allow-Origin` response header.
 
-Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [[M001](#m001)]) , you **MAY** use `*`.
+Using a wildcard `*` in the `Access-Control-Allow-Origin` response header is **NOT RECOMMENDED**, because it disables CORS-security measures. However, if the resource has to be accessed by numerous other origins that are not known up front (such as all resources in an open API, or the `openapi.json` as required by [M001](#m001)), you **MAY** use `*`.
 
 #### 2.2.4 Browser-based applications
 
@@ -474,6 +489,8 @@ A `PUT` request on a singleton resource (identified by the given resource id) wh
 
 API requests containing invalid input **MUST** result in HTTP status code `400 Bad Request`. Invalid input includes syntax errors, missing or invalid query parameters. The request payload **SHOULD** be validated with a schema. A request payload with schema validation error **MUST** be treated as invalid input.
 
+In addition, a request that contains syntactical valid input but which can not be processed because of sementical validation errors, **SHOULD** return a `422 Unprocessable Entity`.
+
 ### <a id="h007"></a>[H007] All bad request errors **SHOULD** be returned together
 
 API requests with HTTP status code `400 Bad Request` **SHOULD** include all applicable schema validation errors and **MAY** include additional errors.
@@ -493,6 +510,8 @@ The AGRI API Style Guide follows the API Design Rules from the NL API Strategie 
 - rules **inherited** from the *ADR* : these rules apply unmodified but guiding examples can be changed to the Agri- and Food context 
 - rules adapted from the _ADR_ which are **customized** (including examples)
 - rules which are not part of the _ADR_ and which are specifically designed for this *AGRI API Style Guide*.
+
+### Compliance Matrix: AASG Rules to ADR Rules
 
 Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).í
 
@@ -542,7 +561,7 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | [H007](#h007) | `/core/error-handling/all-errors`                                              | Inherited  | Bundle all bad request errors together in one response                           |
 | [H008](#h008) | None                                                                           | AASG only  | 401 must only be used for authentication failures                                |
 
-## Reverse Compliance Matrix: ADR Rules to AASG Rules
+### Compliance Matrix: ADR Rules to AASG Rules
 
 The following table provides a reverse lookup showing how each ADR (REST-API Design Rules) rule is adopted in the AGRI API Style Guide (AASG).
 
@@ -610,3 +629,4 @@ The following references are used in this style guide:
 - <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.
+
