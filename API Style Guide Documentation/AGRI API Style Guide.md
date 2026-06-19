@@ -356,14 +356,14 @@ Query keys are often converted to JSON object keys, where lowerCamelCase is the 
 # ✔ Correct: plural nouns as resource names
 GET /growers
 PUT /growers/com.my-mps.codelist.registratienummer/12345
-GET/suppliers
+GET /suppliers
 POST /inbound-deliveries
 GET /inbound-deliveries?deliveryDate=2026-03-25
 
 
 # ❌ Incorrect
 GET /grower                                              # ❌ singular i.s.o. plural
-GER /getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
+GET /getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
 POST /growers/                                           # ❌ trailing slash
 POST /growers//crops                                     # ❌ duplicate slashes
 POST /InboundDeliveries                                  # ❌ CamelCase i.s.o. kebab-case
