@@ -354,20 +354,20 @@ Query keys are often converted to JSON object keys, where lowerCamelCase is the 
 
 ```http
 # ✔ Correct: plural nouns as resource names
-/growers
-/growers/com.my-mps.codelist.registratienummer/12345/crops
-/suppliers
-/inbound-deliveries
-/inbound-deliveries?deliveryDate=2026-03-25
+GET /growers
+PUT /growers/com.my-mps.codelist.registratienummer/12345
+GET/suppliers
+POST /inbound-deliveries
+GET /inbound-deliveries?deliveryDate=2026-03-25
 
 
 # ❌ Incorrect
-/grower                                              # ❌ singular i.s.o. plural
-/getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
-/growers/                                            # ❌ trailing slash
-/growers//crops                                      # ❌ duplicate slashes
-/InboundDeliveries                                   # ❌ CamelCase i.s.o. kebab-case
-/inbound-deliveries?delivery-date=2026-03-25         # ❌ Query pamameter is kebab-case i.s.o. lowercamelCase
+GET /grower                                              # ❌ singular i.s.o. plural
+GER /getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
+POST /growers/                                           # ❌ trailing slash
+POST /growers//crops                                     # ❌ duplicate slashes
+POST /InboundDeliveries                                  # ❌ CamelCase i.s.o. kebab-case
+GET /inbound-deliveries?delivery-date=2026-03-25         # ❌ Query pamameter is kebab-case i.s.o. lowercamelCase
 ```
 
 ### <a id="u007"></a>[U007] Resources and sub-(or child-)resources **MUST** be identified via path segments
