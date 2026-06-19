@@ -77,9 +77,10 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
-### ✔ Correct example
+### Example
 
 ```yaml
+# ✔ Correct 
 openapi: 3.0.4
 info:
   title: AgroConnect eCrop API
@@ -119,9 +120,10 @@ URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because
 
 Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header. The client **MUST** use the standard `User-Agent` HTTP header field for this purpose.
 
-### ✔ Correct example for rules [M006](#m006) and [M007](m007)
+### Example for rules [M006](#m006) and [M007](#m007)
 
 ```http
+# ✔ Correct 
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
@@ -131,36 +133,20 @@ User-Agent: avs2025/v1                                # ✔ Client software pack
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
-  "thirdPartyIds": [
-    {
-      "content": "12345",
-      "schemeId": "com.my-mps.codelist.teeltnummer"
-    }
-  ],
-  "name": "Spring Wheat",
-  ...
+  <request payload>
 }
-```
 
-### ❌ Incorrect example for rules [M006](#m006) and [M007](#m007)
 
-```http
+# ❌ Incorrect 
 POST v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1  # ❌ Major version in URL path
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json
-Client-Software: avs2025/v1                          # ❌ Custom header instead of User-Agent
+Client-Software: avs2025/v1                           # ❌ Custom header instead of User-Agent
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
-  "thirdPartyIds": [
-    {
-      "content": "12345",
-      "schemeId": "com.my-mps.codelist.teeltnummer"
-    }
-  ],
-  "name": "Spring Wheat",
-  ...
+  <request payload>
 }
 ```
 
@@ -176,32 +162,22 @@ For tracing and debugging purposes, a unique, server-side assigned request ident
 
 For tracing and debugging purposes, a unique, server-side generated date-time UTC timestamp (in msecs) **MUST** be returned to the client in the `Request-Date-Time` HTTP response header, using the format `YYYY-MM-DDThh:mi:ss.sssZ`. 
 
-### ✅ Correct example for rules [M008](#m008), [M009](#m009) and [M010](m010)
+### Example for rules [M008](#m008), [M009](#m009) and [M010](m010)
 
 ```http
+# Correct response (header)
 HTTP/1.1 202 Accepted
 Content-Type: application/json
-API-Version: 1.0.3                                   	 # ✔ Full API version in HTTP reponse header
-Request-Id: 123e4567-e89b-12d3-a456-426614174000       # ✔ Unique request-id n in HTTP reponse header
-Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP reponse header
+API-Version: 1.0.3                                   	 # ✔ Full API version in HTTP response header
+Request-Id: 123e4567-e89b-12d3-a456-426614174000       # ✔ Unique request-id n in HTTP response header
+Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP response header
 
 {
-  "id": {
-    "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c",
-    "schemeId": "com.my-mps.codelist.guid"
-  },
-  "thirdPartyIds": [
-    {
-      "content": "12345",
-      "schemeId": "com.my-mps.codelist.teeltnummer"
-    }
-  ],
-  "name": "Spring Wheat",
-  ...
+  <response payload>
 }
 ```
 
-### 2.2 Security [Sxxx] (under construction)
+### 2.2 Security [Sxxx]
 
 #### 2.2.1 Transport Security
 
@@ -319,22 +295,21 @@ This section defines the rules for naming resources and constructing URLs to ide
 
 URLs **SHOULD NOT** use (something like) `/api` or `/services` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
-### ✔ Correct example 
+### Example 
 
 ```http
+# ✔ Correct 
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 ...
-```
 
-### ❌ Incorrect examples
-
-```http
+# ❌ Incorrect: /api in URI
 POST /api/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 ...
 
+# ❌ Incorrect: /services in URI
 POST /services/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
@@ -347,13 +322,7 @@ Resources **MUST** be referred to using nouns (instead of verbs) that represent 
 
 ### <a id="u003"></a>[U003] Resource names **MUST** be plural
 
-Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.
-
-### <a id="u004"></a>[U004] Resources and sub-(or child-)resources **MUST** be identified via path segments
-
-Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the URI path.
-
-### <a id="u005"></a>[U005] All path segments identifying the resource **MUST** be written in kebab-case 
+Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.### <a id="u004"></a>[U004] All path segments identifying the resource **MUST** be written in kebab-case 
 
 Path segments of a URI **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rule, each URI-segment must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
 
@@ -365,7 +334,7 @@ Rationale
 
 Some web servers and frameworks do not handle case sensitivity or special characters of URIs well. The use of kebab-case path segments ensures compatibility with a broad range of systems. It is a more common implementation choice for path segments than camelCase or snake_case. Information (such as names of objects) that requires special characters can be part of the request body instead of being in the URI.
 
-### <a id="u006"></a>[U006] URL Paths **MUST** be normalized without empty path segments and trailing slashes
+### <a id="u005"></a>[U005] URL Paths **MUST** be normalized without empty path segments and trailing slashes
 
 You **MUST NOT** specify paths with duplicate or trailing slashes, e.g. `.../growers//crops` or `.../growers/`. As a consequence, you **MUST NOT** specify or use path variables with empty string values.
 
@@ -373,13 +342,37 @@ When requesting a resource including a trailing slash, this **MUST** result in a
 
 This rule does not apply to the root resource (append `/` to the service root URL).
 
-### <a id="u007"></a>[U007] Query parameters **MUST** be written in lowerCamelCase 
+### <a id="u006"></a>[U006] Query parameters **MUST** be written in lowerCamelCase 
 
 Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letterwhere (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
 
 Rationale
 
 Query keys are often converted to JSON object keys, where lowerCamelCase is the naming convention to avoid compatibility issues with JavaScript when deserializing objects.
+
+### Examples for rules [U002](#u002) to [U006](#u006) 
+
+```http
+# ✔ Correct: plural nouns as resource names
+/growers
+/growers/com.my-mps.codelist.registratienummer/12345/crops
+/suppliers
+/inbound-deliveries
+/inbound-deliveries?deliveryDate=2026-03-25
+
+
+# ❌ Incorrect
+/grower                                              # ❌ singular i.s.o. plural
+/getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
+/growers/                                            # ❌ trailing slash
+/growers//crops                                      # ❌ duplicate slashes
+/InboundDeliveries                                   # ❌ CamelCase i.s.o. kebab-case
+/inbound-deliveries?delivery-date=2026-03-25         # ❌ Query pamameter is kebab-case i.s.o. lowercamelCase
+```
+
+### <a id="u007"></a>[U007] Resources and sub-(or child-)resources **MUST** be identified via path segments
+
+Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the URI path.
 
 ### 2.4 Adherence to RESTful principles [Rxxx]
 
@@ -621,10 +614,10 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | [U001](#u001) | None                                                                           | AASG only  | Do not use `/api` or `/services` as base path                                    |
 | [U002](#u002) | `/core/naming-resources`                                                       | Inherited  | Resource names must be nouns                                                     |
 | [U003](#u003) | `/core/naming-collections`                                                     | Inherited  | Collection resource names must be plural                                         |
-| [U003](#u003) | `/core/nested-child`<br>`/core/resource-operations`                            | Inherited  | Child resources identified via path segments                                     |
 | [U004](#u004) | `/core/path-segments-kebab-case`                                               | Inherited  | Path segments must use kebab-case                                                |
 | [U005](#u005) | `/core/no-trailing-slash`                                                      | Customized | Normalize paths without trailing slashes                                         |
 | [U006](#u006) | `/core/query-keys-camel-case`                                                  | Inherited  | Query parameters must be lowerCamelCase                                          |
+| [U007](#u007) | `/core/nested-child`<br>`/core/resource-operations`                            | Inherited  | Child resources identified via path segments                                     |
 | [R001](#r001) | `/core/stateless`                                                              | Inherited  | APIs must be stateless                                                           |
 | [R002](#r002) | None                                                                           | AASG only  | Must return full resource representation                                         |
 | [R003](#r003) | None                                                                           | AASG only  | Unique resource ID assigned and returned                                         |
@@ -686,8 +679,8 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/http-response-code`               | [H003](#h003) | Inherited  | Use standard HTTP status codes for errors               |
 | `/core/http-response-code`               | [H004](#h004) | Inherited  | Support standard response codes for methods             |
 | `/core/stateless`                        | [R001](#r001) | Inherited  | APIs must be stateless                                  |
-| `/core/nested-child`                     | [U003](#u003) | Inherited  | Child resources identified via path segments            |
-| `/core/resource-operations`              | [U003](#u003) | Inherited  | Child resources identified via path segments            |
+| `/core/nested-child`                     | [U007](#u007) | Inherited  | Child resources identified via path segments            |
+| `/core/resource-operations`              | [U007](#u007) | Inherited  | Child resources identified via path segments            |
 | `/core/error-handling/all-errors`        | [H007](#h007) | Inherited  | Bundle all bad request errors together in one response  |
 | `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
 | `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
