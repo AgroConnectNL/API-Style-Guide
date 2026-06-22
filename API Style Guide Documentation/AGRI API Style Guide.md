@@ -169,7 +169,7 @@ For tracing and debugging purposes, a unique, server-side generated date-time UT
 HTTP/1.1 202 Accepted
 Content-Type: application/json
 API-Version: 1.0.3                                   	 # ✔ Full API version in HTTP response header
-Request-Id: 123e4567-e89b-12d3-a456-426614174000       # ✔ Unique request-id n in HTTP response header
+Request-Id: 9f1c2b3a-4d5e-6f70-81a2-b3c4d5e6f701       # ✔ Unique request-id in HTTP response header
 Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP response header
 
 {
@@ -407,6 +407,117 @@ As a consequence of the Uniform Interface principle, each response to an API req
 As a consequence of the Uniform Interface principle, the API interface must uniquely identify each resource involved in the interaction between the client and the server. When creating a new resource (typically as a result of a `POST` operation), a server-side generated unique identifier (preferably a UUID) **MUST** be assigned to the resource and returned to the client in the response as the `id`. For subsequent  operations (`PUT`, `PATCH`, `DELETE`, `GET`) on this resource provided by the server, the resource **MUST** be identified in the URI using this server-generated unique identifier as a path parameter.
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
+
+### ✅ Example for rules [R002](#r002) and [R003](#r003)
+
+```http
+# Client POSTs a new crop for a certain grower
+POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    { "content": "12345"
+    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+  ],
+  "name": "Spring Wheat",
+  "startDate": "2025-03-12",
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL",
+  "plantSpecies": [ { "plantSpecies": "1010101"
+                    , "variety": "01201" } ]
+  ...                  
+}
+
+# Server responds with the complete representation of the new crop-resource, including the server-side assigned "id" (guid)
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: a1b2c3d4-e5f6-7890-ab12-cdef34567890
+Request-Date-Time: 2025-03-12T15:31:22.123Z
+
+{
+  "id":                                                               # Server side assigned id in response
+    { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
+    , "schemeId": "com.my-mps.codelist.guid" },
+  "thirdPartyIds": [
+    { "content": "12345"
+    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+  ],
+  "name": "Spring Weat",
+  "startDate": "2025-03-12",
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL"
+  ...
+}
+
+# Client uses the server side assigned "id" as resource identifier for succeeding PUT request to update the resource
+PUT /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    { "content": "12345"
+    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+  ],
+  "name": "Spring Wheat",                                   # client updates name
+  "startDate": "2025-03-13",                                # and startDate
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL",
+  "plantSpecies": [ { "plantSpecies": "1010101"
+                    , "variety": "01201" } ]
+  ...                  
+}
+
+# Response contains complete representation after processing the PUT operation
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: 3b2a1d4e-5f6c-7b8a-9c0d-1e2f3a4b5c6d
+Request-Date-Time: 2025-03-18T09:12:52.934Z
+
+{
+  "id": 
+    { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
+    , "schemeId": "com.my-mps.codelist.guid" },
+  "thirdPartyIds": [
+    { "content": "12345"
+    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+  ],
+  "name": "Spring Wheat",
+  "startDate": "2025-03-13",
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL"
+  ...
+}
+
+# Client uses the server side assigned "id" as resource identifier in succeeding DELETE request
+DELETE /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# No content response after succesful deletion of the resource
+HTTP/1.1 204 No Content
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: f0e1d2c3-b4a5-6789-0abc-def123456789
+Request-Date-Time: 2025-03-28T13:01:53.557Z
+```
 
 ### <a id="r004"></a>[R004] APIs **SHOULD NOT** expose implementation details of the underlying application, development platforms/frameworks or database systems/persistence models
 
