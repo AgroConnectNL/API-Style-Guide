@@ -546,7 +546,7 @@ APIs **MUST** use JSON ([RFC 7159](#rfc7159)) to represent structured (resource)
 
 ### <a id="p002"></a>[P002] APIs **MUST** use standard JSON media types
 
-The standard media types `application/json` (normal operations), `application/json-patch+json` (`PATCH` operations) or `application/problem+json` (to support problem JSON, see: [P012](#p012)) **MUST** be used as `Content-Type` (or `Accept`) header information.
+The standard media types `application/json` (normal operations), `application/json-patch+json` (`PATCH` operations, see [P012](#p012)) or `application/problem+json` (to support problem JSON, see: [P013](#p013)) **MUST** be used as `Content-Type` and `Accept` header information.
 
 ### <a id="p003"></a>[P003] Schema names **MUST** be singular
 
@@ -564,9 +564,44 @@ All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*(
 
 Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
+### ✅ Example for rules [P003](#p003), [P004](#p004), [P005](#p005) and [P006](#p006)
+
+```YAML
+    InboundDeliveryDetail:                             # schemaname CamelCase
+      title: Inbound Delivery detail
+      type: object
+      description: |
+        'Detail of materials and inputs delivered by a supplier to a grower as input for their crop process. An inbound delivery describes a certain amount of a certain product acquired by a grower through an order to a supplier.'
+      required:
+        - thirdPartyIds                                 # property names lowerlCamelCase, array properties plural, other singular
+        - dateOfDelivery
+        - quantity
+        - product
+        - location
+      properties:
+        thirdPartyIds:
+          allOf:
+            - $ref: '#/components/schemas/ThirdPartyIdsType'
+          description: 'List of alternative identifiers with which the inbound delivery is identified by third parties.'
+        dateOfDelivery:
+          allOf:
+            - $ref: '#/components/schemas/DateType'
+          description: 'Date at which the product is delivered at the location of the grower ("YYYY-MM-DD")'
+        quantity:
+          allOf:
+            - $ref: '#/components/schemas/MeasureType'
+          description: 'Quantity of the product delivered to the grower.'
+        product:
+          $ref: '#/components/schemas/ProductDetails'
+        location:
+          allOf:
+            - $ref: '#/components/schemas/ProductionLocationDetails'
+          description: 'Identification of the production location of the grower at which the product is delivered'
+```
+
 ### <a id="p007"></a>[P007] Properties with value `null` and absent properties **MUST** be handled the same way
 
-OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (as in: `{}`) or can have the value `null` (as in: `{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), this rule demands that both cases **MUST** be handled in the exact same manner by specification.
+OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify whether properties may be absent (as in: `{}`) or can have the value `null` (as in: `{"example":null}`). If a property is defined to be not `required` _and_ `nullable` (see 2nd row in Table below), rule P007 demands that both cases **MUST** be handled in the exact same manner by specification.
 
 | required | nullable | `{}`   | `{"example":null}` |
 | -------- | -------- | ------ | ------------------ |
@@ -575,9 +610,9 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 | true     | false    | ❌ No  | ❌ No              |
 | false    | false    | ✔ Yes | ❌ No              |
 
-### <a id="p008"></a>[P008] Date properties **MUST NOT** have a time component if only the date is relevant
-
 Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
+
+### <a id="p008"></a>[P008] Date properties **MUST NOT** have a time component if only the date is relevant
 
 ### <a id="p009"></a>[P009] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
 
@@ -607,9 +642,115 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 
 `PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: [R002](#r002)).
 
+### Example PATCH request using RFC 6902
+
+```http
+# Patch request to modify existing grower resource with registration number 12345
+# In this example, the postal code is updated and an email address is added.
+PATCH /growers/com.my-mps.codelist.registratienummer/12345 HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json-patch+json
+Accept: application/json
+Major-Version: 1
+
+[
+  { "op": "replace", "path": "/postalAddress/postalCode", "value": "3521 AA" },
+  { "op": "add", "path": "/emailAddress", "value": "info@delier.nl" }
+]
+
+# Response contains complete representation of the updated grower resource
+HTTP/1.1 200 OK
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: 9f1c2b3a-4d5e-6f70-81a2-b3c4d5e6f701
+Request-Date-Time: 2025-03-12T15:31:21.123Z
+
+{
+  "id": {
+    "content": "e3c8a1b2-4f6e-4a2d-8e3b-9c1d2e3f4a5b",
+    "schemeId": "com.my-mps.codelist.guid"
+  },
+  "thirdPartyIds": [
+    {
+      "id": "09123559",
+      "type": "nl.kvk.codelist.kvknummer"
+    },
+    {
+      "id": "870012388392",
+      "type": "com.gs1.codelist.gln"
+    }
+  ],
+  "name": "Kwekerij De Lier",
+  "personName": "J. de Lier",
+  "phoneNumber": "+31(0)74 26653244",
+  "telefaxNumber": null,
+  "emailAddress": "info@delier.nl",
+  "iban": "NL04ABNA0667352669",
+  "websiteUrl": "www.delier.nl",
+  "postalAddress": {
+    "postalCode": "3521 AA",
+    "cityName": "Naaldwijk",
+    "streetName": null,
+    "streetNumber": null,
+    "country": "NL",
+    "countryName": "Netherlands",
+    "postalBoxId": 4411
+  },
+  "visitorsAddress": {
+    "postalCode": "3521 AN",
+    "cityName": "Naaldwijk",
+    "streetName": "Broekweg",
+    "streetNumber": 12,
+    "country": "NL",
+    "countryName": "Netherlands",
+    "postalBoxId": null
+  }
+}
+```
+
 ### <a id="p013"></a>[P013] Response payloads of erroneous requests **MUST** use the standard _Problem Details for HTTP APIs_
 
 When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](#rfc9457). The `Content-Type` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
+
+### Example error responses using Problem Details for HTTP APIs payload 
+
+```http
+# Example error response for HTTP 400 Bad Request using Problem Details for HTTP APIs payload
+HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json
+API-Version: 1.0.3
+Request-Id: 2a3d4f5b-6c7e-8f90-1234-56789abcdef0
+Request-Date-Time: 2026-06-22T12:34:56.789Z
+
+{
+  "type": "https://example.com/probs/invalid-request",
+  "title": "Invalid request payload",
+  "status": 400,
+  "detail": "The request contains validation errors.",
+  "instance": "/growers/com.my-mps.codelist.registratienummer/12345",
+  "errors": [
+    {
+      "field": "/postalAddress/postalCode",
+      "message": "Postal code must be provided in the format 'NNNN AA'."
+    }
+  ]
+}
+
+# Example error response for HTTP 401 Unauthorized using Problem Details for HTTP APIs payload
+HTTP/1.1 401 Unauthorized
+Content-Type: application/problem+json
+API-Version: 1.0.3
+Request-Id: 3b4e5f6c-7d8e-9f01-2345-6789abcdef01
+Request-Date-Time: 2026-06-23T09:15:32.456Z
+
+{
+  "type": "https://example.com/probs/unauthorized",
+  "title": "Authentication failed",
+  "status": 401,
+  "detail": "The request lacks valid authentication credentials. Ensure the 'Authorization' header contains a valid bearer token.",
+  "instance": "/growers/com.my-mps.codelist.registratienummer/12345"
+}
+```
 
 ### 2.6 HTTP methods and responses [Hxxx]
 
@@ -619,7 +760,7 @@ Although the REST architectural style does not impose a specific protocol, REST 
 
 An API Operation (=HTTP-Method plus resource) **MUST** adhere to the HTTP method semantics defined in [RFC 9110](#rfc9110).
 
-The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed (see: ????????????)
+The HTTP specifications offer a set of standard methods, where every method is designed with explicit semantics. Adhering to the HTTP specification is crucial, since HTTP clients and middleware applications rely on standardized characteristics. An exception to this rule is the HTTP `PATCH` method, which is not described in RFC9110 but which is allowed for partial updates of resources (see: [P012](#p012)).
 
 The following table shows on which resource type (singleton or collection) a HTTP method **MAY** or **MUST NOT** be implemented and the effect the HTTP method **MUST** have when used in a (successful) request.
 
@@ -627,8 +768,8 @@ The following table shows on which resource type (singleton or collection) a HTT
 | -------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `GET`    | Read                   | ✔ Retrieve a collection resource representation for the given URI. Data is only retrieved and never modified. | ✔ Retrieve a singleton resource representation for the given URI. Data is only retrieved and never modified. |
 | `POST`   | Create                 | ✔ Create a new singleton resource as part of a collection.                                          | ❌ Avoid using `POST` on a singleton resource. Return `405 Method Not Allowed`                       |
-| `PUT`    | Update/Replace         | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given URI (full update). The resource MAY be created when does not exist |
-| `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially updates an existing resource.                                                           |
+| `PUT`    | Update/ Replace        | ❌ Avoid using `PUT` on a collection resource. Return `405 Method Not Allowed`                       | ✔ Replace an existing resource with the given URI (full update). The resource MAY be created when does not exist |
+| `PATCH`  | Partial Update/ Modify | ❌ Avoid using `PATCH` on a collection resource, Return `405 Method Not Allowed`                     | ✔ Partially update an existing resource.                                                            |
 | `DELETE` | Delete                 | ❌ Avoid using `DELETE` on a collection resource, Return `405 Method Not Allowed`                    | ✔ Remove a resource with the given URI.                                                             |
 
 If an optional HTTP request method is sent to a server and the server does not support that HTTP method for the target resource, an HTTP status code `405 Method Not Allowed` shall be returned and a list of allowed methods for the target resource shall be provided in the `Allow` header in the response as stated in [RFC 9110 15.5.6](#rfc9110).
@@ -661,7 +802,7 @@ In case of an error, the server **SHOULD NOT** pass technical details (e.g. call
 
 ### <a id="h004"></a>[H004] `GET`, `POST`, `PUT`, `PATCH` and `DELETE` operations **MUST** at least support standard response codes
 
-The HTTP operations `GET`, `POST`, `PUT`, `PATCH` and `DELETE` **MUST** at least support the following response codes
+The HTTP operations `GET`, `POST`, `PUT`, `PATCH` and `DELETE` **MUST** _at least_ support the following response codes:
 
 | Operation                                                          | Result                                                                                               | Response code                                                                                        |
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -674,13 +815,13 @@ The HTTP operations `GET`, `POST`, `PUT`, `PATCH` and `DELETE` **MUST** at least
 
 Remarks:
 
-A `GET` request on a **collection** resource resulting in a response with no items found is not considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on a specific **singleton** resource (with a resource identifier in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
+A `GET` request on a **collection** resource resulting in a response with no items found is _not_ considered as a (client) failure and therefore a status code `200 Ok` with an empty list is returned. A `GET` request on a specific **singleton** resource (with a resource identifier in the URI) which results in a response with no items found, is considered as a client failure because the resource identifier provided by the client does not match a resource on the server. In this case a response code `404 Not Found` is returned to the client.
 
 ### <a id="h005"></a>[H005] The `PUT` method **MUST NOT** be implemented as an insert-or-update operation 
 
-A `PUT` request on a singleton resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an alternative create (insert) operation. 
+A `PUT` request on a resource (identified by the given resource id) which does not exist, **MUST** result in an `404 Not Found` error and **MUST NOT** be processed as an alternative create (insert) operation. 
 
-### <a id="h006"></a>[H006] The HTTP `400 Bad Request` error code MUST be used for invalid input
+### <a id="h006"></a>[H006] The HTTP `400 Bad Request` error code **MUST** be used for invalid input
 
 API requests containing invalid input **MUST** result in HTTP status code `400 Bad Request`. Invalid input includes syntax errors, missing or invalid query parameters. The request payload **SHOULD** be validated with a schema. A request payload with schema validation error **MUST** be treated as invalid input.
 
@@ -694,7 +835,35 @@ Rationale
 
 To reduce the amount of roundtrips between client and server, all applicable schema validation errors **SHOULD** be returned together. This allows a client to present validation errors to a user in one go, reducing user friction with multiple retries.
 
-### <a id="h008"></a>[H008] The HTTP `401 Unauthorized` error code **MUST** only be used  for authentication failures
+### Example error response for multiple HTTP 400 Bad Request errors
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json
+API-Version: 1.0.3
+Request-Id: 2a3d4f5b-6c7e-8f90-1234-56789abcdef0
+Request-Date-Time: 2026-06-22T12:34:56.789Z
+
+{
+  "type": "https://example.com/probs/invalid-request",
+  "title": "Invalid request payload",
+  "status": 400,
+  "detail": "The request contains validation errors.",
+  "instance": "/growers/com.my-mps.codelist.registratienummer/12345",
+  "errors": [
+    {
+      "field": "/postalAddress/postalCode",
+      "message": "Postal code must be provided in the format 'NNNN AA'."
+    },
+    {
+      "field": "/emailAddress",
+      "message": "Email address must be a valid email format."
+    }
+  ]
+}
+```
+
+### <a id="h008"></a>[H008] The HTTP `401 Unauthorized` error code **MUST** only be used for authentication failures
 
 Although the standard description of the HTTP `401` error is: `Unauthorized` this error **MUST** only be returned as a result of a failed **authentication** (e.g. API-key or OAuth2-token) validation. In case clients are successfully authenticated and perform an operation they are not **authorized** (allowed) to, a `403 Forbidden` **SHOULD** be returned. Alternatively a `404 Not Found` **MAY** be returned to hide the information on the existence of the resource for the client (for safety reasons).
 
@@ -800,6 +969,86 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs            |
 | `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
 | `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                      |
+| `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
+## 4. Conformation
+
+The following references are used in this style guide:
+
+- <a id="bcp14"></a> [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
+- <a id="rfc2119"></a> [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
+- <a id="rfc3986"></a> [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986): Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
+- <a id="rfc6749"><a> [IETF RFC 6749](https://datatracker.ietf.org/doc/html/rfc6749): The OAuth 2.0 Authorization Framework. D. Hardt, Ed. October 2012. Standards Track.
+- <a id="rfc6902"></a> [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; E. Nottingham. IETF. April 2013. Proposed Standard.
+- <a id="rfc7159"></a> [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
+- <a id="rfc8174"></a> [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174): Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice.
+- <a id="rfc8252"></a> [IETF RFC 8252](https://datatracker.ietf.org/doc/html/rfc8252): OAuth 2.0 for Native Apps. B. Campbell; E. Mortensen; J. Bradley; et al. IETF. October 2017.
+- <a id="rfc9110"></a> [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110): HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke. IETF. June 2022. Standards Track.
+- <a id="rfc9457"></a> [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs. M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
+- <a id="rfc9557"></a> [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma; Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
+- <a id="draft-health-check-response-format"></a> [IETF Draft: Health Check Response Format for HTTP APIs](https://datatracker.ietf.org/doc/draft-inadarei-api-health-check/): I. Nadareishvili. IETF. April 19, 2022.
+- <a id="draft-json-hal"></a> [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html): M. Kelly. IETF. April 21, 2024. Informational Draft.
+- <a id="iso-3166-country-codes"></a> [ISO-3166-1](https://www.iso.org/standard/72482.html) Codes for the representation of names of countries and their subdivisions — Part 1: Country code. International Organization for Standardization (ISO) ISO 3166-1:2020.
+- <a id="iso-8601-date-and-time-format"></a> [ISO8601-1](https://www.iso.org/standard/70907.html) Date and time — Representations for information interchange — Part 1: Basic rules. International Organization for Standardization (ISO) ISO 8601-1:2019.
+- <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
+- <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
+- <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
+
+
+| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
+
+| `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/transition-period`                | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/changelog`                        | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs            |
+
+| `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
+| `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
+| `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
+## 4. Conformation
+
+The following references are used in this style guide:
+
+- <a id="bcp14"></a> [BCP 14](https://www.rfc-editor.org/info/bcp14): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
+- <a id="rfc2119"></a> [IETF RFC 2119](https://www.rfc-editor.org/rfc/rfc2119): Key words for use in RFCs to Indicate Requirement Levels. S. Bradner. IETF. March 1997. Best Current Practice.<br>
+- <a id="rfc3986"></a> [IETF RFC 3986](https://www.rfc-editor.org/rfc/rfc3986): Uniform Resource Identifier (URI): Generic Syntax. T. Berners-Lee; R. Fielding; L. Masinter. IETF. January 2005. Internet Standard.
+- <a id="rfc6749"><a> [IETF RFC 6749](https://datatracker.ietf.org/doc/html/rfc6749): The OAuth 2.0 Authorization Framework. D. Hardt, Ed. October 2012. Standards Track.
+- <a id="rfc6902"></a> [IETF RFC 6902](https://www.rfc-editor.org/rfc/rfc6902): JavaScript Object Notation (JSON) Patch. P. Bryan; E. Nottingham. IETF. April 2013. Proposed Standard.
+- <a id="rfc7159"></a> [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
+- <a id="rfc8174"></a> [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174): Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice.
+- <a id="rfc8252"></a> [IETF RFC 8252](https://datatracker.ietf.org/doc/html/rfc8252): OAuth 2.0 for Native Apps. B. Campbell; E. Mortensen; J. Bradley; et al. IETF. October 2017.
+- <a id="rfc9110"></a> [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110): HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke. IETF. June 2022. Standards Track.
+- <a id="rfc9457"></a> [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs. M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
+- <a id="rfc9557"></a> [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma; Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
+- <a id="draft-health-check-response-format"></a> [IETF Draft: Health Check Response Format for HTTP APIs](https://datatracker.ietf.org/doc/draft-inadarei-api-health-check/): I. Nadareishvili. IETF. April 19, 2022.
+- <a id="draft-json-hal"></a> [IETF Draft: JSON Hypertext Application Language](https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html): M. Kelly. IETF. April 21, 2024. Informational Draft.
+- <a id="iso-3166-country-codes"></a> [ISO-3166-1](https://www.iso.org/standard/72482.html) Codes for the representation of names of countries and their subdivisions — Part 1: Country code. International Organization for Standardization (ISO) ISO 3166-1:2020.
+- <a id="iso-8601-date-and-time-format"></a> [ISO8601-1](https://www.iso.org/standard/70907.html) Date and time — Representations for information interchange — Part 1: Basic rules. International Organization for Standardization (ISO) ISO 8601-1:2019.
+- <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
+- <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
+- <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
+
+
+| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
+
+| `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/transition-period`                | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/changelog`                        | [M005](#m005) | Customized | Transition between major versions                       |
+
+| `/core/transport/no-sensitive-uris`      | [S002](#s002) | Inherited  | Do not include sensitive information in URIs            |
+
+| `/core/modules/geospatial`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
+| `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                      |
+
 | `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                      |
 
 ## 4. Conformation
