@@ -141,7 +141,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 #### ❌ Incorrect 
 
 ```http
-POST v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1 
+POST /v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1 # ❌ Major version in URI
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json
