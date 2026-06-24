@@ -47,7 +47,7 @@ With this in mind, AgroConnect adopts "API First" as a key engineering principle
 
 Ideally, all APIs in the Agri- and Food domain will look as if the same author created them.
 
-[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR . [Chapter 3](#chapter3) contains conformity matrices whoch show the relation between the AASG Rules and ADR rules. [Chapter 4](#chapter4) contains an overview of references.
+[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR. [Chapter 4](#chapter4) contains an overview of references.
 
 The examples in this style guide are based on the AgroConnect REST API eCrop standaard.
 
