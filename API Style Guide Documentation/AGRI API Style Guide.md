@@ -77,7 +77,7 @@ API specifications **MUST** contain the following [OpenAPI meta information](ht
 - `#/info/description` a proper description of the API
 - `#/info/contact/{name,url,email}` contact info of the team owning the API specification
 
-### Example
+#### Example
 
 ```yaml
 # ✔ Correct 
@@ -120,10 +120,10 @@ URL-based versioning (as in `../v1/growers/...`) **SHOULD NOT** be used, because
 
 Although APIs are client-agnostic, the client **MAY** pass the name and software version which is calling the API in the standard HTTP request header. The client **MUST** use the standard `User-Agent` HTTP header field for this purpose.
 
-### Example for rules [M006](#m006) and [M007](#m007)
+#### Example for rules [M006](#m006) and [M007](#m007)
 
+##### ✔ Correct 
 ```http
-# ✔ Correct 
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
@@ -135,9 +135,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 {
   <request payload>
 }
+```
 
-
-# ❌ Incorrect 
+#### ❌ Incorrect 
+```http
 POST v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1  # ❌ Major version in URL path
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
