@@ -123,6 +123,7 @@ Although APIs are client-agnostic, the client **MAY** pass the name and software
 #### Example for rules [M006](#m006) and [M007](#m007)
 
 ##### ✔ Correct 
+
 ```http
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
@@ -138,6 +139,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 #### ❌ Incorrect 
+
 ```http
 POST v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1  # ❌ Major version in URL path
 Host: standard-api.agroconnect.nl
@@ -169,7 +171,7 @@ For tracing and debugging purposes, a unique, server-side generated date-time UT
 # Correct response (header)
 HTTP/1.1 202 Accepted
 Content-Type: application/json
-API-Version: 1.0.3                                   	 # ✔ Full API version in HTTP response header
+API-Version: 1.0.3                                     # ✔ Full API version in HTTP response header
 Request-Id: 9f1c2b3a-4d5e-6f70-81a2-b3c4d5e6f701       # ✔ Unique request-id in HTTP response header
 Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP response header
 
@@ -995,7 +997,6 @@ The following references are used in this style guide:
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
 
-
 | `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
 
 | `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
@@ -1034,7 +1035,6 @@ The following references are used in this style guide:
 - <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
-
 
 | `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
 
