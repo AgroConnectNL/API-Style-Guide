@@ -47,7 +47,9 @@ With this in mind, AgroConnect adopts "API First" as a key engineering principle
 
 Ideally, all APIs in the Agri- and Food domain will look as if the same author created them.
 
-[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR .
+[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR . [Chapter 3](#chapter3) contains conformity matrices whoch show the relation between the AASG Rules and ADR rules. [Chapter 4](#chapter4) contains an overview of references.
+
+The examples in this style guide are based on the AgroConnect REST API eCrop standaard.
 
 ## <a id="chapter2"></a>2. API Design Rules
 
@@ -128,7 +130,7 @@ Although APIs are client-agnostic, the client **MAY** pass the name and software
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json
+Accept: application/json, application/problem+json
 Major-Version: 1                                      # ✔ Major version in HTTP request header
 User-Agent: avs2025/v1                                # ✔ Client software package in User-Agent
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -144,7 +146,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 POST /v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1 # ❌ Major version in URI
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json
+Accept: application/json, application/problem+json
 Client-Software: avs2025/v1                           # ❌ Custom header instead of User-Agent
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
@@ -165,10 +167,11 @@ For tracing and debugging purposes, a unique, server-side assigned request ident
 
 For tracing and debugging purposes, a unique, server-side generated date-time UTC timestamp (in msecs) **MUST** be returned to the client in the `Request-Date-Time` HTTP response header, using the format `YYYY-MM-DDThh:mi:ss.sssZ`. 
 
-### Example for rules [M008](#m008), [M009](#m009) and [M010](m010)
+#### Example for rules [M008](#m008), [M009](#m009) and [M010](m010)
+
+##### ✔ Correct  response (header)
 
 ```http
-# Correct response (header)
 HTTP/1.1 202 Accepted
 Content-Type: application/json
 API-Version: 1.0.3                                     # ✔ Full API version in HTTP response header
@@ -225,7 +228,7 @@ There are a number of security related headers that can be returned in the HTTP 
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `Cache-Control: no-store`                         | Prevent sensitive information from being cached.                                                     |
 | `Content-Security-Policy: frame-ancestors 'none'` | To protect against drag-and-drop style clickjacking attacks.                                         |
-| `Content-Type`                                    | To specify the content type of the response. This SHOULD be `application/json` for JSON responses.   |
+| `Content-Type`                                    | To specify the content type of the response. This **SHOULD** be `application/json, application/problem+json` for JSON responses (including error responses) |
 | `Strict-Transport-Security`                       | To require connections over HTTPS and to protect against spoofed certificates.                       |
 | `X-Content-Type-Options: nosniff`                 | To prevent browsers from performing MIME sniffing, and inappropriately interpreting responses as HTML. |
 | `X-Frame-Options: DENY`                           | To protect against drag-and-drop style clickjacking attacks.                                         |
@@ -267,13 +270,13 @@ All browser-based applications **SHOULD** follow the best practices specified in
 
   In order to support these clients, the Cross-Origin Resource Sharing (CORS) policy mentioned above is critical and MUST be supported.
 
-#### 2.2.4 Validate content types
+#### 2.2.5 Validate content types
 
 ### <a id="s006"></a>[S006] A REST request or response body **SHOULD** match the intended content type in the header.
 
 A REST request or response body **SHOULD** match the intended content type in the header. Otherwise this could cause misinterpretation at the consumer/producer side and lead to code injection/execution.
 
-- Requests containing unexpected or missing content type headers **MUST** be rejected with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
+- Requests containing unexpected or missing `Content-type` headers **MUST** be rejected with HTTP response status `406 Not Acceptable` or `415 Unsupported Media Type`.
 - Avoid accidentally exposing unintended content types by explicitly defining content types e.g. Jersey (Java) `@consumes("application/json"); @produces("application/json")`. This avoids XXE-attack vectors for example.
 
 It is common for REST services to allow multiple response types (e.g. `application/xml` or `application/json`), and the client specifies the preferred order of response types by the `Accept` header in the request.
@@ -287,10 +290,10 @@ Services (potentially) including script code (e.g. JavaScript) in their response
 
 ### 2.3 URLs and Resources ([Uxxx])
 
-The key abstraction of information in REST is a _resource_. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier (URI), which is part of the Uniform Resource Locator (URL). We distinghuish two types of resources:
+The key abstraction of information in REST is a _resource_. Any information that we can name can be a resource. Each resource is identified by a unique address, the Uniform Resource Identifier (URI), which is part of the Uniform Resource Locator (URL). We distinguish two types of resources:
 
-- **Collection** (resources): a resource that represents a _set of items_ of the same type. An example is the collection (list) of growers on a crop management platform which can be accessed with the URI `.../growers`
-- **Singleton** (resources): a resource that represents _one specific item_ from that set. An example is a specific grower on a crop management platform who has GLN (Global Location Number) issued by GS1 with value 8700292113955 as unique identification which can be accessed with the URI `.../growers/com.gs1.codelists.gln/8700292113955`
+- **Collection** (resources): a resource that represents a _set of items_ of the same type. An example is the collection (list) of growers on a crop management platform which can be accessed with the URI `/growers`
+- **Singleton** (resources): a resource that represents _one specific item_ from that set. An example is a specific grower on a crop management platform who has GLN (Global Location Number) issued by GS1 with value 8700292113955 as unique identification which can be accessed with the URI `/growers/com.gs1.codelists.gln/8700292113955`
 
 This section defines the rules for naming resources and constructing URLs to identify them.
 
@@ -298,21 +301,25 @@ This section defines the rules for naming resources and constructing URLs to ide
 
 URLs **SHOULD NOT** use (something like) `/api` or `/services` as base path. In most cases, all resources provided by a service are part of the public API, and therefore should be made available under the root "/" base path.
 
-### Example 
+#### Examples
+
+##### ✔ Correct  
 
 ```http
 # ✔ Correct 
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 ...
+```
 
-# ❌ Incorrect: /api in URI
+##### ❌ Incorrect: `/api` or `/services` in URI  
+
+```http
 POST /api/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 ...
 
-# ❌ Incorrect: /services in URI
 POST /services/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
@@ -327,7 +334,7 @@ Resources **MUST** be referred to using nouns (instead of verbs) that represent 
 
 Resources represent collections and therefore always **MUST** be referred to with a plural noun. Singleton resources always are referred to with the (plural) name of the collection resource it belongs to, followed by their resource identifier.### <a id="u004"></a>[U004] All path segments identifying the resource **MUST** be written in kebab-case 
 
-Path segments of a URI **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rule, each URI-segment must match regex `^[a-z][a-z\-0-9]*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a number.
+Path segments of a URI **MUST** only contain lowercase letters, digits or hyphens. This is also known as [kebab-case](https://developer.mozilla.org/en-US/docs/Glossary/Kebab_case). Hyphens **MUST** only be used to delineate distinct words. This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted. Following this rule, each URI-segment must match regex `^[a-z][a-z\d]*(-[a-z\d]+)*$`. The first character **MUST** be a lower case letter, and subsequent characters can be a lower case letter, or a dash(`-`), or a digit (0-9).
 
 Another implication of this rule is that file extensions **MUST NOT** be used (since a `"."` is not permitted in a URI). Resources **SHOULD** use the `Accept` header for content negotiation.
 
@@ -347,35 +354,261 @@ This rule does not apply to the root resource (append `/` to the service root UR
 
 ### <a id="u006"></a>[U006] Query parameters **MUST** be written in lowerCamelCase 
 
-Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letterwhere (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
+Query parameters (a.k.a query keys) in a URI **MUST** be lowerCamelCase matching regex `^[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. Query parameters only contain letters and digits and the first character **MUST** be a lower case letter (**MUST NOT** be a digit) . The first letter of each word is capitalized, except for the first letter of the entire compound word. This is also known as [lower camelCase](https://developer.mozilla.org/en-US/docs/Glossary/Camel_case). This also implies that diacritics **MUST** be normalized and special characters **MUST** be omitted.
 
 Rationale
 
 Query keys are often converted to JSON object keys, where lowerCamelCase is the naming convention to avoid compatibility issues with JavaScript when deserializing objects.
 
-### Examples for rules [U002](#u002) to [U006](#u006) 
+#### Examples for rules [U002](#u002) to [U006](#u006) 
+
+##### ✔ Correct: plural nouns as resource names  
 
 ```http
-# ✔ Correct: plural nouns as resource names
 GET /growers
 PUT /growers/com.my-mps.codelist.registratienummer/12345
 GET /suppliers
 POST /inbound-deliveries
 GET /inbound-deliveries?deliveryDate=2026-03-25
+```
 
+##### ❌ Incorrect examples
 
-# ❌ Incorrect
+```http
 GET /grower                                              # ❌ singular i.s.o. plural
-GET /getgrowers                                          # ❌ not an noun: method ("get") in reousrce name
+GET /getgrowers                                          # ❌ not a noun: method ("get") in resource name
 POST /growers/                                           # ❌ trailing slash
 POST /growers//crops                                     # ❌ duplicate slashes
 POST /InboundDeliveries                                  # ❌ CamelCase i.s.o. kebab-case
-GET /inbound-deliveries?delivery-date=2026-03-25         # ❌ Query pamameter is kebab-case i.s.o. lowercamelCase
+GET /inbound-deliveries?delivery-date=2026-03-25         # ❌ Query parameter is kebab-case i.s.o. lowercamelCase
 ```
 
-### <a id="u007"></a>[U007] Resources and sub-(or child-)resources **MUST** be identified via path segments
+### <a id="u007"></a>[U007] Relations between resources with independent sub-(or child-)resources **MUST** be identified via path segments
 
-Hierarchical relationships between resources **MUST** be represented as resources with sub-resources in the URI path.
+Hierarchical ("parent-child") relationships between resources which have an _independent existence_ **MUST** be represented as separate resources with sub-resources in the URI path. A resource which defines the _tasks_ performed on a _crop_ of a certain _grower_ therefore **MUST** look like `/growers/{grower-identification}/crops/{crop-identification}/tasks`, so the hierarchical relation between the resources is clearly expressed in the URI. 
+
+This also implies that the payload of the `tasks`resource of this example **MUST NOT** include resource identifiers for the grower or the crop it belongs to: that information is already part of the URI.
+
+Hierarchical relationships between resources which _do not have an independent existence_ **MAY** be represented as sub-resources in the URI path, but **MAY** also be defined within the payload of the parent resource. For example, a list of `operations` which is part of certain a `task` resource.
+
+##### ✔ Correct: request for `POST /growers/{grower-identification}/crops/{crop-identification}/tasks` with hierarchical relationship represented in URI
+
+This example shows how to create a new task for a specific crop of a specific grower. The grower and crop identifiers are part of the URI, so they **MUST NOT** be included in the payload of the request.
+
+```http
+POST /growers/com.my-mps.codelist.registratienummer/12345/crops/com.gs1.codelist.gtin/0123456789012/tasks HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+User-Agent: agroconnect-client/1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    {
+      "content": "27575",
+      "schemeId": "com.my-mps.codelist.registratienummer"
+    }
+  ],
+  "name": "Spraying task",
+  "startDateTime": "2025-03-12T15:51:00+01:00",
+  "endDateTime": "2025-03-12T16:45:00+01:00",
+  "status": "PROPOSED",
+  "operations": [
+    {
+      "thirdPartyIds": [
+        {
+          "content": "27575-1",
+          "schemeId": "com.my-mps.codelist.registratienummer"
+        }
+      ],
+      "name": "Spraying operation",
+      "startDateTime": "2025-03-12T15:51:00+01:00",
+      "endDateTime": "2025-03-12T16:45:00+01:00",
+      "type": {
+        "content": "SPRAYING",
+        "listId": "nl.agroconnect.codelist.cl127"
+      },
+      "technique": {
+        "content": "SPRAYING",
+        "listId": "nl.agroconnect.codelist.cl302"
+      },
+      ...
+    }
+  ]
+  ...
+}
+```
+
+#### ❌ Incorrect: hierarchical relationship not represented in URI 
+
+This example shows the creation of a task resource without hierarchical relationship. Resource identifiers for the grower and crop are part of the payload of the request. 
+
+```http
+POST /tasks HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+User-Agent: agroconnect-client/1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    {
+      "content": "27575",
+      "schemeId": "com.my-mps.codelist.registratienummer"
+    }
+  ],
+  "name": "Spraying task",
+  "startDateTime": "2025-03-12T15:51:00+01:00",
+  "endDateTime": "2025-03-12T16:45:00+01:00",
+  "status": "PROPOSED",
+  "growerId": { 
+     "content": "12345", 
+     "schemeId": "com.my-mps.codelist.registratienummer" 
+   },
+  "cropId": { 
+     "content": "0123456789012", 
+     "schemeId": "com.gs1.codelist.gtin" 
+   },
+  "operations": [
+    {
+      "thirdPartyIds": [
+        {
+          "content": "27575-1",
+          "schemeId": "com.my-mps.codelist.registratienummer"
+        }
+      ],
+      "name": "Spraying operation",
+      "startDateTime": "2025-03-12T15:51:00+01:00",
+      "endDateTime": "2025-03-12T16:45:00+01:00",
+      "type": {
+        "content": "SPRAYING",
+        "listId": "nl.agroconnect.codelist.cl127"
+      },
+      "technique": {
+        "content": "SPRAYING",
+        "listId": "nl.agroconnect.codelist.cl302"
+      },
+      ...
+    }
+  ]
+  ...
+}
+```
+
+Remark: when sub-resources are also used as independent resource in other operation without the hierarchical context, the sub-resource **MUST** also be available as an independent resource with its own URI. For example, a `task` resource can be created for a specific `crop` of a specific `grower` as shown above, but it can also be retrieved independently using its own URI `/tasks/{task-identification}` for instance to retrieve all tasks over all crops and growers with a `GET /tasks` operation. In this case, the (response) payload of the `task` resource **MAY** include the identifiers of the `crop` and `grower` if they are relevant for the operation as shown in the following example.
+
+#### ✔ Correct: hierarchical relationship not represented in URI 
+
+This example shows a GET request with response for a task resource without hierarchical relationship which is used to retrieve all tasks in a certain period. Resource identifiers for the grower and crop are part of the payload of the request. The result can contain tasks for different growers and crops (so the relation between the resources is not hierarchical in this context).
+
+```http
+GET /tasks?startDate=2025-01-01&endDate=2025-12-31 HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+User-Agent: agroconnect-client/1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: a1b2c3d4-e5f6-7890-ab12-cdef34567890
+Request-Date-Time: 2026-01-15T09:10:54.913Z
+
+[
+    {
+      "thirdPartyIds": [
+        {
+          "content": "27575",
+          "schemeId": "com.my-mps.codelist.registratienummer"
+        }
+      ],
+      "name": "Spraying task",
+      "startDateTime": "2025-03-12T15:51:00+01:00",
+      "endDateTime": "2025-03-12T16:45:00+01:00",
+      "status": "PROPOSED",
+      "growerId": { 
+        "content": "12345", 
+        "schemeId": "com.my-mps.codelist.registratienummer" 
+      },
+      "cropId": { 
+        "content": "0123456789012", 
+        "schemeId": "com.gs1.codelist.gtin" 
+      },
+      "operations": [
+        {
+          "thirdPartyIds": [
+            {
+              "content": "27575-1",
+              "schemeId": "com.my-mps.codelist.registratienummer"
+            }
+          ],
+          "name": "Spraying operation",
+          "startDateTime": "2025-03-12T15:51:00+01:00",
+          "endDateTime": "2025-03-12T16:45:00+01:00",
+          "type": {
+            "content": "SPRAYING",
+            "listId": "nl.agroconnect.codelist.cl127"
+          },
+          "technique": {
+            "content": "SPRAYING",
+            "listId": "nl.agroconnect.codelist.cl302"
+          },
+          ...
+        }
+      ]
+      ...
+    },
+    {
+      "thirdPartyIds": [
+        {
+          "content": "27901",
+          "schemeId": "com.my-mps.codelist.registratienummer"
+        }
+      ],
+      "name": "NPK-Fertilizing task",
+      "startDateTime": "2025-06-23T11:15:00+03:00",
+      "endDateTime": "2025-06-23T16:45:00+02:00",
+      "status": "PLANNED",
+      "growerId": { 
+        "content": "82094", 
+        "schemeId": "com.my-mps.codelist.registratienummer" 
+      },
+      "cropId": { 
+        "content": "8700123456789", 
+        "schemeId": "com.gs1.codelist.gtin" 
+      },
+      "operations": [
+        {
+          "thirdPartyIds": [
+            {
+              "content": "27901-1",
+              "schemeId": "com.my-mps.codelist.registratienummer"
+            }
+          ],
+          "name": "NPK-Fertilizing operation",
+          "startDateTime": "2025-06-23T11:15:00+03:00",
+          "endDateTime": "2025-06-23T16:45:00+02:00",
+          "type": {
+            "content": "FERTILIZING",
+            "listId": "nl.agroconnect.codelist.cl127"
+          },
+          "technique": {
+            "content": "DRIP-IRRIGATION",
+            "listId": "nl.agroconnect.codelist.cl302"
+          },
+          ...
+        }
+      ]
+      ...
+    }
+]
+```
 
 ### 2.4 Adherence to RESTful principles [Rxxx]
 
@@ -411,20 +644,21 @@ As a consequence of the Uniform Interface principle, the API interface must uniq
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
-### ✅ Example for rules [R002](#r002) and [R003](#r003)
+#### ✔ Example for rules [R002](#r002) and [R003](#r003)
+
+#### Client POSTs a new crop for a certain grower
 
 ```http
-# Client POSTs a new crop for a certain grower
 POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json
+Accept: application/json, application/problem+json
 Major-Version: 1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
   "thirdPartyIds": [
-    { "content": "12345"
+    { "content": "66382"
     , "schemeId": "com.my-mps.codelist.teeltnummer" }
   ],
   "name": "Spring Wheat",
@@ -449,7 +683,7 @@ Request-Date-Time: 2025-03-12T15:31:22.123Z
     { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
     , "schemeId": "com.my-mps.codelist.guid" },
   "thirdPartyIds": [
-    { "content": "12345"
+    { "content": "66382"
     , "schemeId": "com.my-mps.codelist.teeltnummer" }
   ],
   "name": "Spring Weat",
@@ -459,18 +693,20 @@ Request-Date-Time: 2025-03-12T15:31:22.123Z
   "country": "NL"
   ...
 }
-
-# Client uses the server side assigned "id" as resource identifier for succeeding PUT request to update the resource
+```
+#### Succeeding request use sever side assigned "id" as resource identifier
+The client uses the server side assigned "id" as resource identifier which he received in the response payload of the POST request for succeeding PUT request to update the resource:
+```http
 PUT /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json
+Accept: application/json, application/problem+json
 Major-Version: 1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
   "thirdPartyIds": [
-    { "content": "12345"
+    { "content": "66382"
     , "schemeId": "com.my-mps.codelist.teeltnummer" }
   ],
   "name": "Spring Wheat",                                   # client updates name
@@ -495,7 +731,7 @@ Request-Date-Time: 2025-03-18T09:12:52.934Z
     { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
     , "schemeId": "com.my-mps.codelist.guid" },
   "thirdPartyIds": [
-    { "content": "12345"
+    { "content": "66382"
     , "schemeId": "com.my-mps.codelist.teeltnummer" }
   ],
   "name": "Spring Wheat",
@@ -505,12 +741,31 @@ Request-Date-Time: 2025-03-18T09:12:52.934Z
   "country": "NL"
   ...
 }
-
-# Client uses the server side assigned "id" as resource identifier in succeeding DELETE request
+```
+#### Succeeding request use sever side assigned "id" as resource identifier
+The client uses the server side assigned "id" as resource identifier which he received in the response payload of the POST request for succeeding DELETE request to update the resource:
+```http
 DELETE /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
-Accept: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# No content response after succesful deletion of the resource
+HTTP/1.1 204 No Content
+Content-Type: application/json
+API-Version: 1.0.3
+Request-Id: f0e1d2c3-b4a5-6789-0abc-def123456789
+Request-Date-Time: 2025-03-28T13:01:53.557Z
+```
+#### Usage of alternative resource identifiers
+Alternatively, the client can use third-party identifiers to reference the resource in the URI in stead of the server-side assigned identifier (when the server supports this!). In this example, the client uses a third-party identifier as resource identifier in the DELETE request.
+```http
+DELETE /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.teeltnummer/66382 HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
 Major-Version: 1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
@@ -557,17 +812,17 @@ Since a schema represent a single instance of an entity, schema names **MUST** b
 
 ### <a id="p004"></a>[P004] Schema names **MUST** be CamelCase (PascalCase)
 
-All schema names MUST be CamelCase matching regex ``
+All schema names MUST be CamelCase (a.k.a PascalCase) matching regex `^[A-Z][a-z\d]*([A-Z][a-z\d]*)*$`
 
 ### <a id="p005"></a>[P005] Property names **MUST** be lowerCamelCase
 
-All property names **MUST** be lowerCamelCase matching regex `^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
+All property names **MUST** be lowerCamelCase matching regex `^[a-z][a-z\d]*([A-Z][a-z\d]*)*$`. 
 
 ### <a id="p006"></a>[P006] Array properties **MUST** have a plural name
 
 Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
-### ✅ Example for rules [P003](#p003), [P004](#p004), [P005](#p005) and [P006](#p006)
+#### ✅ Example schema (yaml) for rules [P003](#p003), [P004](#p004), [P005](#p005) and [P006](#p006)
 
 ```YAML
     InboundDeliveryDetail:                             # schemaname CamelCase
@@ -576,7 +831,7 @@ Properties names of arrays **MUST** be pluralized to indicate that they contain 
       description: |
         'Detail of materials and inputs delivered by a supplier to a grower as input for their crop process. An inbound delivery describes a certain amount of a certain product acquired by a grower through an order to a supplier.'
       required:
-        - thirdPartyIds                                 # property names lowerlCamelCase, array properties plural, other singular
+        - thirdPartyIds                                 # property names lowerCamelCase, array properties plural, other singular
         - dateOfDelivery
         - quantity
         - product
@@ -613,13 +868,13 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 | true     | false    | ❌ No  | ❌ No              |
 | false    | false    | ✔ Yes | ❌ No              |
 
-Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
-
 ### <a id="p008"></a>[P008] Date properties **MUST NOT** have a time component if only the date is relevant
+
+Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
 
 ### <a id="p009"></a>[P009] Date, datetime and time properties **MUST** use RFC9557/ISO8601 formats
 
-OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as strings with the appropriate  format. All date, datetime and time fields in requests and responses **MUST** adhere to [RFC 9557](#rfc9557) and [ISO 8601](#iso-8601-date-and-time-format) formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
+OpenAPI does not know date, datetime or time data types, though represents dates, datetimes and times as _strings_ with the appropriate  _format_. All date, datetime and time fields in requests and responses **MUST** adhere to [RFC 9557](#rfc9557) _and_ [ISO 8601](#iso-8601-date-and-time-format) formats. Each field in the OpenAPI specification **MUST** set `type: string` and set `format` to the OpenAPI format as listed in the following table:
 
 | Field type | ISO8601 format | OpenAPI format (yaml)                  | Syntax                                                                                               | Examples                                                                                             |
 | ---------- | -------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -627,15 +882,15 @@ OpenAPI does not know date, datetime or time data types, though represents dates
 | Datetime   | date-time      | `type: string`<br>`format: date-time`  | `YYYY-DD-MMThh:mi:ssZ`<br>`YYYY-DD-MMThh:mi:ss±hh:mm`<br>`YYYY-DD-MMThh:mi:ss.sssZ`<br>`YYYY-DD-MMThh:mi:ss.sss±hh:mm` | `2026-04-08T13:17:49Z`<br>`2026-04-08T15:17:49+02:00`<br>`2026-04-08T13:17:49.824Z`<br>`2026-04-08T15:17:49.824+02:00` |
 | Time       | partial-time   | `type: string`<br>`format: time-local` | `hh:mm`<br>`hh:mm:ss`                                                                                | `15:17`<br>`15:17:49`                                                                                |
 
-RFC9557 is a profile on ISO8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC9557:
+RFC 9557 is a profile on ISO 8601, but is not a strict subset of allowed notations. Practically, to adhere to both, the following limitations MUST be applied to RFC 9557:
 
-- In a field with a date-time value, the date and time components **MUST** be separated by a "T" in uppercase.
-- The timezone offset "Z" (meaning UTC) **MUST** be uppercase.
-- "-00:00" **MUST NOT** be used as timezone offset. "+00:00" **MAY** be used as timezone offset to indicate an offset of 0h and 0m.
+- In a field with a date-time value, the date and time components **MUST** be separated by a `T` in uppercase.
+- The timezone offset `Z` (meaning UTC) **MUST** be uppercase.
+- `-00:00` **MUST NOT** be used as timezone offset. `+00:00` **MAY** be used as timezone offset to indicate an offset of 0h and 0m.
 
 ### <a id="p010"></a>[P010] APIs **MUST** accept all timezone offsets in requests and **SHOULD** use UTC in responses
 
-APIs **MUST** accept any timezone offset (inluding "Z") in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. "Z" as timezone offset).
+APIs **MUST** accept any timezone offset (including `Z`) in fields in requests containing a datetime. Fields in responses containing a datetime **SHOULD** be in UTC (e.g. `Z` as timezone offset).
 
 ### <a id="p011"></a>[P011] `GET` and `DELETE`operations **MUST NOT** have a request payload 
 
@@ -645,7 +900,8 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 
 `PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: [R002](#r002)).
 
-### Example PATCH request using RFC 6902
+#### Example PATCH request using RFC 6902
+#### PATCH request to modify existing grower resource with registration number 12345
 
 ```http
 # Patch request to modify existing grower resource with registration number 12345
@@ -653,15 +909,16 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 PATCH /growers/com.my-mps.codelist.registratienummer/12345 HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json-patch+json
-Accept: application/json
+Accept: application/json, application/problem+json
 Major-Version: 1
 
 [
   { "op": "replace", "path": "/postalAddress/postalCode", "value": "3521 AA" },
   { "op": "add", "path": "/emailAddress", "value": "info@delier.nl" }
 ]
-
-# Response contains complete representation of the updated grower resource
+```
+#### Response contains complete representation of the updated grower resource
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 API-Version: 1.0.3
@@ -715,10 +972,12 @@ Request-Date-Time: 2025-03-12T15:31:21.123Z
 
 When an API request results in an error (HTTP 4xx of HTTP-5xx), the response payload **MUST** contain the "Problem Details for HTTP APIs" as specified in [RFC 9457](#rfc9457). The `Content-Type` variable in the HTTP response header **MUST** be set to `application/problem+json` to inform the client about the responded content type. 
 
-### Example error responses using Problem Details for HTTP APIs payload 
+As a consequence, each request **MUST** include `application/problem+json` in its `Accept` request header,  expressing that the client is willing to receive this content type.
 
+#### Example error responses using Problem Details for HTTP APIs payload 
+
+#### Example error response for HTTP 400 Bad Request using Problem Details for HTTP APIs payload
 ```http
-# Example error response for HTTP 400 Bad Request using Problem Details for HTTP APIs payload
 HTTP/1.1 400 Bad Request
 Content-Type: application/problem+json
 API-Version: 1.0.3
@@ -738,8 +997,9 @@ Request-Date-Time: 2026-06-22T12:34:56.789Z
     }
   ]
 }
-
-# Example error response for HTTP 401 Unauthorized using Problem Details for HTTP APIs payload
+```
+#### Example error response for HTTP 401 Unauthorized using Problem Details for HTTP APIs payload
+```http
 HTTP/1.1 401 Unauthorized
 Content-Type: application/problem+json
 API-Version: 1.0.3
@@ -838,7 +1098,7 @@ Rationale
 
 To reduce the amount of roundtrips between client and server, all applicable schema validation errors **SHOULD** be returned together. This allows a client to present validation errors to a user in one go, reducing user friction with multiple retries.
 
-### Example error response for multiple HTTP 400 Bad Request errors
+#### Example error response for multiple HTTP 400 Bad Request errors
 
 ```http
 HTTP/1.1 400 Bad Request
@@ -997,6 +1257,7 @@ The following references are used in this style guide:
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
 
+
 | `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
 
 | `/core/deprecation-schedule`             | [M005](#m005) | Customized | Transition between major versions                       |
@@ -1035,6 +1296,7 @@ The following references are used in this style guide:
 - <a id="ncsc2025"></a> [NCSC 2025](https://www.ncsc.nl/wat-kun-je-zelf-doen/documenten/publicaties/2025/juni/01/ict-beveiligingsrichtlijnen-voor-transport-layer-security-2025-05) Transport Layer Security (TLS) richtlijnen 2025-05 NCSC. June 2025. 
 - <a id="openapi-specification"></a> [OpenAPI Specification](https://www.openapis.org/): Darrell Miller; Jason Harmon; Jeremy Whitlock; Marsh Gardiner; Mike Ralphson; Ron Ratovsky; Tony Tam; Uri Sarid. OpenAPI Initiative.
 - <a id="semver"></a> [SemVer](https://semver.org) Semantic Versioning 2.0.0. T. Preston-Werner. June 2013.ether in one response  |
+
 
 | `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                    |
 
