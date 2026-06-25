@@ -47,7 +47,7 @@ With this in mind, AgroConnect adopts "API First" as a key engineering principle
 
 Ideally, all APIs in the Agri- and Food domain will look as if the same author created them.
 
-[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy Matrix to show how our rules relate to the rules published in the ADR . [Chapter 3](#chapter3) contains conformity matrices whoch show the relation between the AASG Rules and ADR rules. [Chapter 4](#chapter4) contains an overview of references.
+[Chapter 2](#chapter2) contains the list of API Design Rules. These are partially based on the [NLGov REST API Design Rules](https://gitdocumentatie.logius.nl/publicatie/api/adr/) ("ADR") as published by Forum Standaardisatie ([REST-API Design Rules | Forum Standaardisatie](https://www.forumstandaardisatie.nl/open-standaarden/rest-api-design-rules)). In [Chapter 3](#chapter3) we added a compliancy matrices which show the relation between the AASG Rules and ADR rules. [Chapter 4](#chapter4) contains an overview of references.
 
 The examples in this style guide are based on the AgroConnect REST API eCrop standaard.
 
@@ -127,7 +127,7 @@ Although APIs are client-agnostic, the client **MAY** pass the name and software
 ##### ✔ Correct 
 
 ```http
-POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
@@ -143,7 +143,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 #### ❌ Incorrect 
 
 ```http
-POST /v1/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1 # ❌ Major version in URI
+POST /v1/growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1 # ❌ Major version in URI
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
@@ -307,7 +307,7 @@ URLs **SHOULD NOT** use (something like) `/api` or `/services` as base path. In 
 
 ```http
 # ✔ Correct 
-POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 ...
 ```
@@ -315,12 +315,12 @@ Host: standard-api.agroconnect.nl
 ##### ❌ Incorrect: `/api` or `/services` in URI  
 
 ```http
-POST /api/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+POST /api/growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 ...
 
-POST /services/growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+POST /services/growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 ...
@@ -366,7 +366,7 @@ Query keys are often converted to JSON object keys, where lowerCamelCase is the 
 
 ```http
 GET /growers
-PUT /growers/com.my-mps.codelist.registratienummer/12345
+PUT /growers/com.my-mps.codelists.registratienummer/12345
 GET /suppliers
 POST /inbound-deliveries
 GET /inbound-deliveries?deliveryDate=2026-03-25
@@ -396,7 +396,7 @@ Hierarchical relationships between resources which _do not have an independent e
 This example shows how to create a new task for a specific crop of a specific grower. The grower and crop identifiers are part of the URI, so they **MUST NOT** be included in the payload of the request.
 
 ```http
-POST /growers/com.my-mps.codelist.registratienummer/12345/crops/com.gs1.codelist.gtin/0123456789012/tasks HTTP/1.1
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops/com.gs1.codelist.gtin/0123456789012/tasks HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
@@ -408,7 +408,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "thirdPartyIds": [
     {
       "content": "27575",
-      "schemeId": "com.my-mps.codelist.registratienummer"
+      "schemeId": "com.my-mps.codelists.registratienummer"
     }
   ],
   "name": "Spraying task",
@@ -420,7 +420,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "thirdPartyIds": [
         {
           "content": "27575-1",
-          "schemeId": "com.my-mps.codelist.registratienummer"
+          "schemeId": "com.my-mps.codelists.registratienummer"
         }
       ],
       "name": "Spraying operation",
@@ -458,7 +458,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "thirdPartyIds": [
     {
       "content": "27575",
-      "schemeId": "com.my-mps.codelist.registratienummer"
+      "schemeId": "com.my-mps.codelists.registratienummer"
     }
   ],
   "name": "Spraying task",
@@ -467,7 +467,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "status": "PROPOSED",
   "growerId": { 
      "content": "12345", 
-     "schemeId": "com.my-mps.codelist.registratienummer" 
+     "schemeId": "com.my-mps.codelists.registratienummer" 
    },
   "cropId": { 
      "content": "0123456789012", 
@@ -478,7 +478,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "thirdPartyIds": [
         {
           "content": "27575-1",
-          "schemeId": "com.my-mps.codelist.registratienummer"
+          "schemeId": "com.my-mps.codelists.registratienummer"
         }
       ],
       "name": "Spraying operation",
@@ -525,7 +525,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
       "thirdPartyIds": [
         {
           "content": "27575",
-          "schemeId": "com.my-mps.codelist.registratienummer"
+          "schemeId": "com.my-mps.codelists.registratienummer"
         }
       ],
       "name": "Spraying task",
@@ -534,7 +534,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
       "status": "PROPOSED",
       "growerId": { 
         "content": "12345", 
-        "schemeId": "com.my-mps.codelist.registratienummer" 
+        "schemeId": "com.my-mps.codelists.registratienummer" 
       },
       "cropId": { 
         "content": "0123456789012", 
@@ -545,7 +545,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
           "thirdPartyIds": [
             {
               "content": "27575-1",
-              "schemeId": "com.my-mps.codelist.registratienummer"
+              "schemeId": "com.my-mps.codelists.registratienummer"
             }
           ],
           "name": "Spraying operation",
@@ -568,7 +568,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
       "thirdPartyIds": [
         {
           "content": "27901",
-          "schemeId": "com.my-mps.codelist.registratienummer"
+          "schemeId": "com.my-mps.codelists.registratienummer"
         }
       ],
       "name": "NPK-Fertilizing task",
@@ -577,7 +577,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
       "status": "PLANNED",
       "growerId": { 
         "content": "82094", 
-        "schemeId": "com.my-mps.codelist.registratienummer" 
+        "schemeId": "com.my-mps.codelists.registratienummer" 
       },
       "cropId": { 
         "content": "8700123456789", 
@@ -588,7 +588,7 @@ Request-Date-Time: 2026-01-15T09:10:54.913Z
           "thirdPartyIds": [
             {
               "content": "27901-1",
-              "schemeId": "com.my-mps.codelist.registratienummer"
+              "schemeId": "com.my-mps.codelists.registratienummer"
             }
           ],
           "name": "NPK-Fertilizing operation",
@@ -644,12 +644,12 @@ As a consequence of the Uniform Interface principle, the API interface must uniq
 
 In addition, resources **MAY** be identified using secondary identifiers assigned by other entities. The API platform **MAY** support these identifiers as resource identifiers in subsequent operations  (`PUT`, `PATCH`, `DELETE`, `GET`) .
 
-#### ✔ Example for rules [R002](#r002) and [R003](#r003)
+#### Example for rules [R002](#r002) and [R003](#r003)
 
-#### Client POSTs a new crop for a certain grower
+Client creates a new crop for a certain grower using the `POST`method
 
 ```http
-POST /growers/com.my-mps.codelist.registratienummer/12345/crops HTTP/1.1
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
@@ -659,7 +659,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 {
   "thirdPartyIds": [
     { "content": "66382"
-    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
   ],
   "name": "Spring Wheat",
   "startDate": "2025-03-12",
@@ -670,8 +670,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                     , "variety": "01201" } ]
   ...                  
 }
+```
 
-# Server responds with the complete representation of the new crop-resource, including the server-side assigned "id" (guid)
+Server responds with the complete representation of the new crop-resource, including the server-side assigned "id" (guid)
+
+```http
 HTTP/1.1 202 Accepted
 Content-Type: application/json
 API-Version: 1.0.3
@@ -679,12 +682,12 @@ Request-Id: a1b2c3d4-e5f6-7890-ab12-cdef34567890
 Request-Date-Time: 2025-03-12T15:31:22.123Z
 
 {
-  "id":                                                               # Server side assigned id in response
+  "id":                                                               # Server side assigned id returned in response payload
     { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
-    , "schemeId": "com.my-mps.codelist.guid" },
+    , "schemeId": "com.my-mps.codelists.guid" },
   "thirdPartyIds": [
     { "content": "66382"
-    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
   ],
   "name": "Spring Weat",
   "startDate": "2025-03-12",
@@ -695,12 +698,10 @@ Request-Date-Time: 2025-03-12T15:31:22.123Z
 }
 ```
 
-#### Succeeding request use sever side assigned "id" as resource identifier
-
-The client uses the server side assigned "id" as resource identifier which he received in the response payload of the POST request for succeeding PUT request to update the resource:
+Succeeding request uses sever side assigned "id" as resource identifier`: the client uses the server side assigned "id" as resource identifier which he received in the response payload of the `POST` request for succeeding `PUT` request to update the resource:
 
 ```http
-PUT /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
+PUT /growers/com.my-mps.codelists.registratienummer/12345/crops/com.my-mps.codelists.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
@@ -710,7 +711,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 {
   "thirdPartyIds": [
     { "content": "66382"
-    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
   ],
   "name": "Spring Wheat",                                   # client updates name
   "startDate": "2025-03-13",                                # and startDate
@@ -721,8 +722,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                     , "variety": "01201" } ]
   ...                  
 }
+```
 
-# Response contains complete representation after processing the PUT operation
+Response contains complete representation after processing the `PUT` operation
+
+```http
 HTTP/1.1 202 Accepted
 Content-Type: application/json
 API-Version: 1.0.3
@@ -732,10 +736,10 @@ Request-Date-Time: 2025-03-18T09:12:52.934Z
 {
   "id": 
     { "content": "c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c"
-    , "schemeId": "com.my-mps.codelist.guid" },
+    , "schemeId": "com.my-mps.codelists.guid" },
   "thirdPartyIds": [
     { "content": "66382"
-    , "schemeId": "com.my-mps.codelist.teeltnummer" }
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
   ],
   "name": "Spring Wheat",
   "startDate": "2025-03-13",
@@ -746,19 +750,20 @@ Request-Date-Time: 2025-03-18T09:12:52.934Z
 }
 ```
 
-#### Succeeding request use sever side assigned "id" as resource identifier
-
-The client uses the server side assigned "id" as resource identifier which he received in the response payload of the POST request for succeeding DELETE request to update the resource:
+Succeeding request uses sever side assigned "id" as resource identifier:  the client uses the server side assigned "id" as resource identifier which he received in the response payload of the `POST` request for succeeding `DELETE` request to update the resource:
 
 ```http
-DELETE /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
+DELETE /growers/com.my-mps.codelists.registratienummer/12345/crops/com.my-mps.codelists.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
 Major-Version: 1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
-# No content response after succesful deletion of the resource
+No content response after succesful deletion of the resource
+
+```http
 HTTP/1.1 204 No Content
 Content-Type: application/json
 API-Version: 1.0.3
@@ -766,19 +771,20 @@ Request-Id: f0e1d2c3-b4a5-6789-0abc-def123456789
 Request-Date-Time: 2025-03-28T13:01:53.557Z
 ```
 
-#### Usage of alternative resource identifiers
-
-Alternatively, the client can use third-party identifiers to reference the resource in the URI in stead of the server-side assigned identifier (when the server supports this!). In this example, the client uses a third-party identifier as resource identifier in the DELETE request.
+Usage of alternative resource identifiers: alternatively, the client can use third-party identifiers to reference the resource in the URI in stead of the server-side assigned identifier (only when the server supports this!). In this example, the client uses a third-party identifier as resource identifier in the `DELETE` request.
 
 ```http
-DELETE /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.teeltnummer/66382 HTTP/1.1
+DELETE /growers/com.my-mps.codelists.registratienummer/12345/crops/com.my-mps.codelists.teeltnummer/66382 HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json
 Accept: application/json, application/problem+json
 Major-Version: 1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
-# No content response after succesful deletion of the resource
+No content response after succesful deletion of the resource
+
+```http
 HTTP/1.1 204 No Content
 Content-Type: application/json
 API-Version: 1.0.3
@@ -831,16 +837,16 @@ All property names **MUST** be lowerCamelCase matching regex `^[a-z][a-z\d]*([A-
 
 Properties names of arrays **MUST** be pluralized to indicate that they contain multiple values. This implies in turn that object names **MUST** be singular. 
 
-#### ✅ Example schema (yaml) for rules [P003](#p003), [P004](#p004), [P005](#p005) and [P006](#p006)
+#### ✔ Example schema (yaml) for rules [P003](#p003), [P004](#p004), [P005](#p005) and [P006](#p006)
 
 ```YAML
-    InboundDeliveryDetail:                             # schemaname CamelCase
+    InboundDeliveryDetail:                             # ✔ schemaname CamelCase
       title: Inbound Delivery detail
       type: object
       description: |
         'Detail of materials and inputs delivered by a supplier to a grower as input for their crop process. An inbound delivery describes a certain amount of a certain product acquired by a grower through an order to a supplier.'
       required:
-        - thirdPartyIds                                 # property names lowerCamelCase, array properties plural, other singular
+        - thirdPartyIds                                # ✔ property names lowerCamelCase, array properties plural, other singular
         - dateOfDelivery
         - quantity
         - product
@@ -877,6 +883,61 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 | true     | false    | ❌ No  | ❌ No              |
 | false    | false    | ✔ Yes | ❌ No              |
 
+#### Example
+
+Following two request should be handled identically
+
+Client POSTs a new crop for a certain grower with `name` property set to `null` (which is allowed because the property is (not required and) nullable):
+
+```http
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    { "content": "66382"
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
+  ],
+  "name": null,                                              # name set to null
+  "startDate": "2025-03-12",
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL",
+  "plantSpecies": [ { "plantSpecies": "1010101"
+                    , "variety": "01201" } ]
+  ...                  
+}
+```
+
+Alternatively, the client POSTs a new crop for a certain grower omitting the `name` property (which is allowed because the property is not required (and nullable)):
+
+```http
+POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
+Host: standard-api.agroconnect.nl
+Content-Type: application/json
+Accept: application/json, application/problem+json
+Major-Version: 1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "thirdPartyIds": [
+    { "content": "66382"
+    , "schemeId": "com.my-mps.codelists.teeltnummer" }
+  ],
+  "startDate": "2025-03-12",                                  # name property not defined
+  "endDate": "2025-11-30",
+  "year": 2025,
+  "country": "NL",
+  "plantSpecies": [ { "plantSpecies": "1010101"
+                    , "variety": "01201" } ]
+  ...                  
+}
+```
+
 ### <a id="p008"></a>[P008] Date properties **MUST NOT** have a time component if only the date is relevant
 
 Properties representing dates (without time) **MUST** use `date` format and **MUST** exclude time components. Including time portions reduces understandability and increases complexity due to timezone conversions.
@@ -907,16 +968,14 @@ Because of their nature (retrieving and removing resources) `GET` and `DELETE` o
 
 ### <a id="p012"></a>[P012] `PATCH` operations **MUST** use the standard _JavaScript Object Notation (JSON) Patch_ as request payload 
 
-`PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type`of **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: [R002](#r002)).
+`PATCH`operations **MUST NOT** use the normal resource representation in the request payload, but **MUST** use _JavaScript Object Notation (JSON) Patch_ as described in [RFC 6902](#rfc6902). The HTTP request header variable `Content-Type` **MUST** be set to `application/json-patch+json`. As with all operations, the response payload of a `PATCH` request **MUST** contain the full representation of the updated resource (see: [R002](#r002)).
 
-#### Example PATCH request using RFC 6902
+#### Example `PATCH` request using RFC 6902
 
-#### PATCH request to modify existing grower resource with registration number 12345
+`PATCH` request to modify existing grower resource with registration number 12345. In this example, the postal code is updated and an email address is added.
 
 ```http
-# Patch request to modify existing grower resource with registration number 12345
-# In this example, the postal code is updated and an email address is added.
-PATCH /growers/com.my-mps.codelist.registratienummer/12345 HTTP/1.1
+PATCH /growers/com.my-mps.codelists.registratienummer/12345 HTTP/1.1
 Host: standard-api.agroconnect.nl
 Content-Type: application/json-patch+json
 Accept: application/json, application/problem+json
@@ -928,7 +987,7 @@ Major-Version: 1
 ]
 ```
 
-#### Response contains complete representation of the updated grower resource
+Response contains complete representation of the updated grower resource
 
 ```http
 HTTP/1.1 200 OK
@@ -940,7 +999,7 @@ Request-Date-Time: 2025-03-12T15:31:21.123Z
 {
   "id": {
     "content": "e3c8a1b2-4f6e-4a2d-8e3b-9c1d2e3f4a5b",
-    "schemeId": "com.my-mps.codelist.guid"
+    "schemeId": "com.my-mps.codelists.guid"
   },
   "thirdPartyIds": [
     {
@@ -988,7 +1047,7 @@ As a consequence, each request **MUST** include `application/problem+json` in it
 
 #### Example error responses using Problem Details for HTTP APIs payload 
 
-#### Example error response for HTTP 400 Bad Request using Problem Details for HTTP APIs payload
+Example error response for HTTP 400 Bad Request using Problem Details for HTTP APIs payload
 
 ```http
 HTTP/1.1 400 Bad Request
@@ -1002,7 +1061,7 @@ Request-Date-Time: 2026-06-22T12:34:56.789Z
   "title": "Invalid request payload",
   "status": 400,
   "detail": "The request contains validation errors.",
-  "instance": "/growers/com.my-mps.codelist.registratienummer/12345",
+  "instance": "/growers/com.my-mps.codelists.registratienummer/12345",
   "errors": [
     {
       "field": "/postalAddress/postalCode",
@@ -1012,7 +1071,7 @@ Request-Date-Time: 2026-06-22T12:34:56.789Z
 }
 ```
 
-#### Example error response for HTTP 401 Unauthorized using Problem Details for HTTP APIs payload
+Example error response for HTTP 401 Unauthorized using Problem Details for HTTP APIs payload
 
 ```http
 HTTP/1.1 401 Unauthorized
@@ -1026,7 +1085,7 @@ Request-Date-Time: 2026-06-23T09:15:32.456Z
   "title": "Authentication failed",
   "status": 401,
   "detail": "The request lacks valid authentication credentials. Ensure the 'Authorization' header contains a valid bearer token.",
-  "instance": "/growers/com.my-mps.codelist.registratienummer/12345"
+  "instance": "/growers/com.my-mps.codelists.registratienummer/12345"
 }
 ```
 
@@ -1127,7 +1186,7 @@ Request-Date-Time: 2026-06-22T12:34:56.789Z
   "title": "Invalid request payload",
   "status": 400,
   "detail": "The request contains validation errors.",
-  "instance": "/growers/com.my-mps.codelist.registratienummer/12345",
+  "instance": "/growers/com.my-mps.codelists.registratienummer/12345",
   "errors": [
     {
       "field": "/postalAddress/postalCode",
