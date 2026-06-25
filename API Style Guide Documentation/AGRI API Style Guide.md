@@ -885,9 +885,9 @@ OpenAPI 3.x allows to mark properties as `required` and as `nullable` to specify
 
 #### Example
 
-Following two request should be handled identically
+Following two requests should be handled identically.
 
-Client POSTs a new crop for a certain grower with `name` property set to `null` (which is allowed because the property is (not required and) nullable):
+Client creates a new crop for a certain grower with `name` property set to `null` (which is allowed because the property is (not required and) nullable):
 
 ```http
 POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
@@ -913,7 +913,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 }
 ```
 
-Alternatively, the client POSTs a new crop for a certain grower omitting the `name` property (which is allowed because the property is not required (and nullable)):
+Alternatively, the client creates a new crop for a certain grower omitting the `name` property (which is allowed because the property is not required (and nullable)):
 
 ```http
 POST /growers/com.my-mps.codelists.registratienummer/12345/crops HTTP/1.1
