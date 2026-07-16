@@ -94,9 +94,9 @@ info:
     url: 'https://www.agroconnect.nl/'
 ```
 
-### <a id="m003"></a>[M003] API Specification **MUST** be written using U.S. English
+### <a id="m003"></a>[M003] API Specification **MUST** be written using U.K. English
 
-The API specification **MUST** be written in U.S. English. 
+The API specification **MUST** be written in U.K. (British) English. 
 
 ### <a id="m004"></a>[M004] API Specification and implementation **MUST** use semantic versioning
 
@@ -1223,7 +1223,7 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | ------------- | ------------------------------------------------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------- |
 | [M001](#m001) | `/core/doc-openapi`<br>`/core/publish-openapi`                                 | Inherited  | OpenAPI specification required                                                                       |
 | [M002](#m002) | `/core/doc-openapi-contact`                                                    | Inherited  | API meta information and contact required                                                            |
-| [M003](#m003) | `/core/doc-language`<br>`/core/interface-language`                             | Customized | AASG prefers U.S. English in specification. ADR allows English but prefers Dutch                     |
+| [M003](#m003) | `/core/doc-language`<br>`/core/interface-language`                             | Customized | AASG prefers U.K. English in specification. ADR allows English but prefers Dutch                     |
 | [M004](#m004) | `/core/semver`                                                                 | Inherited  | Semantic versioning required                                                                         |
 | [M005](#m005) | `/core/deprecation-schedule`<br>`/core/transition-period`<br>`/core/changelog` | Inherited  | These 3 ADR rules are merged in one AASG rule                                                        |
 | [M006](#m006) | `/core/uri-version`                                                            | Customized | AASG prefers major version in request header. ADR in URI                                             |
@@ -1292,7 +1292,7 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | List of functional rules                 |               |            |                                                                                            |
 | `/core/naming-resources`                 | [U002](#u002) | Inherited  | Resource names must be nouns                                                               |
 | `/core/naming-collections`               | [U003](#u003) | Inherited  | Collection resource names must be plural                                                   |
-| `/core/interface-language`               | [M003](#m003) | Customized | AASG prefers U.S. English in specification                                                 |
+| `/core/interface-language`               | [M003](#m003) | Customized | AASG prefers U.K. (British) English in specification                                       |
 | `/core/hide-implementation`              | [R004](#r004) | Inherited  | Hide implementation details from clients                                                   |
 | `/core/http-methods`                     | [H001](#h001) | Extended   | Only use standard HTTP methods.<br>AASG does not allow PUT to be used for insert-or-update |
 | `/core/http-safety`                      | [H002](#h002) | Inherited  | HTTP safety and idempotency semantics required                                             |
@@ -1301,7 +1301,7 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/nested-child`                     | [U007](#u007) | Inherited  | Child resources identified via path segments                                               |
 | `/core/resource-operations`              | [U007](#u007) | Inherited  | Child resources identified via path segments                                               |
 | `/core/error-handling/all-errors`        | [H007](#h007) | Inherited  | Bundle all bad request errors together in one response                                     |
-| `/core/doc-language`                     | [M003](#m003) | Customized | AASG uses U.S. English documentation                                                       |
+| `/core/doc-language`                     | [M003](#m003) | Customized | AAASG prefers U.K. (British) English in documentation                                      |
 | `/core/deprecation-schedule`             | [M005](#m005) | Inherited  | Transition between major versions                                                          |
 | `/core/transition-period`                | [M005](#m005) | Inherited  | Transition between major versions                                                          |
 | `/core/changelog`                        | [M005](#m005) | Inherited  | Add change log for each version                                                            |
