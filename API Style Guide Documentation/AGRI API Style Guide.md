@@ -1091,6 +1091,22 @@ Request-Date-Time: 2026-06-23T09:15:32.456Z
 }
 ```
 
+### <a id="p014"></a>[P014] A RFC 8288-based links array **MUST** be used for hypermedia links
+
+Every resource representation that exposes hypermedia links **MUST** do so via a `links` member whose value is a JSON array of link objects, following the OGC API - Common Hyperlink Schema — a JSON serialization inspired by [RFC 8288 (Web Linking)](#rfc8288). `links` **MUST** always be an array, even when the resource currently has exactly one link. A single link object MUS**T NOT** be used in place of a one-element array.
+
+| Property | Required | Description                                 |
+| -------- | -------- | ------------------------------------------- |
+| href     | Yes      | Absolute or relative URI of the link target |
+| rel      | Yes      | Link relation type                          |
+| type     | No       | Media type hint of the link target          |
+| title    | No       | Human-readable label for the link target    |
+| hreflang | No       | Language hint of the link target            |
+
+Link relation types (rel) **SHOULD** defined using relation types registered in the [IANA Link Relations Registry](https://www.iana.org/assignments/link-relations/link-relations.xhtml) wherever one applies (e.g. `self`, `collection`, `next`, `prev`, `alternate`). Where IANA has no suitable value, prefer an OGC-registered relation type if one exists for Geo-data based resources.
+
+(Following is concept!): Where neither IANA nor OGC defines a suitable relation, define a custom relation type as an absolute, dereferenceable eCrop URI, of the form https://ecrop.agroconnect.nl/rel/{relation-name}. Custom relation types MUST be documented in the eCrop API style guide's relation type registry before use.
+
 ### 2.6 HTTP methods and responses [Hxxx]
 
 Although the REST architectural style does not impose a specific protocol, REST APIs are typically implemented using HTTP Semantics as specified in  [RFC 9110](#rfc9110).
@@ -1256,6 +1272,7 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | [P011](#p011) | None                                                                           | AASG only  | GET and DELETE must not have request payload                                                         |
 | [P012](#p012) | None                                                                           | AASG only  | PATCH must use JSON Patch                                                                            |
 | [P013](#p013) | `/core/error-handling/problem-details`                                         | Inherited  | Error responses use Problem Details                                                                  |
+| [P014](#p014) | None                                                                           | AASG only  | RFC 8288-based links array required for hypermedia links                                             |
 | [H001](#h001) | `/core/http-methods`                                                           | Extended   | Only use standard HTTP methods.<br>AASG does not allow PUT to be used for insert-or-update           |
 | [H002](#h002) | `/core/http-safety`                                                            | Inherited  | HTTP safety and idempotency semantics required                                                       |
 | [H003](#h003) | `/core/http-response-code`                                                     | Inherited  | Use standard HTTP status codes for errors                                                            |
@@ -1322,6 +1339,7 @@ The following references are used in this style guide:
 - <a id="rfc7159"></a> [IETF RFC 7159](https://www.rfc-editor.org/info/rfc7159): The JavaScript Object Notation (JSON) Data Interchange Format. D. Crockford. IETF. March 2014. Proposed Standard.
 - <a id="rfc8174"></a> [IETF RFC 8174](https://www.rfc-editor.org/rfc/rfc8174): Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. B. Leiba. IETF. May 2017. Best Current Practice.
 - <a id="rfc8252"></a> [IETF RFC 8252](https://datatracker.ietf.org/doc/html/rfc8252): OAuth 2.0 for Native Apps. B. Campbell; E. Mortensen; J. Bradley; et al. IETF. October 2017.
+- <a id="rfc8288"></a> [IETF RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288): Web Linking. M. Nottingham. IETF. October 2017. Proposed Standard.
 - <a id="rfc9110"></a> [IETF RFC 9110](https://www.rfc-editor.org/rfc/rfc9110): HTTP Semantics. R. Fielding; M. Nottingham; J. Reschke. IETF. June 2022. Standards Track.
 - <a id="rfc9457"></a> [IETF RFC 9457](https://www.rfc-editor.org/rfc/rfc9457): Problem Details for HTTP APIs. M. Nottingham; E. Wilde; S. Dalal. IETF. July 2023. Proposed Standard.
 - <a id="rfc9557"></a> [IETF RFC 9557](https://www.rfc-editor.org/rfc/rfc9557): Date and Time on the Internet: Timestamps with Additional Information. U. Sharma; Igalia, S.L.; C. Bormann. IETF. July 2023. Proposed Standard.
