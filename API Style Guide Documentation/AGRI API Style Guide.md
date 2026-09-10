@@ -177,6 +177,7 @@ Content-Type: application/json
 API-Version: 1.0.3                                     # ✔ Full API version in HTTP response header
 Request-Id: 9f1c2b3a-4d5e-6f70-81a2-b3c4d5e6f701       # ✔ Unique request-id in HTTP response header
 Request-Date-Time: 2025-03-12T15:31:21.123Z            # ✔ Request timestamp in in HTTP response header
+Location: /growers/com.my-mps.codelist.registratienummer/12345/crops/{crop-id}   # ✔ URI of the (newly) created resource
 
 {
   <response payload>
@@ -682,6 +683,7 @@ Content-Type: application/json
 API-Version: 1.0.3
 Request-Id: a1b2c3d4-e5f6-7890-ab12-cdef34567890
 Request-Date-Time: 2025-03-12T15:31:22.123Z
+Location: /growers/com.my-mps.codelist.registratienummer/12345/crops/com.my-mps.codelist.guid/c9a7b8e2-3d4f-5e6a-7b8c-9d0e1f2a3b4c   # ✔ URI of the newly created crop-resource
 
 {
   "id":                                                               # Server side assigned id returned in response payload
