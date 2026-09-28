@@ -1,4 +1,4 @@
-## 4. Conformation
+## <a id="chapter4"></a>4. Conformation
 
 The following references are used in this style guide:
 

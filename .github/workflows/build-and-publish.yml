@@ -1,0 +1,93 @@
+name: Build and publish style guide
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/style-guide/**"
+      - "tools/build-guide/**"
+      - "VERSION"
+      - ".github/workflows/build-and-publish.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tools/build-guide/package-lock.json
+
+      - name: Install build tooling
+        working-directory: tools/build-guide
+        run: npm ci
+
+      - name: Validate rule files and cross-references
+        working-directory: tools/build-guide
+        run: node assemble.mjs check
+
+      - name: Build combined guide + site
+        working-directory: tools/build-guide
+        run: node assemble.mjs build --out ../../dist/AGRI-API-Style-Guide.md --html ../../dist/site/index.html
+
+      - name: Upload combined document
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-guide
+          path: dist/AGRI-API-Style-Guide.md
+          retention-days: 90
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download combined document
+        uses: actions/download-artifact@v4
+        with:
+          name: combined-guide
+          path: dist/
+
+      - name: Create release if VERSION was bumped
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="$(cat VERSION | tr -d '[:space:]')"
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists, skipping."
+          else
+            gh release create "$tag" "dist/AGRI-API-Style-Guide.md" \
+              --title "AASG $tag" \
+              --notes "Automated release of the AGRI API Style Guide, built from commit ${{ github.sha }}."
+          fi

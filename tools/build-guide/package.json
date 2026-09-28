@@ -1,0 +1,13 @@
+{
+  "name": "build-guide",
+  "private": true,
+  "type": "module",
+  "description": "Assembles the split AGRI API Style Guide rule files into the combined Markdown document and a static HTML site, and validates the source files.",
+  "scripts": {
+    "check": "node assemble.mjs check",
+    "build": "node assemble.mjs build --out ../../dist/AGRI-API-Style-Guide.md --html ../../dist/site/index.html"
+  },
+  "dependencies": {
+    "marked": "^18.0.0"
+  }
+}

@@ -1,0 +1,39 @@
+name: Validate style guide
+
+on:
+  pull_request:
+    paths:
+      - "docs/style-guide/**"
+      - "tools/build-guide/**"
+      - ".github/workflows/pr-validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: tools/build-guide/package-lock.json
+
+      - name: Install build tooling
+        working-directory: tools/build-guide
+        run: npm ci
+
+      - name: Validate rule files and cross-references
+        working-directory: tools/build-guide
+        run: node assemble.mjs check
+
+      - name: Build combined guide (fails on any assembly error)
+        working-directory: tools/build-guide
+        run: node assemble.mjs build --out ../../dist/AGRI-API-Style-Guide.md --html ../../dist/site/index.html
+
+      - name: Upload build preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: style-guide-preview
+          path: dist/
+          retention-days: 14

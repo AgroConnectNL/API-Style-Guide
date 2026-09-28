@@ -1,0 +1,8 @@
+{
+  "$comment": "ADR rules with no corresponding AASG rule (not implemented in the style guide). Used by tools/build-guide/assemble.mjs to complete the reverse compliance matrix. Add a rule here only when it truly has no AASG rule file with a matching `adr.rules` entry.",
+  "rules": [
+    { "rule": "/core/modules/geospatial", "remark": "Not explicitly implemented in AASG" },
+    { "rule": "/core/modules/signing", "remark": "Not explicitly implemented in AASG" },
+    { "rule": "/core/modules/encryption", "remark": "Not explicitly implemented in AASG" }
+  ]
+}
