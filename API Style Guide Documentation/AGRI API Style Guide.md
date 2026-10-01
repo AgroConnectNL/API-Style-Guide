@@ -1235,7 +1235,7 @@ The AGRI API Style Guide (AASG) follows the API Design Rules from the NL API Str
 
 ### Compliance Matrix: AASG Rules to ADR Rules
 
-Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).í
+Following table offers an overview which ADR-rules are inherited, customized or ignored in the AGRI API Style Guide (AASG).
 
 | AASG Rule     | ADR Rule                                                                       | Adoption   | Remark                                                                                               |
 | ------------- | ------------------------------------------------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------- |
@@ -1249,6 +1249,12 @@ Following table offers an overview which ADR-rules are inherited, customized or 
 | [M008](#m008) | `/core/version-header`                                                         | Inherited  | Full API version in response header                                                                  |
 | [M009](#m009) | None                                                                           | AASG only  | Server-side request identifier in response                                                           |
 | [M010](#m010) | None                                                                           | AASG only  | Request date-time in response header                                                                 |
+| [S001](#s001) | `/core/transport/tls`                                                          | Inherited  | Use TLS for secure communication                                                                     |
+| [S002](#s002) | `/core/transport/no-sensitive-uris`                                            | Inherited  | Do not include sensitive information in URIs                                                         |
+| [S003](#s003) | `/core/transport/security-headers`                                             | Inherited  | Use security headers                                                                                 |
+| [S004](#s004) | `/core/transport/cors`                                                         | Inherited  | Use CORS for cross-origin resource sharing                                                           |
+| [S005](#s005) | None                                                                           | AASG only  | Best practices for browser-based (SPA) OAuth clients                                                 |
+| [S006](#s006) | None                                                                           | AASG only  | Request or response body must match the declared content type                                        |
 | [U001](#u001) | None                                                                           | AASG only  | Do not use `/api` or `/services` as base path                                                        |
 | [U002](#u002) | `/core/naming-resources`                                                       | Inherited  | Resource names must be nouns                                                                         |
 | [U003](#u003) | `/core/naming-collections`                                                     | Inherited  | Collection resource names must be plural                                                             |
@@ -1294,9 +1300,9 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/no-trailing-slash`                | [U005](#u005) | Extended   | AASG Inherits this rule and adds additional constraints for empty path segments            |
 | `/core/path-segments-kebab-case`         | [U004](#u004) | Inherited  | Use kebab-case for path segments                                                           |
 | `/core/query-keys-camel-case`            | [U006](#u006) | Inherited  | Use camelCase for query parameters                                                         |
-| `/core/date-time/date-omit-time-portion` | [P006](#p006) | Inherited  | Date-only fields omit time components                                                      |
-| `/core/date-time/format`                 | [P007](#p007) | Inherited  | Use RFC9557/ISO8601 formats                                                                |
-| `/core/date-time/timezone`               | [P008](#p008) | Inherited  | Accept all offsets, prefer UTC responses                                                   |
+| `/core/date-time/date-omit-time-portion` | [P008](#p008) | Inherited  | Date-only fields omit time components                                                      |
+| `/core/date-time/format`                 | [P009](#p009) | Inherited  | Use RFC9557/ISO8601 formats                                                                |
+| `/core/date-time/timezone`               | [P010](#p010) | Inherited  | Accept all offsets, prefer UTC responses                                                   |
 | `/core/error-handling/problem-details`   | [P013](#p013) | Inherited  | Error responses use Standard Problem Details                                               |
 | `/core/error-handling/invalid-input`     | [H006](#h006) | Inherited  | Invalid input must result in 400 Bad Request                                               |
 | `/core/doc-openapi`                      | [M001](#m001) | Inherited  | OpenAPI specification required                                                             |
@@ -1329,7 +1335,7 @@ The following table provides a reverse lookup showing how each ADR (REST-API Des
 | `/core/modules/signing`                  | -             | ADR Only   | Not explicitly implemented in AASG                                                         |
 | `/core/modules/encryption`               | -             | ADR Only   | Not explicitly implemented in AASG                                                         |
 
-## 4. Conformation
+## <a id="chapter4"></a>4. Conformation
 
 The following references are used in this style guide:
 
